@@ -23,12 +23,22 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [domainError, setDomainError] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleCopyDomain = () => {
+    const domain = window.location.hostname;
+    navigator.clipboard.writeText(domain);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     setErrorMessage(null);
+    setDomainError(null);
     try {
       const firebaseUser = await loginWithGoogle();
       if (firebaseUser) {
@@ -45,6 +55,14 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
         setErrorMessage('Giriş penceresi kapatıldı.');
       } else if (err?.code === 'auth/cancelled-popup-request') {
         // Ignored duplicate click
+      } else if (
+        err?.code === 'auth/unauthorized-domain' ||
+        err?.code === 'auth/operation-not-allowed' ||
+        err?.message?.includes('unauthorized-domain') ||
+        err?.message?.includes('unauthorized domain')
+      ) {
+        setDomainError(window.location.hostname);
+        setShowEmailForm(true); // Automatically show email login form as fallback
       } else {
         setErrorMessage(err?.message || 'Google ile giriş yapılırken bir hata oluştu.');
       }
@@ -265,6 +283,34 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
             <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-medium flex items-center gap-3 shadow-xs">
               <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
               <span>{errorMessage}</span>
+            </div>
+          )}
+
+          {/* Firebase Domain Authorization Error Guidance Card */}
+          {domainError && (
+            <div className="p-4 bg-amber-50/90 border border-amber-300 text-amber-950 rounded-2xl text-xs font-normal space-y-2.5 shadow-sm">
+              <div className="flex items-start gap-2.5 font-bold text-amber-900">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <span>Firebase Yetkisiz Etki Alanı (Unauthorized Domain)</span>
+              </div>
+              <p className="leading-relaxed opacity-90">
+                Bu Vercel alan adı (<b>{domainError}</b>) Firebase Konsolunda henüz onaylı etki alanlarına eklenmemiş.
+              </p>
+              <div className="bg-white/80 p-2.5 rounded-xl border border-amber-200 flex items-center justify-between gap-2">
+                <code className="text-[11px] font-mono text-amber-950 font-semibold truncate">
+                  {domainError}
+                </code>
+                <button
+                  type="button"
+                  onClick={handleCopyDomain}
+                  className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] shrink-0 transition-all active:scale-95 cursor-pointer"
+                >
+                  {isCopied ? '✓ Kopyalandı' : 'Domain Adını Kopyala'}
+                </button>
+              </div>
+              <p className="text-[11px] text-amber-800 opacity-80 leading-normal">
+                💡 <b>Çözüm:</b> Firebase Console ➔ Authentication ➔ Settings ➔ Authorized Domains kısmına bu adresi yapıştırıp ekleyin. Dilerseniz aşağıdaki form ile de hemen giriş yapabilirsiniz.
+              </p>
             </div>
           )}
 

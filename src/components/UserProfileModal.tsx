@@ -40,14 +40,23 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   });
 
   const [isLoading, setIsLoading] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [domainError, setDomainError] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleCopyDomain = () => {
+    const domain = window.location.hostname;
+    navigator.clipboard.writeText(domain);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   const handleSimulatedGoogleLogin = async () => {
     setIsLoading(true);
     setErrorMessage(null);
+    setDomainError(null);
     try {
       const firebaseUser = await loginWithGoogle();
       if (firebaseUser) {
@@ -62,7 +71,16 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
       }
     } catch (err: any) {
       console.error("Google login error:", err);
-      setErrorMessage(err?.message || 'Google ile giriş yapılırken bir hata oluştu.');
+      if (
+        err?.code === 'auth/unauthorized-domain' ||
+        err?.code === 'auth/operation-not-allowed' ||
+        err?.message?.includes('unauthorized-domain') ||
+        err?.message?.includes('unauthorized domain')
+      ) {
+        setDomainError(window.location.hostname);
+      } else {
+        setErrorMessage(err?.message || 'Google ile giriş yapılırken bir hata oluştu.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -184,6 +202,37 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     Notlarınızı ve okuma geçmişinizi tüm cihazlarınızda eşitlemek için giriş yapın.
                   </p>
                 </div>
+
+                {/* Error Message */}
+                {errorMessage && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-[11px] font-medium text-left">
+                    {errorMessage}
+                  </div>
+                )}
+
+                {/* Domain Error Guidance */}
+                {domainError && (
+                  <div className="p-3 bg-amber-50 border border-amber-300 text-amber-950 rounded-xl text-[11px] text-left space-y-2">
+                    <p className="font-bold text-amber-900">
+                      ⚠️ Firebase Domain Yetkilendirmesi Gerekli
+                    </p>
+                    <p className="opacity-90">
+                      <b>{domainError}</b> adresi Firebase Authorized Domains listesinde yok.
+                    </p>
+                    <div className="bg-white p-2 rounded-lg border border-amber-200 flex items-center justify-between gap-1">
+                      <code className="font-mono text-[10px] text-amber-900 truncate">
+                        {domainError}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={handleCopyDomain}
+                        className="px-2 py-0.5 rounded bg-amber-600 text-white font-bold text-[10px] shrink-0 active:scale-95 cursor-pointer"
+                      >
+                        {isCopied ? '✓ Kopyalandı' : 'Kopyala'}
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <button
                   disabled={isLoading}

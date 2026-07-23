@@ -805,8 +805,13 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     }
   }, [activeAyah]);
 
-  // Trigger prominent page badge notice whenever selectedPage changes
+  // Trigger prominent page badge notice whenever selectedPage changes (except initial mount)
+  const isFirstRenderRef = React.useRef(true);
   useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
     setPageNotice(selectedPage);
     const timer = setTimeout(() => {
       setPageNotice(null);
