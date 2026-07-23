@@ -11,6 +11,8 @@ interface SohbetViewProps {
   onOpenVoiceRecorder: () => void;
   recordedVoiceUrl?: string | null;
   recordedVoiceTranscript?: string;
+  user?: { name: string; email: string; avatar: string } | null;
+  onRequireAuth?: (message: string) => void;
 }
 
 export const SohbetView: React.FC<SohbetViewProps> = ({
@@ -20,6 +22,8 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
   onOpenVoiceRecorder,
   recordedVoiceUrl,
   recordedVoiceTranscript,
+  user,
+  onRequireAuth,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchVenue, setSearchVenue] = useState<string>('');
@@ -197,7 +201,13 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
           </div>
 
           <button
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={() => {
+              if (!user && onRequireAuth) {
+                onRequireAuth('Sohbet meclisi ve ders kaydı eklemek için lütfen oturum açın.');
+                return;
+              }
+              setIsAddModalOpen(true);
+            }}
             className="px-4 py-2.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all shrink-0 w-full sm:w-auto justify-center"
           >
             <Plus className="w-4 h-4 text-white" />

@@ -28,6 +28,8 @@ interface QuranReaderProps {
   setShowTajweed?: (val: boolean) => void;
   showTranslation?: boolean;
   setShowTranslation?: (val: boolean) => void;
+  user?: { name: string; email: string; avatar: string } | null;
+  onRequireAuth?: (message: string) => void;
 }
 
 // 14 Tilavet Secdesi Ayeti Listesi (Sûre No ve Ayet No)
@@ -324,6 +326,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   setShowTajweed: propSetShowTajweed,
   showTranslation: propShowTranslation,
   setShowTranslation: propSetShowTranslation,
+  user,
+  onRequireAuth,
 }) => {
   // Reading Mode state
   const [viewMode, setViewMode] = useState<'mushaf' | 'meal' | 'detailed'>('mushaf');
@@ -2391,6 +2395,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
                       <button
                         onClick={() => {
+                          if (!user && onRequireAuth) {
+                            onRequireAuth('Ayetlere tefekkür ders notu eklemek için lütfen oturum açın.');
+                            return;
+                          }
                           setActiveNoteModalAyah(verse);
                           setNoteTextInput('');
                         }}
@@ -2496,6 +2504,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
             <button
               onClick={() => {
+                if (!user && onRequireAuth) {
+                  onRequireAuth('Ayetlere tefekkür ders notu eklemek için lütfen oturum açın.');
+                  return;
+                }
                 setActiveNoteModalAyah(selectedMushafAyah);
                 setNoteTextInput('');
               }}

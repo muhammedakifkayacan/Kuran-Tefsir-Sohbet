@@ -28,6 +28,9 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioPlaybackRef = useRef<HTMLAudioElement | null>(null);
+  const wakeLockRef = useRef<any>(null);
+  const silentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const isRecordingRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -35,9 +38,71 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
     }
   }, [isOpen]);
 
+  // Request Wake Lock to prevent screen sleep during recording
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      }
+    } catch (e) {
+      console.warn('Wake Lock request failed:', e);
+    }
+  };
+
+  // Release Wake Lock
+  const releaseWakeLock = () => {
+    if (wakeLockRef.current) {
+      wakeLockRef.current.release().catch(() => {});
+      wakeLockRef.current = null;
+    }
+  };
+
+  // Start background audio keep-alive (looping silent audio track + mediaSession)
+  const startBackgroundAudioKeepAlive = () => {
+    try {
+      if (!silentAudioRef.current) {
+        // 1-second silent WAV base64
+        const silentWav = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+        const audio = new Audio(silentWav);
+        audio.loop = true;
+        silentAudioRef.current = audio;
+      }
+      silentAudioRef.current.play().catch(() => {});
+
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: '🎙️ Ders & Sohbet Ses Kaydı Alınıyor',
+          artist: "Kur'an & Tefsir Uygulaması (Arka Planda Kayıtta)",
+          album: 'Canlı Ses Kayıt Motoru',
+        });
+        navigator.mediaSession.setActionHandler('play', () => {});
+        navigator.mediaSession.setActionHandler('pause', () => {});
+      }
+    } catch (e) {
+      console.warn('Background audio keep-alive warning:', e);
+    }
+  };
+
+  const stopBackgroundAudioKeepAlive = () => {
+    try {
+      if (silentAudioRef.current) {
+        silentAudioRef.current.pause();
+      }
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = null;
+      }
+    } catch (e) {}
+  };
+
   const startRecording = async () => {
     setErrorMsg(null);
     setLiveTranscript('');
+    isRecordingRef.current = true;
+
+    // Enable Mobile WakeLock and Background Audio KeepAlive
+    await requestWakeLock();
+    startBackgroundAudioKeepAlive();
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunksRef.current = [];
@@ -54,7 +119,6 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
-        // Stop track streams
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -62,7 +126,7 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
       setIsRecording(true);
       setRecordingTime(0);
 
-      // Initialize Browser Speech Recognition concurrently
+      // Initialize Browser Speech Recognition concurrently with auto-restart on Mobile
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
       if (SpeechRecognition) {
         try {
@@ -70,6 +134,7 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
           recognition.continuous = true;
           recognition.interimResults = true;
           recognition.lang = 'tr-TR';
+
           recognition.onresult = (event: any) => {
             let fullText = '';
             for (let i = 0; i < event.results.length; i++) {
@@ -77,6 +142,16 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
             }
             setLiveTranscript(fullText.trim());
           };
+
+          // Continuous auto-restart on Mobile browser tab background/pause
+          recognition.onend = () => {
+            if (isRecordingRef.current && recognitionRef.current) {
+              try {
+                recognitionRef.current.start();
+              } catch (e) {}
+            }
+          };
+
           recognition.start();
           recognitionRef.current = recognition;
         } catch (srErr) {
@@ -103,8 +178,12 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
   };
 
   const stopRecording = () => {
+    isRecordingRef.current = false;
     if (timerRef.current) clearInterval(timerRef.current);
     setIsRecording(false);
+
+    releaseWakeLock();
+    stopBackgroundAudioKeepAlive();
 
     if (recognitionRef.current) {
       try {
@@ -138,6 +217,9 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
   };
 
   const handleReset = () => {
+    isRecordingRef.current = false;
+    releaseWakeLock();
+    stopBackgroundAudioKeepAlive();
     if (timerRef.current) clearInterval(timerRef.current);
     if (recognitionRef.current) {
       try {

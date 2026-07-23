@@ -42,16 +42,25 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
   const handleSimulatedGoogleLogin = () => {
     setIsLoading(true);
+    
+    // Prompt user for their real name and email for account setup on Vercel
     setTimeout(() => {
-      const mockUser = {
-        name: 'Ahmet Yılmaz',
-        email: 'ahmet.yilmaz@gmail.com',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+      const userEmail = window.prompt('Lütfen Google E-Posta Adresinizi Giriniz:', 'ornek@gmail.com');
+      if (!userEmail) {
+        setIsLoading(false);
+        return;
+      }
+      const userName = window.prompt('Lütfen Adınızı ve Soyadınızı Giriniz:', userEmail.split('@')[0]);
+
+      const realUser = {
+        name: userName || userEmail.split('@')[0],
+        email: userEmail,
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName || userEmail)}`,
       };
-      setUser(mockUser);
-      localStorage.setItem('kuran_user_profile', JSON.stringify(mockUser));
+      setUser(realUser);
+      localStorage.setItem('kuran_user_profile', JSON.stringify(realUser));
       setIsLoading(false);
-    }, 800);
+    }, 300);
   };
 
   const handleLogout = () => {

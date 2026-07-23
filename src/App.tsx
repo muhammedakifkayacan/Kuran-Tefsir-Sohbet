@@ -10,6 +10,8 @@ import { VoiceRecorderModal } from './components/VoiceRecorderModal';
 import { WelcomeModal } from './components/WelcomeModal';
 import { ExportImportNotesModal } from './components/ExportImportNotesModal';
 import { UserProfileModal } from './components/UserProfileModal';
+import { AuthLandingModal } from './components/AuthLandingModal';
+import { AuthGuardModal } from './components/AuthGuardModal';
 
 import { NavTab, Surah, Ayah, VerseNote, Reciter, SohbetSession } from './types';
 import { QURAN_SURAHS, RECITERS } from './data/quranData';
@@ -20,13 +22,53 @@ export default function App() {
   // Mobile Frame Toggle
   const [isMobileFrame, setIsMobileFrame] = useState<boolean>(false);
 
+  // User Account & Guest Mode State
+  const [user, setUser] = useState<{ name: string; email: string; avatar: string } | null>(() => {
+    const saved = localStorage.getItem('kuran_user_profile');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [isGuest, setIsGuest] = useState<boolean>(() => {
+    return localStorage.getItem('kuran_app_guest_mode') === 'true';
+  });
+
+  // Controls Split Screen Onboarding & Login Landing Modal
+  const [isAuthLandingOpen, setIsAuthLandingOpen] = useState<boolean>(() => {
+    const savedUser = localStorage.getItem('kuran_user_profile');
+    const savedGuest = localStorage.getItem('kuran_app_guest_mode');
+    return !savedUser && savedGuest !== 'true';
+  });
+
+  // Controls Auth Guard Warning Modal when a guest tries to add notes or sohbet
+  const [isAuthGuardOpen, setIsAuthGuardOpen] = useState<boolean>(false);
+  const [authGuardMessage, setAuthGuardMessage] = useState<string>('');
+
+  const handleLoginSuccess = (loggedUser: { name: string; email: string; avatar: string }) => {
+    setUser(loggedUser);
+    setIsGuest(false);
+    localStorage.setItem('kuran_user_profile', JSON.stringify(loggedUser));
+    localStorage.removeItem('kuran_app_guest_mode');
+    setIsAuthLandingOpen(false);
+    setIsAuthGuardOpen(false);
+  };
+
+  const handleContinueAsGuest = () => {
+    setIsGuest(true);
+    localStorage.setItem('kuran_app_guest_mode', 'true');
+    setIsAuthLandingOpen(false);
+  };
+
+  const handleRequireAuth = (msg: string) => {
+    if (user) return;
+    setAuthGuardMessage(msg);
+    setIsAuthGuardOpen(true);
+  };
+
   // Modals & Welcome Screen State
   const [dontShowAgain, setDontShowAgain] = useState<boolean>(() => {
     return localStorage.getItem('kuran_welcome_dismissed') === 'true';
   });
-  const [isWelcomeOpen, setIsWelcomeOpen] = useState<boolean>(() => {
-    return localStorage.getItem('kuran_welcome_dismissed') !== 'true';
-  });
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState<boolean>(false);
   const [isExportImportOpen, setIsExportImportOpen] = useState<boolean>(false);
   const [isUserProfileOpen, setIsUserProfileOpen] = useState<boolean>(false);
 
@@ -255,6 +297,8 @@ export default function App() {
           onOpenWelcomeModal={() => setIsWelcomeOpen(true)}
           onOpenExportImportModal={() => setIsExportImportOpen(true)}
           onOpenUserProfileModal={() => setIsUserProfileOpen(true)}
+          onOpenAuthLandingModal={() => setIsAuthLandingOpen(true)}
+          user={user}
           activeTab={activeTab}
           onNavigateTab={(tab) => setActiveTab(tab)}
         />
@@ -283,11 +327,13 @@ export default function App() {
               setActiveAyah={setActiveAyah}
               isPlaying={isPlaying}
               onPlayAyah={handlePlayAyah}
-              onOpenAiTajweedExplain={(surahName, verseNum, verseText) => {
+              onOpenAiTajweedExplain={(_surahName, _verseNum, _verseText) => {
                 setActiveTab('notes');
               }}
               onSaveVerseNote={handleSaveVerseNote}
               onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
+              user={user}
+              onRequireAuth={handleRequireAuth}
             />
           )}
 
@@ -299,6 +345,8 @@ export default function App() {
               onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
               recordedVoiceUrl={recordedVoiceUrl}
               recordedVoiceTranscript={recordedVoiceTranscript}
+              user={user}
+              onRequireAuth={handleRequireAuth}
             />
           )}
 
@@ -482,6 +530,26 @@ export default function App() {
         setShowTajweed={setShowTajweed}
         showTranslation={showTranslation}
         setShowTranslation={setShowTranslation}
+      />
+
+      {/* Split Screen Onboarding & Auth Landing Modal */}
+      <AuthLandingModal
+        isOpen={isAuthLandingOpen}
+        onClose={() => setIsAuthLandingOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+        onContinueAsGuest={handleContinueAsGuest}
+        initialMessage={authGuardMessage}
+      />
+
+      {/* Auth Guard Warning Modal for Guests */}
+      <AuthGuardModal
+        isOpen={isAuthGuardOpen}
+        onClose={() => setIsAuthGuardOpen(false)}
+        onOpenAuthModal={() => {
+          setIsAuthGuardOpen(false);
+          setIsAuthLandingOpen(true);
+        }}
+        message={authGuardMessage}
       />
 
       {/* Voice Recorder Modal */}
