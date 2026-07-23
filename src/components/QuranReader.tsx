@@ -185,6 +185,38 @@ const resolveSmartQuery = (input: string, currentSurah?: Surah): SmartQueryResul
     { keywords: ['tebbet', 'lahab', 'تبت يدا', 'المسد'], surahId: 111, verseNumber: 1, pageNumber: 603, title: 'Tebbet Sûresi', description: 'Sayfa 603' },
     { keywords: ['nazar', 'kalem 51', 'وإن يكاد الذين كفروا'], surahId: 68, verseNumber: 51, pageNumber: 566, title: 'Nazar Ayeti (Kalem 51-52)', description: 'Sayfa 566' },
     { keywords: ['hasr 21', 'haşr 21', 'lev anzelna', 'yestevi', 'لو أنزلنا هذا القرآن'], surahId: 59, verseNumber: 21, pageNumber: 548, title: 'Haşr Sûresi Son Ayetler (Lâ yestevî)', description: 'Sayfa 548' },
+    { keywords: ['rabbisrahli', 'rabbişrahli', 'rabbişrah', 'rabbi israh li', 'rabbi israh', 'رب اشرح لي', 'رب اشرح لي صدري', 'اشرح لي صدري', 'رب اشرحلي', 'taha 25', 'tâhâ 25'], surahId: 20, verseNumber: 25, pageNumber: 313, title: "Hz. Mûsâ'nın Duası (Tâhâ 25)", description: 'Tâhâ Sûresi 25. Ayet (Sayfa 313)' },
+    { keywords: ['insirah', 'inşirah', 'alam nasrah', 'elemneşrah', 'ألم نشرح لك صدرك', 'الانشراح'], surahId: 94, verseNumber: 1, pageNumber: 596, title: 'İnşirah Sûresi', description: 'Sayfa 596' },
+    { keywords: ['la ilaha illa anta', 'subhanaka inni kuntu', 'la ilahe illa ente', 'süphaneke inni küntü', 'لا إله إلا أنت سبحانك', 'الأنبياء 87'], surahId: 21, verseNumber: 87, pageNumber: 329, title: "Hz. Yûnus'un Duası (Enbiyâ 87)", description: 'Enbiyâ Sûresi 87. Ayet (Sayfa 329)' },
+    { keywords: ['hasbunallah', 'hasbunallahu ve nimel vekil', 'حسبنا الله ونعم الوكيل'], surahId: 3, verseNumber: 173, pageNumber: 72, title: "Hasbunallâhu ve Ni'mel Vekîl (Âl-i İmrân 173)", description: 'Âl-i İmrân Sûresi 173. Ayet (Sayfa 72)' },
+    { keywords: ['rabbena atina', 'rabbenâ âtinâ', 'ربنا آتنا في الدنيا حسنة'], surahId: 2, verseNumber: 201, pageNumber: 31, title: 'Rabbena Âtinâ Duası (Bakara 201)', description: 'Bakara Sûresi 201. Ayet (Sayfa 31)' },
+    { keywords: ['rabbicalni', 'rabbic\'alni', 'رب اجعلني مقيم الصلاة'], surahId: 14, verseNumber: 40, pageNumber: 260, title: "Hz. İbrâhîm'in Namaz Duası (İbrâhîm 40)", description: 'İbrâhîm Sûresi 40. Ayet (Sayfa 260)' },
+    { keywords: ['tekasur', 'takasur', 'tekâsür', 'alhakum', 'ألهاكم التكاثر', 'ألهاكم', 'التكاثر'], surahId: 102, verseNumber: 1, pageNumber: 600, title: 'Tekâsür Sûresi', description: 'Sayfa 600' },
+    { keywords: ['karia', 'kâria', 'kariah', 'القارعة', 'القارعة ما القارعة'], surahId: 101, verseNumber: 1, pageNumber: 600, title: 'Kâri\'a Sûresi', description: 'Sayfa 600' },
+    { keywords: ['asr', 'wal asr', 'والعصر', 'والعصر إن الإنسان لفي خسر', 'العصر'], surahId: 103, verseNumber: 1, pageNumber: 601, title: 'Asr Sûresi', description: 'Sayfa 601' },
+    { keywords: ['humaze', 'hümefe', 'ويل لكل همزة', 'الهمزة'], surahId: 104, verseNumber: 1, pageNumber: 601, title: 'Hümeze Sûresi', description: 'Sayfa 601' },
+    { keywords: ['adiyat', 'âdiyât', 'والعاديات', 'العاديات'], surahId: 100, verseNumber: 1, pageNumber: 599, title: 'Âdiyât Sûresi', description: 'Sayfa 599' },
+    { keywords: ['beyyine', 'لم يكن الذين كفروا', 'البينة'], surahId: 98, verseNumber: 1, pageNumber: 598, title: 'Beyyine Sûresi', description: 'Sayfa 598' },
+    { keywords: ['zilzal', 'إذا زلزلت', 'الزلزلة'], surahId: 99, verseNumber: 1, pageNumber: 599, title: 'Zilzâl Sûresi', description: 'Sayfa 599' },
+    { keywords: ['tin', 'tîn', 'والتين', 'التين'], surahId: 95, verseNumber: 1, pageNumber: 597, title: 'Tîn Sûresi', description: 'Sayfa 597' },
+    { keywords: ['alak', 'alâk', 'اقرأ باسم ربك', 'العلق'], surahId: 96, verseNumber: 1, pageNumber: 597, title: 'Alak Sûresi', description: 'Sayfa 597' },
+    { keywords: ['kadr', 'kadir', 'إنا أنزلناه في ليلة القدر', 'القدر'], surahId: 97, verseNumber: 1, pageNumber: 598, title: 'Kadir Sûresi', description: 'Sayfa 598' },
+    { keywords: ['duha', 'duhâ', 'والضحى', 'الضحى'], surahId: 93, verseNumber: 1, pageNumber: 596, title: 'Duhâ Sûresi', description: 'Sayfa 596' },
+    { keywords: ['insirah', 'inşirah', 'alam nasrah', 'elemneşrah', 'ألم نشرح لك صدرك', 'الانشراح'], surahId: 94, verseNumber: 1, pageNumber: 596, title: 'İnşirah Sûresi', description: 'Sayfa 596' },
+    { keywords: ['leyl', 'والليل إذا يغشى', 'الليل'], surahId: 92, verseNumber: 1, pageNumber: 595, title: 'Leyl Sûresi', description: 'Sayfa 595' },
+    { keywords: ['sems', 'şems', 'والشمس وضحاها', 'الشمس'], surahId: 91, verseNumber: 1, pageNumber: 595, title: 'Şems Sûresi', description: 'Sayfa 595' },
+    { keywords: ['beled', 'لا أقسم بهذا البلد', 'البلد'], surahId: 90, verseNumber: 1, pageNumber: 594, title: 'Beled Sûresi', description: 'Sayfa 594' },
+    { keywords: ['fecr', 'والفجر', 'الفجر'], surahId: 89, verseNumber: 1, pageNumber: 593, title: 'Fecr Sûresi', description: 'Sayfa 593' },
+    { keywords: ['gasiye', 'gâşiye', 'هل أتاك حديث الغاشية', 'الغاشية'], surahId: 88, verseNumber: 1, pageNumber: 592, title: 'Gâşiye Sûresi', description: 'Sayfa 592' },
+    { keywords: ['ala', 'a\'lâ', 'سبح اسم ربك الأعلى', 'الأعلى'], surahId: 87, verseNumber: 1, pageNumber: 591, title: 'A\'lâ Sûresi', description: 'Sayfa 591' },
+    { keywords: ['tarik', 'târık', 'والسماء والطارق', 'الطارق'], surahId: 86, verseNumber: 1, pageNumber: 591, title: 'Târık Sûresi', description: 'Sayfa 591' },
+    { keywords: ['buruc', 'burûc', 'والسماء ذات البروج', 'البروج'], surahId: 85, verseNumber: 1, pageNumber: 590, title: 'Burûc Sûresi', description: 'Sayfa 590' },
+    { keywords: ['insikak', 'inşikâk', 'إذا السماء انشقت', 'الانشقاق'], surahId: 84, verseNumber: 1, pageNumber: 589, title: 'İnşikâk Sûresi', description: 'Sayfa 589' },
+    { keywords: ['mutaffifin', 'mutaffifîn', 'ويل للمطففين', 'المطففين'], surahId: 83, verseNumber: 1, pageNumber: 587, title: 'Mutaffifîn Sûresi', description: 'Sayfa 587' },
+    { keywords: ['infitar', 'infitâr', 'إذا السماء انفطرت', 'الانفطار'], surahId: 82, verseNumber: 1, pageNumber: 587, title: 'İnfitâr Sûresi', description: 'Sayfa 587' },
+    { keywords: ['takvir', 'إذا الشمس كورت', 'التكوير'], surahId: 81, verseNumber: 1, pageNumber: 586, title: 'Tekvîr Sûresi', description: 'Sayfa 586' },
+    { keywords: ['abese', 'عبس وتولى', 'عبس'], surahId: 80, verseNumber: 1, pageNumber: 585, title: 'Abese Sûresi', description: 'Sayfa 585' },
+    { keywords: ['naziat', 'nâziât', 'والنازعات', 'النازعات'], surahId: 79, verseNumber: 1, pageNumber: 583, title: 'Nâziât Sûresi', description: 'Sayfa 583' },
     { keywords: ['rahman', 'rah mân', 'الرحمن', 'الرحمن علم القرآن'], surahId: 55, verseNumber: 1, pageNumber: 531, title: 'Rahmân Sûresi', description: 'Sayfa 531' },
     { keywords: ['vakia', 'vâkıa', 'إذا وقعت الواقعة', 'الواقعة'], surahId: 56, verseNumber: 1, pageNumber: 534, title: 'Vâkıa Sûresi', description: 'Sayfa 534' },
     { keywords: ['cuma', 'cum\'a', 'يسبح لله ما في السماوات', 'الجمعة'], surahId: 62, verseNumber: 1, pageNumber: 553, title: 'Cum\'a Sûresi', description: 'Sayfa 553' },
@@ -347,11 +379,22 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const fontSize = propFontSize !== undefined ? propFontSize : localFontSize;
   const setFontSize = propSetFontSize || setLocalFontSize;
 
+  const [selectedPage, setSelectedPage] = useState<number>(selectedSurah.startPage || 1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterJuz, setFilterJuz] = useState<number | 'all'>('all');
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchCategoryTab, setSearchCategoryTab] = useState<'all' | 'surahs' | 'verses' | 'pages'>('all');
   const [isLiveListening, setIsLiveListening] = useState(false);
+
+  // Tarteel Live Recitation Tracking & Auto-Follower States
+  const [isTarteelTracking, setIsTarteelTracking] = useState(false);
+  const isTarteelTrackingRef = React.useRef(false);
+  const [tarteelLastMatch, setTarteelLastMatch] = useState<{
+    surahId: number;
+    surahName: string;
+    verseNumber: number;
+    arabicText: string;
+  } | null>(null);
 
   // AI Voice Search States
   const [isVoiceSearching, setIsVoiceSearching] = useState(false);
@@ -375,9 +418,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const audioChunksRef = React.useRef<Blob[]>([]);
   const speechRecognitionRef = React.useRef<any>(null);
   const liveVoiceTimeoutRef = React.useRef<any>(null);
+  const lastMatchedVerseKeyRef = React.useRef<string>('');
 
   // Smart Match Direct Navigation Helper
-  const navigateToSmartMatch = async (match: SmartQueryResult) => {
+  const navigateToSmartMatch = async (match: SmartQueryResult, options?: { silent?: boolean }) => {
     if (!match) return;
     try {
       if (match.surahId) {
@@ -396,15 +440,495 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             setSelectedMushafAyah(vObj);
             setActiveAyah(vObj);
             if (vObj.page) setSelectedPage(vObj.page);
+
+            setTimeout(() => {
+              const el =
+                document.getElementById(`verse-${vObj.number}`) ||
+                document.getElementById(`ayah-${vObj.number}`);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 120);
           }
         }
       }
       setIsSearchModalOpen(false);
       setIsVoiceSearching(false);
-      showToast(`🎯 Bulundu ve Açıldı: ${match.title}`);
+      if (!options?.silent) {
+        showToast(`🎯 Bulundu ve Açıldı: ${match.title}`);
+      }
     } catch (e) {
       console.warn('Smart match navigation error:', e);
     }
+  };
+
+  // Sync state refs to prevent stale closures in speech recognition events
+  const selectedSurahRef = React.useRef(selectedSurah);
+  selectedSurahRef.current = selectedSurah;
+
+  const selectedMushafAyahRef = React.useRef(selectedMushafAyah);
+  selectedMushafAyahRef.current = selectedMushafAyah;
+
+  const selectedPageRef = React.useRef(selectedPage);
+  selectedPageRef.current = selectedPage;
+
+  // Clean Arabic String Helper for Tarteel Matching (preserves spaces for word-level matching)
+  const cleanArabicForMatching = (text: string): string => {
+    if (!text) return '';
+    return normalizeArabicText(text)
+      .replace(/[^\u0621-\u064A\s]/g, '') // Keep Arabic letters AND spaces
+      .replace(/\s+/g, ' ') // Normalize spaces
+      .trim();
+  };
+
+  // Helper to strip introductory phrases (Besmele & Euzu) that precede Surah recitation
+  const stripBasmalahAndIstiadhah = (text: string): string => {
+    if (!text) return '';
+    let result = text;
+    result = result.replace(/بسم الله الرحمن الرحيم/g, '');
+    result = result.replace(/بسم الله/g, '');
+    result = result.replace(/اعوذ بالله من الشيطان الرجيم/g, '');
+    result = result.replace(/اعوذ بالله/g, '');
+    return result.replace(/\s+/g, ' ').trim();
+  };
+
+  // Real-time Spoken Recitation Ayah Matcher & Auto-Follower (Supports Continuous Surah Transition & Anti-Flicker)
+  const matchSpokenRecitationToAyah = React.useCallback(
+    async (fullTranscript: string, latestChunk: string = '') => {
+      if (!fullTranscript || fullTranscript.trim().length < 2) return;
+
+      const surah = selectedSurahRef.current;
+      if (!surah || !surah.verses || surah.verses.length === 0) return;
+
+      const currentMushafAyah = selectedMushafAyahRef.current;
+      const currentVerseNum = currentMushafAyah?.number || 1;
+
+      const rawFullClean = cleanArabicForMatching(fullTranscript);
+      const rawLatestClean = cleanArabicForMatching(latestChunk);
+
+      if (!rawFullClean && !rawLatestClean) return;
+
+      // Cleaned versions with Basmalah/Istiadhah stripped when evaluating content
+      const fullCleanStripped = stripBasmalahAndIstiadhah(rawFullClean);
+      const latestCleanStripped = stripBasmalahAndIstiadhah(rawLatestClean);
+
+      // SAFETY GUARANTEE:
+      // If the user ONLY spoke "Bismillahir Rahmanir Rahim" or "Euzu billah...",
+      // stripped text will be empty ("").
+      // Do NOT trigger any matches or jump to Fatiha 1! Wait until actual verse words are spoken.
+      if (!fullCleanStripped && !latestCleanStripped) {
+        return;
+      }
+
+      const fullClean = fullCleanStripped;
+      const latestClean = latestCleanStripped || fullCleanStripped;
+
+      // Extract recent spoken tail (last ~10 spoken words / ~50 chars)
+      const fullWords = fullClean.split(/\s+/).filter((w) => w.length >= 2);
+      const recentWords = fullWords.slice(-10);
+      const recentTailClean = recentWords.join(' ');
+      const latestWords = latestClean.split(/\s+/).filter((w) => w.length >= 2);
+
+      // Helper to compute match score for a given verse
+      const computeScore = (v: Ayah, isCurrentSurah: boolean) => {
+        let cleanVerse = cleanArabicForMatching(v.arabic);
+        if (!cleanVerse) return -999;
+
+        // Always strip Besmele from verse text so raw Besmele in Fatiha 1 doesn't match introductory Besmele!
+        const strippedVerse = stripBasmalahAndIstiadhah(cleanVerse);
+        if (!strippedVerse) {
+          // If a verse becomes empty after stripping Besmele (Fatiha Ayah 1), it shouldn't match on Besmele alone
+          return -999;
+        }
+        cleanVerse = strippedVerse;
+
+        const noSpaceVerse = cleanVerse.replace(/\s+/g, '');
+        let score = 0;
+
+        // 1. Match against latest spoken chunk
+        if (latestClean.length >= 2) {
+          const noSpaceLatest = latestClean.replace(/\s+/g, '');
+          if (cleanVerse.includes(latestClean) || latestClean.includes(cleanVerse)) {
+            score += 150;
+          } else if (noSpaceVerse.includes(noSpaceLatest) || noSpaceLatest.includes(noSpaceVerse)) {
+            score += 130;
+          }
+
+          let latestHits = 0;
+          for (const lw of latestWords) {
+            if (cleanVerse.includes(lw) || noSpaceVerse.includes(lw)) {
+              latestHits++;
+            }
+          }
+          if (latestWords.length > 0) {
+            score += (latestHits / latestWords.length) * 100;
+          }
+        }
+
+        // 2. Match against recent tail
+        if (recentTailClean.length >= 2) {
+          const noSpaceTail = recentTailClean.replace(/\s+/g, '');
+          if (cleanVerse.includes(recentTailClean) || recentTailClean.includes(cleanVerse)) {
+            score += 120;
+          } else if (noSpaceVerse.includes(noSpaceTail) || noSpaceTail.includes(noSpaceVerse)) {
+            score += 100;
+          }
+
+          let tailHits = 0;
+          for (const rw of recentWords) {
+            if (cleanVerse.includes(rw) || noSpaceVerse.includes(rw)) {
+              tailHits++;
+            }
+          }
+          if (recentWords.length > 0) {
+            score += (tailHits / recentWords.length) * 80;
+          }
+        }
+
+        // 3. Positional / Continuity bias
+        if (isCurrentSurah) {
+          const dist = v.number - currentVerseNum;
+          if (dist === 0) {
+            score += 110;
+          } else if (dist === 1) {
+            score += 90;
+          } else if (dist === 2) {
+            score += 45;
+          } else if (dist === 3) {
+            score += 20;
+          } else if (dist < 0) {
+            // Heavy penalty for backward jumps in current surah to prevent random flickering
+            score -= 160;
+          } else if (dist > 3) {
+            score -= 90;
+          }
+        } else {
+          // Next Surah bias (favor initial verses when transitioning)
+          if (v.number === 1) score += 95;
+          else if (v.number === 2) score += 80;
+          else if (v.number === 3) score += 50;
+        }
+
+        return score;
+      };
+
+      // PASS 1: Score current surah
+      let currentBestVerse: Ayah | null = null;
+      let maxCurrentScore = -999;
+
+      for (const v of surah.verses) {
+        const score = computeScore(v, true);
+        if (score > maxCurrentScore) {
+          maxCurrentScore = score;
+          currentBestVerse = v;
+        }
+      }
+
+      // PASS 2: If near the end of current surah OR maxCurrentScore is low, check NEXT SURAH
+      let nextSurahObj: Surah | null = null;
+      let nextBestVerse: Ayah | null = null;
+      let maxNextScore = -999;
+
+      const isNearEndOfSurah = currentVerseNum >= surah.verses.length - 1;
+
+      if ((isNearEndOfSurah || maxCurrentScore < 80) && surah.id < 114) {
+        try {
+          nextSurahObj = await fetchSurahFromApi(surah.id + 1);
+          if (nextSurahObj && nextSurahObj.verses) {
+            // Check first 10 verses of next surah
+            const nextVersesToCheck = nextSurahObj.verses.slice(0, 10);
+            for (const nv of nextVersesToCheck) {
+              const score = computeScore(nv, false);
+              if (score > maxNextScore) {
+                maxNextScore = score;
+                nextBestVerse = nv;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Next surah pre-fetch error:', e);
+        }
+      }
+
+      // DECISION 1: Switch to NEXT SURAH if strong match found or near end of surah
+      if (
+        nextSurahObj &&
+        nextBestVerse &&
+        maxNextScore >= 45 &&
+        (maxNextScore > maxCurrentScore || isNearEndOfSurah)
+      ) {
+        const targetSurahId = nextSurahObj.id;
+        const matchKey = `${targetSurahId}:${nextBestVerse.number}`;
+
+        if (matchKey !== lastMatchedVerseKeyRef.current) {
+          lastMatchedVerseKeyRef.current = matchKey;
+
+          // Update refs immediately
+          selectedSurahRef.current = nextSurahObj;
+          selectedMushafAyahRef.current = nextBestVerse;
+
+          // Load next surah view
+          await loadSurah(targetSurahId);
+          setSelectedMushafAyah(nextBestVerse);
+          setActiveAyah(nextBestVerse);
+          if (nextBestVerse.page) setSelectedPage(nextBestVerse.page);
+
+          setTarteelLastMatch({
+            surahId: nextSurahObj.id,
+            surahName: nextSurahObj.nameTurkish,
+            verseNumber: nextBestVerse.number,
+            arabicText: nextBestVerse.arabic,
+          });
+
+          setTimeout(() => {
+            const el =
+              document.getElementById(`verse-${nextBestVerse!.number}`) ||
+              document.getElementById(`ayah-${nextBestVerse!.number}`);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 120);
+        }
+        return;
+      }
+
+      // DECISION 2: Apply match inside CURRENT SURAH
+      if (currentBestVerse) {
+        // Prevent spurious backward jumps in current surah unless score is overwhelmingly high (explicit restart)
+        if (currentBestVerse.number < currentVerseNum && maxCurrentScore < 150) {
+          return;
+        }
+
+        if (maxCurrentScore >= 35) {
+          const verse = currentBestVerse;
+          const matchKey = `${surah.id}:${verse.number}`;
+
+          selectedMushafAyahRef.current = verse;
+
+          setSelectedMushafAyah(verse);
+          setActiveAyah(verse);
+          if (verse.page && verse.page !== selectedPageRef.current) {
+            setSelectedPage(verse.page);
+          }
+
+          setTarteelLastMatch({
+            surahId: surah.id,
+            surahName: surah.nameTurkish,
+            verseNumber: verse.number,
+            arabicText: verse.arabic,
+          });
+
+          if (matchKey !== lastMatchedVerseKeyRef.current) {
+            lastMatchedVerseKeyRef.current = matchKey;
+            setTimeout(() => {
+              const el =
+                document.getElementById(`verse-${verse.number}`) ||
+                document.getElementById(`ayah-${verse.number}`);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 60);
+          }
+          return;
+        }
+      }
+
+      // PASS 3: Global Quran Search for Spoken Arabic (e.g. user jump to Taha 25 "Rabbi ishrah li sadri" or Karia "El qari'ah")
+      const candidateSpoken = recentTailClean.length >= 4 ? recentTailClean : fullClean;
+      const spokenArabic = stripBasmalahAndIstiadhah(candidateSpoken);
+
+      if (spokenArabic && spokenArabic.length >= 3 && maxCurrentScore < 25 && maxNextScore < 25) {
+        // 1. Check Smart Query / Famous Map
+        const smartMatch =
+          resolveSmartQuery(spokenArabic, surah) ||
+          resolveSmartQuery(stripBasmalahAndIstiadhah(fullTranscript), surah);
+        if (smartMatch && smartMatch.surahId && smartMatch.surahId !== surah.id) {
+          const matchKey = `${smartMatch.surahId}:${smartMatch.verseNumber || 1}`;
+          if (matchKey !== lastMatchedVerseKeyRef.current) {
+            lastMatchedVerseKeyRef.current = matchKey;
+            await navigateToSmartMatch(smartMatch, { silent: true });
+            setTarteelLastMatch({
+              surahId: smartMatch.surahId,
+              surahName: smartMatch.surahName || '',
+              verseNumber: smartMatch.verseNumber || 1,
+              arabicText: smartMatch.title,
+            });
+            return;
+          }
+        }
+
+        // 2. Search ALL_SURAHS by Arabic surah name (e.g. "العصر", "القارعة", "التكاثر")
+        const normSpoken = normalizeArabicText(spokenArabic);
+        for (const sObj of ALL_SURAHS) {
+          if (sObj.id === surah.id) continue;
+          const sArNorm = normalizeArabicText(sObj.nameArabic);
+          const sArNoAl = sArNorm.replace(/^ال/, ''); // e.g. "عصر", "قارعة", "تكاثر"
+          if (
+            (sArNorm.length >= 3 && normSpoken.includes(sArNorm)) ||
+            (sArNoAl.length >= 3 && normSpoken.includes(sArNoAl))
+          ) {
+            const matchKey = `${sObj.id}:1`;
+            if (matchKey !== lastMatchedVerseKeyRef.current) {
+              lastMatchedVerseKeyRef.current = matchKey;
+              const loaded = await fetchSurahFromApi(sObj.id);
+              selectedSurahRef.current = loaded;
+              await loadSurah(sObj.id);
+
+              const vObj = loaded.verses[0];
+              selectedMushafAyahRef.current = vObj;
+              setSelectedMushafAyah(vObj);
+              setActiveAyah(vObj);
+              if (vObj.page) setSelectedPage(vObj.page);
+
+              setTarteelLastMatch({
+                surahId: loaded.id,
+                surahName: loaded.nameTurkish,
+                verseNumber: vObj.number,
+                arabicText: vObj.arabic,
+              });
+
+              setTimeout(() => {
+                const el =
+                  document.getElementById(`verse-1`) ||
+                  document.getElementById(`ayah-1`);
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 120);
+              return;
+            }
+          }
+        }
+
+        // 3. Perform live global AlQuran Cloud API search across all 114 Surahs
+        try {
+          const searchRes = await fetch(
+            `https://api.alquran.cloud/v1/search/${encodeURIComponent(spokenArabic)}/all/quran-uthmani`
+          );
+          if (searchRes.ok) {
+            const searchJson = await searchRes.json();
+            if (
+              searchJson.code === 200 &&
+              searchJson.data &&
+              searchJson.data.matches &&
+              searchJson.data.matches.length > 0
+            ) {
+              const topMatch = searchJson.data.matches[0];
+              const targetSurahId = topMatch.surah.number;
+              const targetVerseNum = topMatch.numberInSurah;
+              const matchKey = `${targetSurahId}:${targetVerseNum}`;
+
+              if (matchKey !== lastMatchedVerseKeyRef.current) {
+                lastMatchedVerseKeyRef.current = matchKey;
+
+                const targetSurahObj = await fetchSurahFromApi(targetSurahId);
+                if (targetSurahObj) {
+                  selectedSurahRef.current = targetSurahObj;
+                  await loadSurah(targetSurahId);
+
+                  const vObj = targetSurahObj.verses.find((v) => v.number === targetVerseNum);
+                  if (vObj) {
+                    selectedMushafAyahRef.current = vObj;
+                    setSelectedMushafAyah(vObj);
+                    setActiveAyah(vObj);
+                    if (vObj.page) setSelectedPage(vObj.page);
+
+                    setTarteelLastMatch({
+                      surahId: targetSurahObj.id,
+                      surahName: targetSurahObj.nameTurkish,
+                      verseNumber: vObj.number,
+                      arabicText: vObj.arabic,
+                    });
+
+                    setTimeout(() => {
+                      const el =
+                        document.getElementById(`verse-${vObj.number}`) ||
+                        document.getElementById(`ayah-${vObj.number}`);
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }, 120);
+                  }
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Global Tarteel API search error:', e);
+        }
+      }
+    },
+    [loadSurah]
+  );
+
+  // Start Tarteel Continuous Recitation Tracking Mode
+  const startTarteelLiveTracking = () => {
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Tarayıcınız canlı okuma takibi özelliğini desteklemiyor. Lütfen Chrome veya Safari kullanın.');
+      return;
+    }
+
+    setIsSearchModalOpen(false);
+    setIsVoiceSearching(false);
+    setIsTarteelTracking(true);
+    isTarteelTrackingRef.current = true;
+    lastMatchedVerseKeyRef.current = '';
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'ar-SA'; // Quranic Arabic Recitation
+
+      recognition.onresult = (event: any) => {
+        let fullTranscript = '';
+        let latestChunk = '';
+
+        for (let i = 0; i < event.results.length; i++) {
+          const res = event.results[i][0].transcript;
+          fullTranscript += res + ' ';
+          if (i === event.results.length - 1) {
+            latestChunk = res;
+          }
+        }
+
+        const trimmedFull = fullTranscript.trim();
+        const trimmedLatest = latestChunk.trim();
+
+        if (trimmedFull || trimmedLatest) {
+          matchSpokenRecitationToAyah(trimmedFull, trimmedLatest);
+        }
+      };
+
+      recognition.onerror = (err: any) => {
+        console.warn('Tarteel live tracking speech error:', err);
+      };
+
+      recognition.onend = () => {
+        if (isTarteelTrackingRef.current) {
+          try {
+            recognition.start();
+          } catch (e) {}
+        }
+      };
+
+      recognition.start();
+      speechRecognitionRef.current = recognition;
+      showToast('🎙️ Tarteel Canlı Okuma Takibi Başlatıldı');
+    } catch (e) {
+      console.warn('Could not start Tarteel tracking:', e);
+    }
+  };
+
+  const stopTarteelLiveTracking = () => {
+    isTarteelTrackingRef.current = false;
+    setIsTarteelTracking(false);
+    if (speechRecognitionRef.current) {
+      try {
+        speechRecognitionRef.current.stop();
+      } catch (e) {}
+    }
+    showToast('Tarteel Canlı Takip Durduruldu');
   };
 
   // Instant Client-side Live Speech-to-Text Input (%100 Ücretsiz & Doğrudan Ayete Giden Akıllı Mod)
@@ -717,7 +1241,6 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
   // Dynamic pages inside the selected Surah
   const pagesInSurah = Array.from(new Set(selectedSurah.verses.map((v) => v.page))).sort((a: number, b: number) => a - b);
-  const [selectedPage, setSelectedPage] = useState<number>(selectedSurah.startPage || 1);
 
   const hasPrevPage = pagesInSurah.indexOf(selectedPage) > 0 || selectedSurah.id > 1;
   const hasNextPage = pagesInSurah.indexOf(selectedPage) < pagesInSurah.length - 1 || selectedSurah.id < 114;
@@ -1106,11 +1629,31 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               if (isFilterMenuOpen) setIsFilterMenuOpen(false);
               if (isPageMenuOpen) setIsPageMenuOpen(false);
             }}
-            className="p-1.5 px-2.5 rounded-xl border border-stone-200 bg-stone-100/90 hover:bg-amber-50 text-stone-800 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95"
+            className="p-1.5 px-2.5 rounded-xl border border-stone-200 bg-stone-100/90 hover:bg-amber-50 text-stone-800 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
             title="Kur'an-ı Kerim'de Ara & Sesle Bul"
           >
             <Search className="w-4 h-4 text-amber-700" />
             <span className="hidden sm:inline text-xs font-semibold">Ara</span>
+          </button>
+
+          {/* Tarteel Canlı Okuma Takip Butonu */}
+          <button
+            type="button"
+            onClick={isTarteelTracking ? stopTarteelLiveTracking : startTarteelLiveTracking}
+            className={`p-1.5 px-2.5 sm:px-3 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 ${
+              isTarteelTracking
+                ? 'bg-emerald-600 text-white border-emerald-700 shadow-md animate-pulse'
+                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-300/80 shadow-2xs'
+            }`}
+            title="Tarteel Canlı Okuma Takibi (Siz okudukça okuduğunuz ayeti canlı takip eder)"
+          >
+            <Mic className={`w-4 h-4 ${isTarteelTracking ? 'text-white' : 'text-emerald-700'}`} />
+            <span className="hidden sm:inline">
+              {isTarteelTracking ? 'Tarteel Takip Açık' : 'Tarteel Canlı Takip'}
+            </span>
+            <span className="sm:hidden">
+              {isTarteelTracking ? 'Takipte' : 'Tarteel'}
+            </span>
           </button>
 
           {/* Filtre / Okuma Ayarları İkon Butonu */}
@@ -1293,16 +1836,16 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       {/* TAM EKRAN / MODAL ARAMA & SESLE AYET BULMA EKRANI */}
       {isSearchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/45 backdrop-blur-md animate-fade-in">
-          <div className="bg-white/95 text-stone-900 border border-white/60 shadow-2xl rounded-[32px] max-w-2xl w-full p-5 sm:p-6 space-y-4 relative overflow-hidden backdrop-blur-2xl max-h-[85vh] flex flex-col">
+          <div className="bg-white text-stone-900 border border-stone-200 shadow-2xl rounded-3xl max-w-xl w-full p-5 sm:p-6 space-y-4 relative overflow-hidden backdrop-blur-2xl max-h-[85vh] flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-stone-200/80 pb-3 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-2xl bg-amber-100 text-amber-900 border border-amber-200 flex items-center justify-center font-bold">
-                  <Search className="w-5 h-5 text-amber-800" />
+                <div className="w-9 h-9 rounded-2xl bg-emerald-100 text-emerald-900 border border-emerald-200 flex items-center justify-center font-bold">
+                  <Search className="w-5 h-5 text-emerald-800" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-stone-900">Kur'an-ı Kerim Arama & Sesle Bul</h3>
-                  <p className="text-xs text-stone-500">114 Sûre, Ayetler, Sayfalar veya Sesli Okuyarak Arayın</p>
+                  <h3 className="font-bold text-base text-stone-900">Arama Yap</h3>
+                  <p className="text-xs text-stone-500">Sure ismi, ayet numarası (Örn: Bakara 255) veya kelime arayın</p>
                 </div>
               </div>
 
@@ -1314,14 +1857,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     setIsLiveListening(false);
                   }
                 }}
-                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-500 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-500 flex items-center justify-center transition-colors cursor-pointer"
                 title="Kapat"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Main Search Input & Live Mic Bar */}
+            {/* Main Search Input & Voice Mic Bar */}
             <div className="space-y-2 shrink-0">
               <div className="relative flex items-center gap-2">
                 <div className="relative flex-1">
@@ -1330,77 +1873,33 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Sûre adı, ayet no (ör. Bakara 255, Yasin), sayfa no veya meal..."
-                    className="w-full pl-10 pr-9 py-2.5 text-xs font-semibold rounded-2xl bg-stone-100/90 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                    placeholder="Bakara 255, Yasin, Ayetel Kursi veya kelime..."
+                    className="w-full pl-10 pr-9 py-2.5 text-xs font-semibold rounded-2xl bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
                     autoFocus
                   />
                   {searchQuery && (
                     <button
                       type="button"
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1 rounded-full"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1 rounded-full cursor-pointer"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>
 
-                {/* Instant Live Speech Recognition Mic Button (%100 Ücretsiz & Kredisiz) */}
+                {/* Tarteel AI Voice Search & Live Tracking Button */}
                 <button
                   type="button"
-                  onClick={toggleLiveVoiceInput}
-                  className={`px-3 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all shrink-0 ${
-                    isLiveListening
-                      ? 'bg-red-600 text-white animate-pulse'
-                      : 'bg-amber-700 hover:bg-amber-800 text-white'
-                  }`}
-                  title="Mikrofonu Açarak Okuyun (%100 Ücretsiz / Cihaz İçi Ses Tanıma - 0 Kredi)"
+                  onClick={startTarteelLiveTracking}
+                  className="px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer"
+                  title="Tarteel Canlı Okuma Takibi (Siz okudukça okuduğunuz ayeti canlı takip eder)"
                 >
-                  <Mic className={`w-4 h-4 ${isLiveListening ? 'text-white' : 'text-amber-200'}`} />
-                  <span className="hidden sm:inline">
-                    {isLiveListening ? 'Dinleniyor...' : 'Canlı Sesle Ara'}
-                  </span>
-                </button>
-
-                {/* Tarteel AI Whisper Model Audio Record Button */}
-                <button
-                  type="button"
-                  onClick={startAiVoiceSearch}
-                  className="px-3 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm active:scale-95 transition-all shrink-0"
-                  title="Tarteel AI Whisper Kur'an Kıraat Modeli (tarteel-ai/whisper-base-ar-quran) ile Ses Analizi"
-                >
-                  <Sparkles className="w-4 h-4 text-emerald-200 animate-pulse" />
-                  <span className="hidden sm:inline">Tarteel AI Analiz</span>
-                  <span className="text-[9px] bg-emerald-900 text-emerald-100 font-extrabold px-1.5 py-0.5 rounded-full">
-                    Whisper AR
-                  </span>
+                  <Sparkles className="w-4 h-4 text-emerald-200" />
+                  <span className="hidden sm:inline">Tarteel Canlı Okuma Takibi</span>
+                  <span className="sm:hidden">Tarteel Takip</span>
                 </button>
               </div>
-
-              {/* Tarteel AI Notice */}
-              <div className="p-2 bg-emerald-50/90 border border-emerald-200/90 rounded-xl text-[11px] text-emerald-950 flex items-center justify-between">
-                <span className="flex items-center gap-1.5 font-bold">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                  <span><b>Tarteel AI Whisper (tarteel-ai/whisper-base-ar-quran):</b> %100 Ücretsiz Kur'an kıraat modeli (0 Kredi) ile sesli okuyuş analizi.</span>
-                </span>
-              </div>
-
-              {/* Live Listening Status Banner */}
-              {isLiveListening && (
-                <div className="p-2.5 bg-red-50 border border-red-200 text-red-900 rounded-xl text-xs flex items-center justify-between animate-fade-in">
-                  <span className="flex items-center gap-2 font-semibold">
-                    <span className="w-2 h-2 rounded-full bg-red-600 animate-ping shrink-0" />
-                    <span>Konuşmanız ve okuduğunuz Kur'an dinleniyor, otomatik sûre/ayet aranıyor...</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={toggleLiveVoiceInput}
-                    className="text-[11px] font-bold text-red-800 underline"
-                  >
-                    Durdur
-                  </button>
-                </div>
-              )}
 
               {/* Quick Preset Shortcut Chips */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px]">
@@ -1412,14 +1911,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   { label: "Fâtiha", query: "Fatiha" },
                   { label: "Mülk (Tebâreke)", query: "Mülk" },
                   { label: "İhlâs & Felak & Nâs", query: "İhlas" },
-                  { label: "Haşr (Lâ yestevî)", query: "Haşr 21" },
+                  { label: "Haşr", query: "Haşr 21" },
                   { label: "Nazar Ayeti", query: "Nazar Ayeti" },
                 ].map((chip) => (
                   <button
                     key={chip.label}
                     type="button"
                     onClick={() => setSearchQuery(chip.query)}
-                    className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100/90 text-amber-900 font-bold border border-amber-200/80 whitespace-nowrap shrink-0 transition-colors"
+                    className="px-2.5 py-1 rounded-xl bg-stone-100 hover:bg-emerald-50 text-stone-700 hover:text-emerald-950 font-medium border border-stone-200/80 whitespace-nowrap shrink-0 transition-colors cursor-pointer"
                   >
                     {chip.label}
                   </button>
@@ -1429,21 +1928,21 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
             {/* Results Content Area */}
             <div className="overflow-y-auto flex-1 space-y-3 pr-1 scrollbar-thin">
-              {/* Smart Match Card (Akıllı Otomatik Tespit) */}
+              {/* Smart Match Card */}
               {searchResults?.smartMatch && (
-                <div className="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-400/80 rounded-2xl space-y-2 animate-fade-in shadow-xs">
+                <div className="p-3.5 bg-emerald-50/90 border border-emerald-200 rounded-2xl space-y-2 animate-fade-in shadow-2xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-amber-950 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-600 animate-bounce" />
-                      AKILLI AYET / SÛRE TESPİTİ
+                    <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-emerald-700" />
+                      Ayet / Sûre Eşleşmesi
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-700 text-white shadow-2xs">
-                      Doğrudan Eşleşme
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-700 text-white">
+                      Bulundu
                     </span>
                   </div>
                   <div>
-                    <div className="text-sm font-black text-amber-950">{searchResults.smartMatch.title}</div>
-                    <div className="text-xs text-amber-900/90 font-medium mt-0.5">{searchResults.smartMatch.description}</div>
+                    <div className="text-sm font-bold text-emerald-950">{searchResults.smartMatch.title}</div>
+                    <div className="text-xs text-emerald-800 font-medium mt-0.5">{searchResults.smartMatch.description}</div>
                   </div>
                   <button
                     type="button"
@@ -1452,23 +1951,23 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                         navigateToSmartMatch(searchResults.smartMatch);
                       }
                     }}
-                    className="w-full py-2 bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs rounded-xl transition-all shadow-sm active:scale-98 flex items-center justify-center gap-1.5"
+                    className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition-all shadow-xs active:scale-98 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <span>Doğrudan Bu Ayete / Sûreye Git</span>
+                    <span>Sayfaya Git</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               )}
 
-              {/* Kur'an Genelinde Ayet Numarası Eşleşmeleri (Ayet Numarasına Göre Arama) */}
+              {/* Kur'an Genelinde Ayet Numarası Eşleşmeleri */}
               {searchResults?.matchedAllQuranVersesByNumber && searchResults.matchedAllQuranVersesByNumber.length > 0 && (
                 <div className="space-y-2">
-                  <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center justify-between">
+                  <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider flex items-center justify-between">
                     <span className="flex items-center gap-1">
-                      <Search className="w-3 h-3 text-amber-700" />
+                      <Search className="w-3 h-3 text-emerald-700" />
                       Tüm Sûrelerdeki {searchQuery.replace(/\D/g, '')}. Ayetler ({searchResults.matchedAllQuranVersesByNumber.length})
                     </span>
-                    <span className="text-[9px] bg-amber-100 px-1.5 py-0.5 rounded text-amber-900 font-bold">Ayet No İle Arama</span>
+                    <span className="text-[9px] bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-900 font-bold">Ayet No</span>
                   </div>
                   <div className="space-y-1.5">
                     {searchResults.matchedAllQuranVersesByNumber.map((item) => (
@@ -1488,11 +1987,11 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           setIsSearchModalOpen(false);
                           showToast(`📖 ${item.surahName} ${item.verseNumber}. Ayet Yüklendi (Sayfa ${item.pageNumber})`);
                         }}
-                        className="w-full p-3 rounded-2xl bg-amber-50/60 hover:bg-amber-100/80 border border-amber-200/80 text-left transition-all flex items-center justify-between group active:scale-98"
+                        className="w-full p-3 rounded-2xl bg-stone-50 hover:bg-emerald-50/80 border border-stone-200/80 text-left transition-all flex items-center justify-between group active:scale-98 cursor-pointer"
                       >
                         <div className="space-y-0.5 flex-1 pr-2">
                           <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 rounded-lg bg-amber-700 text-white font-bold text-[11px]">
+                            <span className="px-2 py-0.5 rounded-lg bg-emerald-700 text-white font-bold text-[11px]">
                               {item.surahName} {item.verseNumber}. Ayet
                             </span>
                             <span className="text-[10px] font-semibold text-stone-500">
@@ -1505,7 +2004,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                             </p>
                           )}
                         </div>
-                        <ArrowRight className="w-4 h-4 text-amber-700 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                        <ArrowRight className="w-4 h-4 text-emerald-700 shrink-0 group-hover:translate-x-0.5 transition-transform" />
                       </button>
                     ))}
                   </div>
@@ -1516,7 +2015,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               {searchResults && searchResults.matchedSurahs.length > 0 && (
                 <div className="space-y-1.5">
                   <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wider flex items-center gap-1">
-                    <BookOpen className="w-3 h-3 text-amber-700" />
+                    <BookOpen className="w-3 h-3 text-emerald-700" />
                     Eşleşen Sûreler ({searchResults.matchedSurahs.length})
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1529,10 +2028,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           setIsSearchModalOpen(false);
                           showToast(`📖 ${s.nameTurkish} Yüklendi`);
                         }}
-                        className="p-3 rounded-2xl bg-stone-50 hover:bg-amber-50 border border-stone-200/80 text-left flex items-center justify-between transition-all active:scale-98"
+                        className="p-3 rounded-2xl bg-stone-50 hover:bg-emerald-50 border border-stone-200/80 text-left flex items-center justify-between transition-all active:scale-98 cursor-pointer"
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="w-7 h-7 rounded-xl bg-amber-200/80 text-amber-900 font-bold text-xs flex items-center justify-center">
+                          <span className="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-900 font-bold text-xs flex items-center justify-center">
                             {s.id}
                           </span>
                           <div>
@@ -1542,7 +2041,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                             <div className="text-[10px] text-stone-500">{s.versesCount} Ayet</div>
                           </div>
                         </div>
-                        <span className="font-serif text-sm text-amber-900 font-bold">{s.nameArabic}</span>
+                        <span className="font-serif text-sm text-emerald-900 font-bold">{s.nameArabic}</span>
                       </button>
                     ))}
                   </div>
@@ -1554,7 +2053,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl flex items-center justify-between">
                   <div>
                     <div className="text-xs font-bold text-stone-900">Sayfa {searchResults.pageMatch}</div>
-                    <div className="text-[10px] text-stone-500">Kur'an-ı Kerim Sayfa Numarası</div>
+                    <div className="text-[10px] text-stone-500">Sayfa Numarası</div>
                   </div>
                   <button
                     type="button"
@@ -1563,7 +2062,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       setIsSearchModalOpen(false);
                       showToast(`📄 Sayfa ${searchResults.pageMatch} Açıldı`);
                     }}
-                    className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs rounded-xl transition-all shadow-2xs"
+                    className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl transition-all shadow-2xs cursor-pointer"
                   >
                     Sayfaya Git
                   </button>
@@ -1574,7 +2073,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               {searchResults && searchResults.matchedVersesInSurah.length > 0 && (
                 <div className="space-y-1.5 pt-1">
                   <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wider flex items-center gap-1">
-                    <List className="w-3 h-3 text-amber-700" />
+                    <List className="w-3 h-3 text-emerald-700" />
                     {selectedSurah.nameTurkish} İçindeki Eşleşen Ayetler
                   </div>
                   <div className="space-y-2">
@@ -1589,10 +2088,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           setIsSearchModalOpen(false);
                           showToast(`📌 ${v.number}. Ayete gidildi (Sayfa ${v.page})`);
                         }}
-                        className="w-full p-3 rounded-2xl bg-stone-50 hover:bg-amber-50 border border-stone-200/80 text-left transition-all group"
+                        className="w-full p-3 rounded-2xl bg-stone-50 hover:bg-emerald-50 border border-stone-200/80 text-left transition-all group cursor-pointer"
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-bold text-amber-900">
+                          <span className="text-xs font-bold text-emerald-900">
                             {selectedSurah.nameTurkish} {v.number}. Ayet (Sayfa {v.page})
                           </span>
                           <span className="font-serif text-sm text-stone-800">{v.arabic.slice(0, 35)}...</span>
@@ -1606,31 +2105,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 </div>
               )}
 
-              {/* Default Empty State or AI Deep Voice Search Option */}
+              {/* Default Empty State */}
               {(!searchResults || (searchResults.matchedSurahs.length === 0 && !searchResults.pageMatch && searchResults.matchedVersesInSurah.length === 0)) && (
-                <div className="text-center py-8 space-y-4">
-                  <p className="text-xs text-stone-500">
+                <div className="text-center py-8 space-y-3">
+                  <p className="text-xs text-stone-500 font-medium">
                     {searchQuery.trim()
-                      ? `"${searchQuery}" için doğrudan sonuç bulunamadı.`
-                      : 'Yukarıdaki arama çubuğuna yazarak veya sesli okuyarak hemen arayabilirsiniz.'}
+                      ? `"${searchQuery}" araması için sonuç bulunamadı.`
+                      : 'Aradığınız sure, ayet numarası (Örn: Bakara 255) veya kelimeyi yazın.'}
                   </p>
-
-                  <div className="pt-2 border-t border-stone-200/60 max-w-sm mx-auto space-y-2">
-                    <p className="text-[11px] text-stone-400">
-                      Özel bir tilavet ses kaydı analizi yapmak isterseniz Tarteel AI Whisper kredisiz hafız modunu başlatabilirsiniz:
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsSearchModalOpen(false);
-                        startAiVoiceSearch();
-                      }}
-                      className="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-700 to-emerald-900 text-white rounded-2xl font-bold text-xs shadow-md flex items-center justify-center gap-2 hover:opacity-95 transition-opacity"
-                    >
-                      <Sparkles className="w-4 h-4 text-emerald-200" />
-                      <span>Tarteel AI Whisper Sesli Ayet Analizi Başlat</span>
-                    </button>
-                  </div>
                 </div>
               )}
             </div>
@@ -1641,19 +2123,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       {/* AI SESLİ AYET ARAMA MODALI */}
       {isVoiceSearching && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md animate-fade-in">
-          <div className="bg-white/98 text-stone-900 border border-amber-200/90 shadow-2xl rounded-3xl max-w-lg w-full p-6 space-y-5 text-center backdrop-blur-2xl relative overflow-hidden">
-            {/* Decorative Ambient Gold Glow */}
-            <div className="absolute -top-12 -left-12 w-32 h-32 bg-amber-400/20 rounded-full blur-2xl pointer-events-none" />
+          <div className="bg-white text-stone-900 border border-emerald-200/90 shadow-2xl rounded-3xl max-w-lg w-full p-6 space-y-5 text-center backdrop-blur-2xl relative overflow-hidden">
+            {/* Ambient Emerald Glow */}
+            <div className="absolute -top-12 -left-12 w-32 h-32 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none" />
 
             <div className="flex justify-between items-center pb-2 border-b border-stone-100">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-600" />
-                <span className="font-bold text-sm text-stone-900">AI Sesli Ayet & Sûre Bulucu</span>
+                <Sparkles className="w-5 h-5 text-emerald-700" />
+                <span className="font-bold text-sm text-stone-900">Tarteel AI (Hugging Face) Sesli Arama</span>
               </div>
               <button
                 type="button"
                 onClick={cancelAiVoiceSearch}
-                className="p-1 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors"
+                className="p-1 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1662,13 +2144,13 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             {voiceSearchStatus === 'listening' ? (
               <div className="space-y-4 py-2">
                 {/* Language Selection Switcher Pills */}
-                <div className="flex items-center justify-center gap-1.5 p-1 bg-stone-100/90 rounded-2xl w-max mx-auto border border-stone-200">
+                <div className="flex items-center justify-center gap-1.5 p-1 bg-stone-100 rounded-2xl w-max mx-auto border border-stone-200">
                   <button
                     type="button"
                     onClick={() => setVoiceSearchLang('ar-SA')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
                       voiceSearchLang === 'ar-SA'
-                        ? 'bg-[#1C1A17] text-[#D4AF37] shadow-sm'
+                        ? 'bg-emerald-800 text-white shadow-2xs'
                         : 'text-stone-600 hover:text-stone-900'
                     }`}
                   >
@@ -1677,9 +2159,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   <button
                     type="button"
                     onClick={() => setVoiceSearchLang('tr-TR')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
                       voiceSearchLang === 'tr-TR'
-                        ? 'bg-[#1C1A17] text-[#D4AF37] shadow-sm'
+                        ? 'bg-emerald-800 text-white shadow-2xs'
                         : 'text-stone-600 hover:text-stone-900'
                     }`}
                   >
@@ -1689,25 +2171,25 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
                 {/* Animated Pulsing Mic Circle */}
                 <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-                  <div className="absolute inset-0 bg-amber-500/20 rounded-full animate-ping" />
-                  <div className="w-16 h-16 bg-gradient-to-tr from-amber-600 to-amber-800 text-white rounded-full flex items-center justify-center shadow-lg relative z-10">
-                    <Mic className="w-8 h-8 text-amber-200 animate-pulse" />
+                  <div className="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping" />
+                  <div className="w-16 h-16 bg-gradient-to-tr from-emerald-700 to-emerald-900 text-white rounded-full flex items-center justify-center shadow-lg relative z-10">
+                    <Mic className="w-8 h-8 text-emerald-100 animate-pulse" />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="font-bold text-base text-stone-900">Sesiniz Dinleniyor...</h3>
+                  <h3 className="font-bold text-base text-stone-900">Tilavetiniz Dinleniyor...</h3>
                   <p className="text-xs text-stone-500 max-w-xs mx-auto">
-                    Lütfen okuduğunuz ayet tilavetini, Türkçe mealini veya aradığınız sûreyi sesli olarak okuyun.
+                    Hugging Face <b>tarteel-ai/whisper-base-ar-quran</b> modeli için Arapça ayet tilaveti veya sure adı okuyun.
                   </p>
                 </div>
 
                 {/* Live Transcript Display Box */}
-                <div className="bg-stone-50 rounded-2xl p-3.5 border border-amber-200/60 min-h-[60px] flex items-center justify-center">
+                <div className="bg-stone-50 rounded-2xl p-3.5 border border-emerald-200/80 min-h-[60px] flex items-center justify-center">
                   {voiceTranscript ? (
-                    <p className="text-xs font-semibold text-amber-950 italic">"{voiceTranscript}"</p>
+                    <p className="text-xs font-bold text-emerald-950 italic">"{voiceTranscript}"</p>
                   ) : (
-                    <p className="text-xs text-stone-400 italic">Sesiniz bekleniyor ve kaydediliyor...</p>
+                    <p className="text-xs text-stone-400 italic">Sesiniz kaydediliyor...</p>
                   )}
                 </div>
 
@@ -1715,7 +2197,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   <button
                     type="button"
                     onClick={cancelAiVoiceSearch}
-                    className="flex-1 py-2.5 rounded-xl border border-stone-200 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition-all"
+                    className="flex-1 py-2.5 rounded-xl border border-stone-200 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition-all cursor-pointer"
                   >
                     Vazgeç
                   </button>
@@ -1723,20 +2205,20 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   <button
                     type="button"
                     onClick={stopAiVoiceSearch}
-                    className="flex-1 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <Sparkles className="w-4 h-4 text-amber-200" />
-                    <span>Durdur ve Ayeti Bul</span>
+                    <Sparkles className="w-4 h-4 text-emerald-200" />
+                    <span>Durdur ve Tarteel AI ile Bul</span>
                   </button>
                 </div>
               </div>
             ) : voiceSearchStatus === 'analyzing' ? (
               <div className="py-8 space-y-4">
-                <div className="w-12 h-12 border-4 border-amber-200 border-t-amber-700 rounded-full animate-spin mx-auto" />
+                <div className="w-12 h-12 border-4 border-emerald-200 border-t-emerald-700 rounded-full animate-spin mx-auto" />
                 <div className="space-y-1">
-                  <h3 className="font-bold text-base text-stone-900">Tarteel AI Whisper Çözümlüyor...</h3>
-                  <p className="text-xs text-stone-500">
-                    Okunan tilavet %100 ücretsiz Tarteel AI Whisper modeliyle çözümlenip aranıyor.
+                  <h3 className="font-bold text-base text-stone-900">Hugging Face Tarteel AI Analiz Ediyor...</h3>
+                  <p className="text-xs text-stone-500 max-w-xs mx-auto">
+                    <b>tarteel-ai/whisper-base-ar-quran</b> modeli ile ses kaydınız çözümleniyor.
                   </p>
                 </div>
               </div>
@@ -1874,8 +2356,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 type="text"
                 value={surahSearchQuery}
                 onChange={(e) => setSurahSearchQuery(e.target.value)}
-                placeholder="Sûre adı veya numarası ara (örn: Mülk, Yasin, 67)..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-2xl bg-stone-100/80 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                placeholder="Sure adı veya numarası ara (Mülk, Yasin, 67)..."
+                className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-2xl bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
                 autoFocus
               />
             </div>
@@ -1894,15 +2376,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     setIsSurahModalOpen(false);
                     setSurahSearchQuery('');
                   }}
-                  className={`p-3 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-98 ${
+                  className={`p-3 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-98 cursor-pointer ${
                     selectedSurah.id === s.id
-                      ? 'bg-amber-500 text-white border-amber-600 shadow-md font-bold'
-                      : 'bg-stone-50/80 hover:bg-amber-50 border-stone-200/80 text-stone-800'
+                      ? 'bg-emerald-700 text-white border-emerald-800 shadow-md font-bold'
+                      : 'bg-stone-50 hover:bg-emerald-50 border-stone-200/80 text-stone-800'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black ${
-                      selectedSurah.id === s.id ? 'bg-amber-600 text-white' : 'bg-stone-200/80 text-stone-700'
+                      selectedSurah.id === s.id ? 'bg-emerald-900 text-white' : 'bg-stone-200/80 text-stone-700'
                     }`}>
                       {s.id}
                     </span>
@@ -1910,7 +2392,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       <div className="text-xs font-bold leading-tight">
                         {s.nameTurkish.replace(' Sûresi', '')} Sûresi
                       </div>
-                      <div className={`text-[10px] ${selectedSurah.id === s.id ? 'text-amber-100' : 'text-stone-500'}`}>
+                      <div className={`text-[10px] ${selectedSurah.id === s.id ? 'text-emerald-100' : 'text-stone-500'}`}>
                         {s.versesCount} Ayet • {s.revelationType}
                       </div>
                     </div>
@@ -2020,15 +2502,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   {pageVerses.map((verse) => {
                     const isSelected = selectedMushafAyah?.number === verse.number;
                     const isPlayingCurrently = activeAyah?.number === verse.number && isPlaying;
+                    const isTarteelMatched = isTarteelTracking && (selectedMushafAyah?.number === verse.number || tarteelLastMatch?.verseNumber === verse.number);
                     const isBookmarked = bookmarkedVerses.includes(verse.number);
                     const isSajdah = checkIsSajdahVerse(selectedSurah.id, verse.number);
 
                     return (
                       <span
                         key={verse.number}
+                        id={`verse-${verse.number}`}
                         onClick={() => setSelectedMushafAyah(verse)}
                         className={`cursor-pointer inline transition-all duration-200 px-1 py-1 rounded-lg interactive-ayah ${
-                          isSelected
+                          isTarteelMatched
+                            ? 'bg-emerald-400/40 dark:bg-emerald-600/50 text-stone-950 dark:text-emerald-100 shadow-xl ring-2 ring-emerald-500 ring-offset-2 ring-offset-stone-50 dark:ring-offset-stone-900 rounded-xl px-1.5 py-1 border border-emerald-500/70 font-extrabold animate-pulse'
+                            : isSelected
                             ? themeStyles.activeHighlight
                             : isPlayingCurrently
                             ? 'bg-amber-500/25 text-stone-950 dark:text-white shadow-sm ring-2 ring-[#D4AF37]'
@@ -2135,6 +2621,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     return (
                       <span
                         key={verse.number}
+                        id={`verse-${verse.number}`}
                         onClick={() => setSelectedMushafAyah(verse)}
                         className={`cursor-pointer inline transition-all duration-200 px-1 py-1 rounded-lg interactive-ayah ${
                           isSelected
@@ -2252,6 +2739,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           <div className="space-y-4">
             {filteredVerses.map((verse) => {
               const isCurrentActive = activeAyah?.number === verse.number;
+              const isTarteelMatched = isTarteelTracking && (selectedMushafAyah?.number === verse.number || activeAyah?.number === verse.number);
               const isBookmarked = bookmarkedVerses.includes(verse.number);
               const isSajdah = checkIsSajdahVerse(selectedSurah.id, verse.number);
 
@@ -2260,13 +2748,22 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   key={verse.number}
                   id={`ayah-${verse.number}`}
                   className={`relative rounded-3xl p-5 transition-all duration-200 border interactive-ayah ${
-                    isCurrentActive
+                    isTarteelMatched
+                      ? 'bg-emerald-50/95 dark:bg-emerald-950/40 border-2 border-emerald-500 shadow-xl ring-2 ring-emerald-500/80 scale-[1.01]'
+                      : isCurrentActive
                       ? 'bg-amber-50/80 border-amber-400 shadow-md ring-1 ring-amber-400/30'
                       : isSajdah
                       ? 'bg-amber-50/40 border-amber-300 shadow-sm'
                       : 'bg-white border-stone-200 hover:border-stone-300 shadow-sm'
                   }`}
                 >
+                  {/* Tarteel Active Recitation Badge */}
+                  {isTarteelMatched && (
+                    <div className="mb-3 inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-700 text-white text-xs font-bold rounded-full shadow-xs animate-pulse">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-200" />
+                      <span>Tarteel Canlı Okuma Burayı Takip Ediyor</span>
+                    </div>
+                  )}
                   {/* Tilavet Secdesi Uyarısı (Ayet Bazlı) */}
                   {isSajdah && (
                     <div className="mb-3.5 p-3 bg-amber-500/15 border-2 border-amber-500/80 rounded-2xl text-amber-950 flex items-center justify-between gap-2.5 text-xs font-bold shadow-xs">
@@ -2370,9 +2867,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     <button
                       id="tour-audio-controls"
                       onClick={() => onPlayAyah(verse)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                         isCurrentActive && isPlaying
-                          ? 'bg-[#D4AF37] text-stone-950 font-bold'
+                          ? 'bg-emerald-700 text-white shadow-xs'
                           : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200'
                       }`}
                     >
@@ -2385,15 +2882,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                         onClick={() =>
                           onOpenAiTajweedExplain(selectedSurah.nameTurkish, verse.number, verse.arabic)
                         }
-                        className="p-2 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-100 transition-colors"
+                        className="p-2 rounded-xl bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200/80 transition-colors cursor-pointer"
                         title="AI Tecvit Tahlili"
                       >
-                        <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
                       </button>
 
                       <button
                         onClick={onOpenVoiceRecorder}
-                        className="p-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100 transition-colors"
+                        className="p-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100 transition-colors cursor-pointer"
                         title="Ses Kaydı Al"
                       >
                         <Mic className="w-3.5 h-3.5" />
@@ -2408,10 +2905,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           setActiveNoteModalAyah(verse);
                           setNoteTextInput('');
                         }}
-                        className="p-2 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200 transition-colors flex items-center gap-1 font-semibold text-xs"
+                        className="p-2 rounded-xl bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200/80 transition-colors flex items-center gap-1 font-semibold text-xs cursor-pointer"
                         title="Ayet Notu Ekle"
                       >
-                        <Edit3 className="w-3.5 h-3.5 text-amber-700" />
+                        <Edit3 className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Not Al</span>
                       </button>
                     </div>
@@ -2685,6 +3182,37 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               Kapat ✕
             </div>
           </div>
+        </div>
+      )}
+      {/* FLOATING LIVE TARTEEL RECITATION TRACKING HUD BANNER */}
+      {isTarteelTracking && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] bg-emerald-950/95 text-white px-4 py-3 rounded-2xl shadow-2xl border border-emerald-500/60 flex items-center gap-3 backdrop-blur-2xl animate-fade-in max-w-md w-[92%] sm:w-auto">
+          <div className="relative flex h-3.5 w-3.5 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+          </div>
+          <div className="text-xs space-y-0.5 flex-1 min-w-0">
+            <div className="font-bold text-emerald-300 flex items-center gap-1.5 text-xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>Tarteel Canlı Okuma Takibi Açık</span>
+            </div>
+            {tarteelLastMatch ? (
+              <div className="text-stone-100 font-semibold text-[11px] truncate">
+                🎯 {tarteelLastMatch.surahName} {tarteelLastMatch.verseNumber}. Ayet (Takip Ediliyor)
+              </div>
+            ) : (
+              <div className="text-stone-300 text-[11px] truncate">
+                Siz Kur'an okudukça okuduğunuz ayet canlı tespit edilecek...
+              </div>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={stopTarteelLiveTracking}
+            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-[11px] font-bold rounded-xl shadow-xs transition-all cursor-pointer shrink-0 active:scale-95"
+          >
+            Durdur
+          </button>
         </div>
       )}
     </div>

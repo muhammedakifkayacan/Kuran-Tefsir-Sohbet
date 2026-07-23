@@ -209,7 +209,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
               }
               setIsAddModalOpen(true);
             }}
-            className="px-4 py-2.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all shrink-0 w-full sm:w-auto justify-center cursor-pointer"
+            className="px-4 py-2.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all shrink-0 w-full sm:w-auto justify-center cursor-pointer"
           >
             <Plus className="w-4 h-4 text-white" />
             <span>Sohbet Ekle</span>
@@ -223,7 +223,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
             placeholder="Mekan veya sohbet başlığı ara..."
             value={searchVenue}
             onChange={(e) => setSearchVenue(e.target.value)}
-            className="w-full bg-white text-stone-900 placeholder-stone-400 text-xs rounded-xl px-3.5 py-2 border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
+            className="w-full bg-white text-stone-900 placeholder-stone-400 text-xs rounded-xl px-3.5 py-2 border border-stone-200 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           />
 
           <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs scrollbar-none">
@@ -238,9 +238,9 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-[11px] font-semibold ${
+                className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-[11px] font-semibold cursor-pointer ${
                   selectedCategory === cat.id
-                    ? 'bg-amber-700 text-white font-bold shadow-2xs'
+                    ? 'bg-emerald-700 text-white font-bold shadow-2xs'
                     : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
                 }`}
               >

@@ -1,14 +1,10 @@
 import express from "express";
 import path from "path";
-import { fileURLToPath } from "url";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
@@ -177,20 +173,22 @@ Hocanın vermiş olduğu sohbet dersinin verilerine ve GERÇEK SES KAYDI TRANSKR
     }
   });
 
-  // Tarteel AI Hugging Face Whisper Model Voice Search Endpoint (0 Gemini Credits)
+  // Tarteel AI Hugging Face Whisper Model Voice Search Endpoint
   app.post("/api/quran-voice-search", async (req, res) => {
     try {
       const { transcript, audioBase64, mimeType } = req.body;
       let tarteelWhisperText = "";
+      let geminiAudioText = "";
 
-      // Call Tarteel AI Hugging Face Whisper Quran Model (tarteel-ai/whisper-base-ar-quran) with timeout & fallback
+      // 1. Primary Attempt: Hugging Face Tarteel AI Quran Whisper Model (tarteel-ai/whisper-base-ar-quran)
       if (audioBase64) {
         try {
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 second max timeout
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
           const audioBuffer = Buffer.from(audioBase64, "base64");
           const hfHeaders: Record<string, string> = {
             "Content-Type": mimeType || "audio/webm",
+            "x-wait-for-model": "true", // Hugging Face serverless wait header
           };
           if (process.env.HF_TOKEN) {
             hfHeaders["Authorization"] = `Bearer ${process.env.HF_TOKEN}`;
@@ -211,15 +209,48 @@ Hocanın vermiş olduğu sohbet dersinin verilerine ve GERÇEK SES KAYDI TRANSKR
             }
           }
         } catch (hfErr) {
-          // Gracefully fallback to browser transcript without throwing
+          console.warn("HF Tarteel AI error, falling back to Gemini Audio transcription:", hfErr);
+        }
+
+        // 2. Backup / Precision Booster: Gemini Audio Multimodal Transcription if HF did not return text
+        if (!tarteelWhisperText) {
+          try {
+            const ai = getAiClient();
+            if (ai) {
+              const geminiRes = await ai.models.generateContent({
+                model: "gemini-3.6-flash",
+                contents: [
+                  {
+                    inlineData: {
+                      mimeType: mimeType || "audio/webm",
+                      data: audioBase64,
+                    },
+                  },
+                  "Bu ses kaydında okunan Kur'an-ı Kerim ayetini veya kelimelerini sadece orijinal Arapça metin olarak çıkar. Yanıtında başka hiçbir metin veya açıklama yazma, sadece okunan Arapça kelimeleri yaz.",
+                ],
+              });
+              if (geminiRes.text && geminiRes.text.trim()) {
+                geminiAudioText = geminiRes.text.trim();
+              }
+            }
+          } catch (geminiErr) {
+            console.warn("Gemini Audio Transcription error:", geminiErr);
+          }
         }
       }
 
-      const finalText = tarteelWhisperText || transcript || "";
+      const finalText = tarteelWhisperText || geminiAudioText || transcript || "";
+      const usedEngine = tarteelWhisperText
+        ? "Tarteel AI Whisper (Hugging Face)"
+        : geminiAudioText
+        ? "Gemini Quran AI (Ses Analizi)"
+        : "Canlı Ses Motoru";
+
       res.json({
         success: true,
         text: finalText,
-        engine: tarteelWhisperText ? "Tarteel AI Whisper (0 Kredi)" : "Tarayıcı Ses Motoru (0 Kredi)",
+        engine: usedEngine,
+        tarteelUsed: Boolean(tarteelWhisperText),
       });
     } catch (error: any) {
       res.status(500).json({ error: error?.message || "Ses çözümlenirken hata oluştu." });

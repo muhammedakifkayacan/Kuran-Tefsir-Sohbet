@@ -18,63 +18,63 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'step_welcome',
     targetId: 'tour-header-logo',
     tab: 'quran',
-    title: 'Hoş Geldiniz!',
-    badge: 'Uygulama Rehberi',
-    description: 'Kur\'an & Tefsir Rehberi ders, sohbet ve tefekkür notlarınızı düzenlemek için tasarlandı. Şimdi uygulamanın ana özelliklerini hızlıca keşfedelim.',
+    title: 'Hoş Geldin! 🎉',
+    badge: 'Kolay Kullanım Rehberi',
+    description: 'Kur\'an & Tefsir Rehberine hoş geldin! Kur\'an-ı Kerim okumayı, dinlemeyi, ders notları almayı ve merak ettiğin ayetleri sormayı senin için çok kolaylaştırdık. Haydi birlikte keşfedelim!',
     preferredPosition: 'bottom',
   },
   {
     id: 'step_surah_select',
     targetId: 'tour-surah-selector',
     tab: 'quran',
-    title: 'Sûre & Sayfa Gezgini',
-    badge: 'Kur\'an Tilaveti',
-    description: 'Arama çubuğundan veya listeden dilediğiniz Sûre, cüz veya sayfaya anında erişebilir, tecvit renklerini ve meali inceleyebilirsiniz.',
+    title: 'Sure ve Sayfa Seçimi 📖',
+    badge: 'Arama & Gezinti',
+    description: 'İstediğin Sûre ismini veya sayfa numarasını buraya yazarak anında açabilirsin. İster Türkçe mealini oku, ister Arapça metni takip et!',
     preferredPosition: 'bottom',
   },
   {
     id: 'step_recitation_audio',
     targetId: 'tour-audio-controls',
     tab: 'quran',
-    title: 'Kâri & Sesli Dinleme',
-    badge: 'Tecvitli Tilavet',
-    description: 'Ayetlerin yanındaki ses ikonuna basarak seçkin kârilerin sesinden tilavet dinleyebilir, hızı ve tekrarları özelleştirebilirsiniz.',
+    title: 'Sesli Dinleme & Takip 🎧',
+    badge: 'Güzel Tilavet',
+    description: 'Ayetlerin altındaki \'Dinle\' butonuna basarak dünyaca ünlü hocaların sesinden Kur\'an dinleyebilir, okuma hızını istediğin gibi ayarlayabilirsin.',
     preferredPosition: 'top',
   },
   {
     id: 'step_sohbet_view',
     targetId: 'tour-tab-sohbet',
     tab: 'sohbet',
-    title: 'Sohbet & Arka Plan Ses Kaydı',
-    badge: 'Ders Kaydı',
-    description: 'Sohbet ve vaaz esnasında ses kaydı başlatabilir, ekran kapansa bile kayda devam edip konuşmaları metne dökebilirsiniz.',
+    title: 'Ders & Sohbet Kaydı 💬',
+    badge: 'Ders Dinle',
+    description: 'Ders veya sohbet esnasında ses kaydı başlatabilir, önemli notları kaydedip sesleri otomatik metne dönüştürebilirsin.',
     preferredPosition: 'top',
   },
   {
     id: 'step_ai_report',
     targetId: 'tour-ai-report',
     tab: 'sohbet',
-    title: 'Gemini AI Vaaz Özeti',
-    badge: 'Yapay Zekâ',
-    description: 'Yapay zekâ asistanı ile ders ses kayıtlarınızdan saniyeler içinde vaaz özetleri ve maddeleşmiş ders raporları çıkartabilirsiniz.',
+    title: 'Yapay Zekâ Ders Asistanı 🤖',
+    badge: 'Zeki Asistan',
+    description: 'Anlamadığın bir konu mu oldu? Akıllı asistanımız ders kayıtlarını özetler ve sana ayetlerin anlamlarını tam senin anlayacağın sade bir dille anlatır!',
     preferredPosition: 'top',
   },
   {
     id: 'step_notes_view',
     targetId: 'tour-tab-notes',
     tab: 'notes',
-    title: 'Tefekkür & Ayet Notları',
-    badge: 'Ayet Notları',
-    description: 'Ayetler ve dersler üzerine aldığınız özel tefekkür notlarını düzenleyebilir, etiketleyebilir ve farklı cihazlara aktarabilirsiniz.',
+    title: 'Notlarım & Ayraçlarım 📝',
+    badge: 'Unutmamak İçin',
+    description: 'Beğendiğin ayetlere kendi notlarını ekleyebilir, kaldığın yere ayraç koyabilirsin. İstediğin zaman notlarına tekrar göz atabilirsin.',
     preferredPosition: 'top',
   },
   {
     id: 'step_profile_sync',
     targetId: 'tour-user-profile',
     tab: 'quran',
-    title: 'Hesap & Bulut Senkronizasyonu',
-    badge: 'Giriş & Ayarlar',
-    description: 'Google ile giriş yaparak notlarınızı ve okuma geçmişinizi bulutta saklayabilir, font ve fildişi/nane renk temalarını değiştirebilirsiniz.',
+    title: 'Profil & Kolay Ayarlar ⚙️',
+    badge: 'Sana Özel',
+    description: 'Buradan Google hesabınla giriş yapabilir, yazı boyutunu büyütüp küçültebilir ve gözünü yormayan gece modunu kolayca açabilirsin.',
     preferredPosition: 'bottom',
   },
 ];
@@ -372,9 +372,9 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
                 onClick={() => setCurrentStepIndex(idx)}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   idx === currentStepIndex
-                    ? 'w-6 bg-amber-600'
+                    ? 'w-6 bg-emerald-700'
                     : idx < currentStepIndex
-                    ? 'w-1.5 bg-amber-300'
+                    ? 'w-1.5 bg-emerald-300'
                     : 'w-1.5 bg-stone-200'
                 }`}
                 title={`${idx + 1}. Adıma Git`}
@@ -389,7 +389,7 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
                 type="checkbox"
                 checked={!!dontShowAgain}
                 onChange={(e) => onToggleDontShowAgain?.(e.target.checked)}
-                className="w-3.5 h-3.5 rounded border-stone-300 text-amber-600 focus:ring-amber-500 accent-amber-600 cursor-pointer"
+                className="w-3.5 h-3.5 rounded border-stone-300 text-emerald-700 focus:ring-emerald-600 accent-emerald-700 cursor-pointer"
               />
               <span className="text-[11px] font-medium text-stone-600 group-hover:text-stone-900 transition-colors">
                 Bir daha otomatik gösterme
@@ -430,7 +430,7 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
                   setCurrentStepIndex((prev) => prev + 1);
                 }
               }}
-              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
             >
               <span>{isLastStep ? 'Tamamla' : 'Sonraki'}</span>
               {isLastStep ? (

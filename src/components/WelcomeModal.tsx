@@ -53,7 +53,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
 
         {/* Minimal Greeting */}
         <div className="text-center pt-2 space-y-1">
-          <p className="text-xs font-semibold text-amber-700 tracking-wider uppercase">
+          <p className="text-xs font-semibold text-emerald-700 tracking-wider uppercase">
             Kur'an & Ders Asistanı
           </p>
           <h2 className="text-2xl font-extrabold tracking-tight text-stone-900">
@@ -63,13 +63,13 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
 
         {/* Hero Card: Kaldığın Yerden Devam Et */}
         {lastReadPosition ? (
-          <div className="bg-amber-50/90 border border-amber-200/90 text-stone-900 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between text-xs text-amber-800 font-medium">
+          <div className="bg-emerald-50/90 border border-emerald-200/90 text-stone-900 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center justify-between text-xs text-emerald-800 font-medium">
               <span className="flex items-center gap-1.5 font-bold">
-                <Bookmark className="w-4 h-4 text-amber-600 fill-amber-500" />
+                <Bookmark className="w-4 h-4 text-emerald-600 fill-emerald-600" />
                 <span>Kaldığın Yer</span>
               </span>
-              <span className="text-[11px] text-amber-700/80 font-mono">
+              <span className="text-[11px] text-emerald-700/80 font-mono">
                 {lastReadPosition.updatedAt}
               </span>
             </div>
@@ -89,7 +89,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
                   onResumeReading(lastReadPosition.surahId, lastReadPosition.pageNumber);
                   onClose();
                 }}
-                className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
+                className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-95 transition-all cursor-pointer"
               >
                 <span>Devam Et</span>
                 <ArrowRight className="w-3.5 h-3.5" />

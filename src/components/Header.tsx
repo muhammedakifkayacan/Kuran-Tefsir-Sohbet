@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Smartphone, Monitor, Sparkles, Download, Home, User, Menu, X, BookOpen, Radio, BookCheck, StickyNote, Sliders, ChevronRight } from 'lucide-react';
+import { Smartphone, Monitor, Sparkles, Download, Home, User, Menu, X, BookOpen, Radio, BookCheck, StickyNote, Sliders, ChevronRight, Compass } from 'lucide-react';
 import { NavTab } from '../types';
 
 interface HeaderProps {
@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
           className="flex items-center gap-2.5 cursor-pointer group shrink-0"
           title="Karşılama Ekranı"
         >
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-amber-500 text-stone-950 flex items-center justify-center font-bold shadow-xs border border-amber-400 group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-bold shadow-xs border border-emerald-600 group-hover:scale-105 transition-transform">
             <span className="text-lg sm:text-xl font-serif">ق</span>
           </div>
           <div>
@@ -75,12 +75,12 @@ export const Header: React.FC<HeaderProps> = ({
               id="tour-user-profile"
               onClick={onOpenUserProfileModal}
               title={`Hesabım (${user.name})`}
-              className="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-stone-900 transition-all active:scale-95 flex items-center gap-1.5 text-xs border border-amber-200/80 shadow-xs cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-950 transition-all active:scale-95 flex items-center gap-1.5 text-xs border border-emerald-200 shadow-xs cursor-pointer"
             >
               {user.avatar ? (
                 <img src={user.avatar} alt={user.name} className="w-4 h-4 rounded-full" />
               ) : (
-                <User className="w-4 h-4 text-amber-700" />
+                <User className="w-4 h-4 text-emerald-700" />
               )}
               <span className="font-bold text-[11px] hidden xs:inline">{user.name.split(' ')[0]}</span>
             </button>
@@ -89,9 +89,9 @@ export const Header: React.FC<HeaderProps> = ({
               id="tour-user-profile"
               onClick={onOpenAuthLandingModal || onOpenUserProfileModal}
               title="Giriş Yap / Tanıtım Ekranı"
-              className="px-2.5 py-1.5 rounded-xl bg-[#1C1A17] hover:bg-stone-800 text-[#D4AF37] transition-all active:scale-95 flex items-center gap-1.5 text-xs border border-stone-800 shadow-xs cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white transition-all active:scale-95 flex items-center gap-1.5 text-xs border border-emerald-800 shadow-xs cursor-pointer font-semibold"
             >
-              <User className="w-4 h-4 text-[#D4AF37]" />
+              <User className="w-4 h-4 text-emerald-100" />
               <span className="font-bold text-[11px]">Giriş Yap</span>
             </button>
           )}
@@ -101,9 +101,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenWelcomeModal}
               title="Karşılama Ekranı & Kaldığın Yer"
-              className="p-1.5 sm:p-2 rounded-xl bg-stone-100/80 hover:bg-stone-200/80 text-stone-700 transition-all active:scale-95 flex items-center gap-1 text-xs border border-stone-200"
+              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all active:scale-95 flex items-center gap-1 text-xs border border-stone-200"
             >
-              <Home className="w-4 h-4 text-amber-600" />
+              <Home className="w-4 h-4 text-emerald-700" />
             </button>
           )}
 
@@ -112,28 +112,39 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenExportImportModal}
               title="Not Dışa / İçe Aktar (Word, Drive, JSON)"
-              className="p-1.5 sm:p-2 rounded-xl bg-stone-100/80 hover:bg-stone-200/80 text-stone-700 transition-all active:scale-95 flex items-center gap-1 text-xs border border-stone-200 hidden sm:flex"
+              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all active:scale-95 flex items-center gap-1 text-xs border border-stone-200 hidden sm:flex"
             >
               <Download className="w-4 h-4 text-emerald-600" />
+            </button>
+          )}
+
+          {/* Tour / Guide Button */}
+          {onStartTour && (
+            <button
+              onClick={onStartTour}
+              title="Nasıl Kullanılır? Kolay Rehber"
+              className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs transition-all flex items-center gap-1 border border-emerald-200 shadow-xs active:scale-95 cursor-pointer"
+            >
+              <Compass className="w-3.5 h-3.5 text-emerald-700 animate-pulse" />
+              <span className="hidden sm:inline">🚀 Rehber</span>
             </button>
           )}
 
           {/* AI Assistant Quick Trigger */}
           <button
             onClick={onOpenAiAssistant}
-            title="AI Hoca Asistanı"
-            className="px-2.5 py-1.5 rounded-xl bg-amber-500 text-stone-950 font-bold text-xs hover:bg-amber-400 transition-all flex items-center gap-1 shadow-xs active:scale-95"
+            title="Soru Sor / Akıllı Asistan"
+            className="px-2.5 py-1.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer border border-emerald-700"
           >
-            <Sparkles className="w-3.5 h-3.5 text-stone-950" />
-            <span className="hidden md:inline">AI Asistan</span>
+            <Sparkles className="w-3.5 h-3.5 text-emerald-100" />
+            <span className="hidden md:inline">Soru Sor</span>
           </button>
-
 
           {/* Hamburger Menu Toggle Button */}
           <button
             onClick={() => setIsMenuOpen(true)}
             title="Tüm Menü & Seçenekler"
-            className="p-2 rounded-xl bg-stone-100/80 hover:bg-amber-50 text-stone-900 hover:text-amber-700 transition-all active:scale-95 flex items-center justify-center border border-stone-200 shadow-xs"
+            className="p-2 rounded-xl bg-stone-100 hover:bg-emerald-50 text-stone-900 hover:text-emerald-700 transition-all active:scale-95 flex items-center justify-center border border-stone-200 shadow-xs cursor-pointer"
           >
             <Menu className="w-5 h-5 text-stone-800" />
           </button>
@@ -146,21 +157,21 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Top Bar of Fullscreen Overlay */}
           <div className="flex items-center justify-between max-w-4xl mx-auto w-full">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-600 text-white flex items-center justify-center font-bold shadow-sm">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-bold shadow-sm">
                 <span className="text-xl font-serif">ق</span>
               </div>
               <div>
                 <h2 className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
                   Kur'an & Tefsir Rehberi
                 </h2>
-                <p className="text-xs text-stone-500 font-medium">Apple Sadeliğinde Gezinti</p>
+                <p className="text-xs text-stone-500 font-medium">Sade & Kolay Kullanım</p>
               </div>
             </div>
 
             {/* Close Button */}
             <button
               onClick={() => setIsMenuOpen(false)}
-              className="p-2.5 rounded-2xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 transition-all flex items-center gap-2 active:scale-95"
+              className="p-2.5 rounded-2xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
             >
               <span className="text-xs font-mono font-semibold text-stone-500 hidden sm:inline">ESC</span>
               <X className="w-5 h-5 text-stone-800" />
@@ -169,7 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Center Navigation Links */}
           <div className="max-w-4xl mx-auto w-full my-8 space-y-6">
-            <p className="text-xs font-bold uppercase tracking-widest text-amber-800 border-b border-stone-200 pb-2">
+            <p className="text-xs font-bold uppercase tracking-widest text-emerald-800 border-b border-stone-200 pb-2">
               Ana Bölümler
             </p>
 
@@ -181,17 +192,17 @@ export const Header: React.FC<HeaderProps> = ({
                 }}
                 className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group ${
                   activeTab === 'quran'
-                    ? 'bg-amber-600 text-white border-amber-600 shadow-md'
+                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
                     : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-2xl ${activeTab === 'quran' ? 'bg-amber-700 text-white' : 'bg-amber-50 text-amber-800 border border-amber-200/60'}`}>
+                  <div className={`p-3 rounded-2xl ${activeTab === 'quran' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
                     <BookOpen className="w-6 h-6" />
                   </div>
                   <div>
                     <h3 className="font-bold text-base sm:text-lg">Kur'an Okuma</h3>
-                    <p className={`text-xs ${activeTab === 'quran' ? 'text-amber-100' : 'text-stone-500'}`}>Mushaf, Mealli ve Sadece Meal Sayfaları</p>
+                    <p className={`text-xs ${activeTab === 'quran' ? 'text-emerald-100' : 'text-stone-500'}`}>Mushaf, Mealli ve Sadece Meal Sayfaları</p>
                   </div>
                 </div>
                 <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'quran' ? 'text-white' : 'text-stone-400'}`} />
@@ -204,17 +215,17 @@ export const Header: React.FC<HeaderProps> = ({
                 }}
                 className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group ${
                   activeTab === 'sohbet'
-                    ? 'bg-amber-600 text-white border-amber-600 shadow-md'
+                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
                     : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-2xl ${activeTab === 'sohbet' ? 'bg-amber-700 text-white' : 'bg-amber-50 text-amber-800 border border-amber-200/60'}`}>
+                  <div className={`p-3 rounded-2xl ${activeTab === 'sohbet' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
                     <Radio className="w-6 h-6" />
                   </div>
                   <div>
                     <h3 className="font-bold text-base sm:text-lg">Sohbet & Ders</h3>
-                    <p className={`text-xs ${activeTab === 'sohbet' ? 'text-amber-100' : 'text-stone-500'}`}>Ders Ses Kayıtları ve Sohbet Dinleme</p>
+                    <p className={`text-xs ${activeTab === 'sohbet' ? 'text-emerald-100' : 'text-stone-500'}`}>Ders Ses Kayıtları ve Sohbet Dinleme</p>
                   </div>
                 </div>
                 <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'sohbet' ? 'text-white' : 'text-stone-400'}`} />
@@ -227,17 +238,17 @@ export const Header: React.FC<HeaderProps> = ({
                 }}
                 className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group ${
                   activeTab === 'notes'
-                    ? 'bg-amber-600 text-white border-amber-600 shadow-md'
+                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
                     : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
                 }`}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-2xl ${activeTab === 'notes' ? 'bg-amber-700 text-white' : 'bg-amber-50 text-amber-800 border border-amber-200/60'}`}>
+                  <div className={`p-3 rounded-2xl ${activeTab === 'notes' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
                     <StickyNote className="w-6 h-6" />
                   </div>
                   <div>
                     <h3 className="font-bold text-base sm:text-lg">Hoca Notlarım</h3>
-                    <p className={`text-xs ${activeTab === 'notes' ? 'text-amber-100' : 'text-stone-500'}`}>Ayetlere Alınan Tüm Ders Notları</p>
+                    <p className={`text-xs ${activeTab === 'notes' ? 'text-emerald-100' : 'text-stone-500'}`}>Ayetlere Alınan Tüm Ders Notları</p>
                   </div>
                 </div>
                 <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'notes' ? 'text-white' : 'text-stone-400'}`} />
@@ -252,9 +263,9 @@ export const Header: React.FC<HeaderProps> = ({
                     onOpenUserProfileModal();
                     setIsMenuOpen(false);
                   }}
-                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all"
+                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
                 >
-                  <Sliders className="w-4 h-4 text-amber-700 shrink-0" />
+                  <Sliders className="w-4 h-4 text-emerald-700 shrink-0" />
                   <span>Kullanıcı Profili & Ayarlar</span>
                 </button>
               )}
@@ -265,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({
                     onOpenExportImportModal();
                     setIsMenuOpen(false);
                   }}
-                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all"
+                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
                 >
                   <Download className="w-4 h-4 text-emerald-700 shrink-0" />
                   <span>Notları Aktar (Word / Drive)</span>
@@ -278,9 +289,9 @@ export const Header: React.FC<HeaderProps> = ({
                     onOpenWelcomeModal();
                     setIsMenuOpen(false);
                   }}
-                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all"
+                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
                 >
-                  <Home className="w-4 h-4 text-amber-700 shrink-0" />
+                  <Home className="w-4 h-4 text-emerald-700 shrink-0" />
                   <span>Karşılama Ekranı</span>
                 </button>
               )}
@@ -291,7 +302,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setIsMenuOpen(false);
                     onStartTour();
                   }}
-                  className="p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                  className="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
                 >
                   <span className="text-sm">🧭</span>
                   <span>Uygulama Rehberi (Tur)</span>

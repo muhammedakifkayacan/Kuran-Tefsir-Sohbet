@@ -14,9 +14,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   unresolvedNotesCount = 0,
 }) => {
   const tabs: { id: NavTab; label: string; icon: React.FC<{ className?: string }>; badge?: number }[] = [
-    { id: 'quran', label: 'Kur\'an-ı Kerim', icon: BookOpen },
-    { id: 'sohbet', label: 'Sohbet & Tefsir', icon: Radio },
-    { id: 'notes', label: 'Notlar & AI', icon: StickyNote, badge: unresolvedNotesCount },
+    { id: 'quran', label: '📖 Kur\'an Oku', icon: BookOpen },
+    { id: 'sohbet', label: '💬 Ders & Sohbet', icon: Radio },
+    { id: 'notes', label: '📝 Notlarım & AI', icon: StickyNote, badge: unresolvedNotesCount },
   ];
 
   return (
@@ -33,21 +33,21 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               onClick={() => setActiveTab(tab.id)}
               className={`relative flex flex-col items-center justify-center py-1.5 px-3.5 rounded-2xl transition-all duration-200 active:scale-95 cursor-pointer ${
                 isActive
-                  ? 'text-amber-900 font-bold'
-                  : 'text-slate-500 hover:text-amber-700 font-medium'
+                  ? 'text-emerald-950 font-bold'
+                  : 'text-stone-500 hover:text-emerald-800 font-medium'
               }`}
             >
               {/* Active Indicator Background */}
               {isActive && (
-                <span className="absolute inset-0 bg-amber-50 rounded-2xl border border-amber-200/80 -z-10" />
+                <span className="absolute inset-0 bg-emerald-50 rounded-2xl border border-emerald-200/80 -z-10" />
               )}
 
               <div className="relative">
-                <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110 text-amber-800' : ''}`} />
+                <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110 text-emerald-800' : ''}`} />
 
                 {/* Badge if exists */}
                 {Boolean(tab.badge && tab.badge > 0) && (
-                  <span className="absolute -top-1.5 -right-2 bg-amber-600 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[16px] text-center shadow-sm">
+                  <span className="absolute -top-1.5 -right-2 bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[16px] text-center shadow-xs">
                     {tab.badge}
                   </span>
                 )}
