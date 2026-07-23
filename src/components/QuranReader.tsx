@@ -1630,30 +1630,30 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               if (isPageMenuOpen) setIsPageMenuOpen(false);
             }}
             className="p-1.5 px-2.5 rounded-xl border border-stone-200 bg-stone-100/90 hover:bg-amber-50 text-stone-800 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
-            title="Kur'an-ı Kerim'de Ara & Sesle Bul"
+            title="Kur'an-ı Kerim'de Ara"
           >
             <Search className="w-4 h-4 text-amber-700" />
             <span className="hidden sm:inline text-xs font-semibold">Ara</span>
           </button>
 
-          {/* Tarteel Canlı Okuma Takip Butonu */}
+          {/* Audio Recitation Dinle Button (Tour Target & Quick Recitation Play) */}
           <button
-            type="button"
-            onClick={isTarteelTracking ? stopTarteelLiveTracking : startTarteelLiveTracking}
-            className={`p-1.5 px-2.5 sm:px-3 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 ${
-              isTarteelTracking
-                ? 'bg-emerald-600 text-white border-emerald-700 shadow-md animate-pulse'
-                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-300/80 shadow-2xs'
+            id="tour-audio-controls"
+            onClick={() => {
+              const firstAyahInPage = pageVerses[0] || selectedSurah?.verses[0];
+              if (firstAyahInPage) {
+                onPlayAyah(firstAyahInPage);
+              }
+            }}
+            className={`p-1.5 px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
+              isPlaying
+                ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs'
+                : 'bg-stone-100/90 hover:bg-emerald-50 text-stone-800 border-stone-200'
             }`}
-            title="Tarteel Canlı Okuma Takibi (Siz okudukça okuduğunuz ayeti canlı takip eder)"
+            title="Sayfadaki Ayetleri Dinle"
           >
-            <Mic className={`w-4 h-4 ${isTarteelTracking ? 'text-white' : 'text-emerald-700'}`} />
-            <span className="hidden sm:inline">
-              {isTarteelTracking ? 'Tarteel Takip Açık' : 'Tarteel Canlı Takip'}
-            </span>
-            <span className="sm:hidden">
-              {isTarteelTracking ? 'Takipte' : 'Tarteel'}
-            </span>
+            <Volume2 className={`w-4 h-4 ${isPlaying ? 'text-white animate-pulse' : 'text-emerald-700'}`} />
+            <span className="hidden sm:inline text-xs font-semibold">{isPlaying ? 'Durdur' : 'Dinle'}</span>
           </button>
 
           {/* Filtre / Okuma Ayarları İkon Butonu */}
@@ -1887,18 +1887,6 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     </button>
                   )}
                 </div>
-
-                {/* Tarteel AI Voice Search & Live Tracking Button */}
-                <button
-                  type="button"
-                  onClick={startTarteelLiveTracking}
-                  className="px-3.5 py-2.5 rounded-2xl font-bold text-xs flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer"
-                  title="Tarteel Canlı Okuma Takibi (Siz okudukça okuduğunuz ayeti canlı takip eder)"
-                >
-                  <Sparkles className="w-4 h-4 text-emerald-200" />
-                  <span className="hidden sm:inline">Tarteel Canlı Okuma Takibi</span>
-                  <span className="sm:hidden">Tarteel Takip</span>
-                </button>
               </div>
 
               {/* Quick Preset Shortcut Chips */}
@@ -3184,8 +3172,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           </div>
         </div>
       )}
-      {/* FLOATING LIVE TARTEEL RECITATION TRACKING HUD BANNER */}
-      {isTarteelTracking && (
+      {/* FLOATING LIVE TARTEEL RECITATION TRACKING HUD BANNER (Disabled until API is set up) */}
+      {false && isTarteelTracking && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[999] bg-emerald-950/95 text-white px-4 py-3 rounded-2xl shadow-2xl border border-emerald-500/60 flex items-center gap-3 backdrop-blur-2xl animate-fade-in max-w-md w-[92%] sm:w-auto">
           <div className="relative flex h-3.5 w-3.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

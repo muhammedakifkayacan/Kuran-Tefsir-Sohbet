@@ -96,12 +96,12 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          {/* Welcome Screen Trigger */}
+          {/* Welcome Screen Trigger - Hidden on mobile, available in menu */}
           {onOpenWelcomeModal && (
             <button
               onClick={onOpenWelcomeModal}
               title="Karşılama Ekranı & Kaldığın Yer"
-              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all active:scale-95 flex items-center gap-1 text-xs border border-stone-200"
+              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all active:scale-95 items-center gap-1 text-xs border border-stone-200 hidden sm:flex cursor-pointer"
             >
               <Home className="w-4 h-4 text-emerald-700" />
             </button>
@@ -112,21 +112,21 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenExportImportModal}
               title="Not Dışa / İçe Aktar (Word, Drive, JSON)"
-              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all active:scale-95 flex items-center gap-1 text-xs border border-stone-200 hidden sm:flex"
+              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all active:scale-95 items-center gap-1 text-xs border border-stone-200 hidden sm:flex cursor-pointer"
             >
               <Download className="w-4 h-4 text-emerald-600" />
             </button>
           )}
 
-          {/* Tour / Guide Button */}
+          {/* Tour / Guide Button - Hidden on mobile header, available in menu */}
           {onStartTour && (
             <button
               onClick={onStartTour}
               title="Nasıl Kullanılır? Kolay Rehber"
-              className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs transition-all flex items-center gap-1 border border-emerald-200 shadow-xs active:scale-95 cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs transition-all items-center gap-1 border border-emerald-200 shadow-xs active:scale-95 cursor-pointer hidden sm:flex"
             >
               <Compass className="w-3.5 h-3.5 text-emerald-700 animate-pulse" />
-              <span className="hidden sm:inline">🚀 Rehber</span>
+              <span>🚀 Rehber</span>
             </button>
           )}
 

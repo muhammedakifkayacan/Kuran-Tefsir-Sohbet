@@ -88,7 +88,7 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
   const halfRowText = phraseUnit + phraseUnit + phraseUnit;
 
   return (
-    <div className="fixed inset-0 z-50 min-h-screen w-full bg-[#FAF8F5] text-stone-900 flex flex-col lg:flex-row overflow-y-auto animate-fade-in font-sans selection:bg-stone-200 selection:text-stone-900">
+    <div className="fixed inset-0 z-50 min-h-screen w-full bg-[#FAF8F5] text-stone-900 flex flex-col-reverse lg:flex-row overflow-y-auto animate-fade-in font-sans selection:bg-stone-200 selection:text-stone-900">
       
       {/* Top Right Close / Skip button */}
       <motion.button
@@ -137,7 +137,7 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
       </div>
 
       {/* LEFT COLUMN: Apple-Style Light Luxury Feature Showcase */}
-      <div className="flex-1 bg-white/40 lg:bg-transparent p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative z-10 border-b lg:border-b-0 lg:border-r border-stone-200/80 min-h-[50vh] lg:min-h-screen">
+      <div className="flex-1 bg-white/40 lg:bg-transparent p-5 sm:p-10 lg:p-16 flex flex-col justify-between relative z-10 border-t lg:border-t-0 lg:border-r border-stone-200/80 min-h-[40vh] lg:min-h-screen">
         
         {/* Ambient Glow Orbs */}
         <div className="absolute -top-32 -left-32 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
@@ -261,7 +261,7 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
       </div>
 
       {/* RIGHT COLUMN: Clean Apple Minimalist Auth Panel */}
-      <div className="flex-1 bg-white/60 lg:bg-white/30 backdrop-blur-xs text-stone-900 p-8 sm:p-12 lg:p-16 flex flex-col justify-center items-center relative z-10 min-h-[50vh] lg:min-h-screen">
+      <div className="flex-1 bg-white/60 lg:bg-white/30 backdrop-blur-xs text-stone-900 p-5 pt-14 sm:p-10 lg:p-16 flex flex-col justify-center items-center relative z-10 min-h-[50vh] lg:min-h-screen">
         
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}

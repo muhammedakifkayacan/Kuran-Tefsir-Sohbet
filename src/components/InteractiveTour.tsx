@@ -121,22 +121,19 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
   const measureTarget = useCallback(() => {
     if (!isOpen || !currentStep) return;
 
-    const el = document.getElementById(currentStep.targetId);
+    let el = document.getElementById(currentStep.targetId);
     if (!el) {
-      if (retryCountRef.current < 8) {
+      if (retryCountRef.current < 15) {
         retryCountRef.current += 1;
         setTimeout(measureTarget, 100);
+        return;
       } else {
-        // Fallback center position if element not found
-        setTargetRect({
-          top: window.innerHeight / 2 - 50,
-          left: window.innerWidth / 2 - 100,
-          width: 200,
-          height: 100,
-        });
+        // Fallback to top header logo or main selector if specific target element is missing
+        el = document.getElementById('tour-surah-selector') || document.getElementById('tour-header-logo') || document.querySelector('header');
       }
-      return;
     }
+
+    if (!el) return;
 
     retryCountRef.current = 0;
     
