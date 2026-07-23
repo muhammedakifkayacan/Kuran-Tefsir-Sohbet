@@ -5,6 +5,9 @@ import { loginWithGoogle, logoutFirebase } from '../lib/firebase';
 interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
+  user?: { name: string; email: string; avatar: string } | null;
+  onLoginSuccess?: (user: { name: string; email: string; avatar: string }) => void;
+  onLogout?: () => void;
   notesCount: number;
   lastReadPosition: { surahName: string; verseNumber: number; pageNumber: number } | null;
   fontSize?: 'md' | 'lg' | 'xl' | '2xl';
@@ -21,6 +24,9 @@ interface UserProfileModalProps {
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   isOpen,
   onClose,
+  user: userProp,
+  onLoginSuccess,
+  onLogout,
   notesCount,
   lastReadPosition,
   fontSize = 'xl',
@@ -34,10 +40,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   onStartTour,
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'settings'>('profile');
-  const [user, setUser] = useState<{ name: string; email: string; avatar: string } | null>(() => {
+  const [localUser, setLocalUser] = useState<{ name: string; email: string; avatar: string } | null>(() => {
     const saved = localStorage.getItem('kuran_user_profile');
     return saved ? JSON.parse(saved) : null;
   });
+
+  const currentUser = userProp !== undefined ? userProp : localUser;
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -65,7 +73,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           email: firebaseUser.email || '',
           avatar: firebaseUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(firebaseUser.displayName || firebaseUser.email || 'Kullanici')}`,
         };
-        setUser(realUser);
+        setLocalUser(realUser);
+        onLoginSuccess?.(realUser);
         localStorage.setItem('kuran_user_profile', JSON.stringify(realUser));
         localStorage.removeItem('kuran_app_guest_mode');
       }
@@ -92,7 +101,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     } catch (err) {
       console.error("Logout error:", err);
     }
-    setUser(null);
+    setLocalUser(null);
+    onLogout?.();
     localStorage.removeItem('kuran_user_profile');
   };
 
@@ -156,20 +166,20 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         {activeTab === 'profile' ? (
           <>
             {/* User Card */}
-            {user ? (
+            {currentUser ? (
               <div className="bg-gradient-to-br from-stone-900 to-stone-800 text-stone-100 rounded-2xl p-4 space-y-3 shadow-md">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <img
-                      src={user.avatar}
-                      alt={user.name}
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
                       className="w-12 h-12 rounded-full border-2 border-amber-400 object-cover"
                     />
                     <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-stone-900" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-white truncate">{user.name}</h3>
-                    <p className="text-xs text-stone-300 truncate">{user.email}</p>
+                    <h3 className="text-sm font-bold text-white truncate">{currentUser.name}</h3>
+                    <p className="text-xs text-stone-300 truncate">{currentUser.email}</p>
                     <span className="inline-flex items-center gap-1 text-[10px] text-amber-300 font-medium pt-0.5">
                       <ShieldCheck className="w-3 h-3 text-amber-400" />
                       Google Hesabı İle Bağlı

@@ -2368,6 +2368,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   {/* Interaction bar */}
                   <div className="flex items-center justify-between gap-1 mt-5 pt-3 border-t border-stone-100">
                     <button
+                      id="tour-audio-controls"
                       onClick={() => onPlayAyah(verse)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
                         isCurrentActive && isPlaying

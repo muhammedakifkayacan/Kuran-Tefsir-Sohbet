@@ -84,6 +84,8 @@ interface InteractiveTourProps {
   onClose: () => void;
   activeTab: NavTab;
   onNavigateTab: (tab: NavTab) => void;
+  dontShowAgain?: boolean;
+  onToggleDontShowAgain?: (val: boolean) => void;
 }
 
 interface ElementRect {
@@ -98,11 +100,20 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
   onClose,
   activeTab,
   onNavigateTab,
+  dontShowAgain,
+  onToggleDontShowAgain,
 }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState<ElementRect | null>(null);
   const [isMeasuring, setIsMeasuring] = useState(false);
   const retryCountRef = useRef(0);
+
+  // Reset step to 0 whenever tour opens
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStepIndex(0);
+    }
+  }, [isOpen]);
 
   const currentStep = TOUR_STEPS[currentStepIndex];
 
@@ -371,6 +382,21 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
             ))}
           </div>
 
+          {/* Don't show again option */}
+          <div className="flex items-center justify-between gap-2 mb-3 pt-2 border-t border-stone-100">
+            <label className="flex items-center gap-2 cursor-pointer select-none group">
+              <input
+                type="checkbox"
+                checked={!!dontShowAgain}
+                onChange={(e) => onToggleDontShowAgain?.(e.target.checked)}
+                className="w-3.5 h-3.5 rounded border-stone-300 text-amber-600 focus:ring-amber-500 accent-amber-600 cursor-pointer"
+              />
+              <span className="text-[11px] font-medium text-stone-600 group-hover:text-stone-900 transition-colors">
+                Bir daha otomatik gösterme
+              </span>
+            </label>
+          </div>
+
           {/* Navigation Action Buttons */}
           <div className="flex items-center justify-between gap-2 pt-2 border-t border-stone-100">
             <button
@@ -398,6 +424,7 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
             <button
               onClick={() => {
                 if (isLastStep) {
+                  onToggleDontShowAgain?.(true);
                   onClose();
                 } else {
                   setCurrentStepIndex((prev) => prev + 1);

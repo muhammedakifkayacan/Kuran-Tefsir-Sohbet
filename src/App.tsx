@@ -81,6 +81,12 @@ export default function App() {
     setIsAuthLandingOpen(false);
   };
 
+  const handleLogout = () => {
+    setUser(null);
+    setIsGuest(true);
+    localStorage.removeItem('kuran_user_profile');
+  };
+
   const handleRequireAuth = (msg: string) => {
     if (user) return;
     setAuthGuardMessage(msg);
@@ -90,6 +96,9 @@ export default function App() {
   // Modals & Welcome Screen State
   const [dontShowAgain, setDontShowAgain] = useState<boolean>(() => {
     return localStorage.getItem('kuran_welcome_dismissed') === 'true';
+  });
+  const [dontShowTourAgain, setDontShowTourAgain] = useState<boolean>(() => {
+    return localStorage.getItem('kuran_tour_dismissed') === 'true';
   });
   const [isWelcomeOpen, setIsWelcomeOpen] = useState<boolean>(false);
   const [isExportImportOpen, setIsExportImportOpen] = useState<boolean>(false);
@@ -103,11 +112,25 @@ export default function App() {
     setIsTourOpen(true);
   };
 
-
   // Sync dontShowAgain setting
   useEffect(() => {
     localStorage.setItem('kuran_welcome_dismissed', dontShowAgain ? 'true' : 'false');
   }, [dontShowAgain]);
+
+  // Sync dontShowTourAgain setting
+  useEffect(() => {
+    localStorage.setItem('kuran_tour_dismissed', dontShowTourAgain ? 'true' : 'false');
+  }, [dontShowTourAgain]);
+
+  // Auto-start tour guide on first open / session if not dismissed
+  useEffect(() => {
+    if (!dontShowTourAgain && !isAuthLandingOpen) {
+      const timer = setTimeout(() => {
+        setIsTourOpen(true);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [dontShowTourAgain, isAuthLandingOpen]);
 
   // Last Reading Position State
   const [lastReadPosition, setLastReadPosition] = useState<{
@@ -553,6 +576,9 @@ export default function App() {
       <UserProfileModal
         isOpen={isUserProfileOpen}
         onClose={() => setIsUserProfileOpen(false)}
+        user={user}
+        onLoginSuccess={handleLoginSuccess}
+        onLogout={handleLogout}
         notesCount={verseNotes.length}
         lastReadPosition={lastReadPosition}
         fontSize={fontSize}
@@ -605,6 +631,8 @@ export default function App() {
         onClose={() => setIsTourOpen(false)}
         activeTab={activeTab}
         onNavigateTab={(tab) => setActiveTab(tab)}
+        dontShowAgain={dontShowTourAgain}
+        onToggleDontShowAgain={(val) => setDontShowTourAgain(val)}
       />
     </div>
   );
