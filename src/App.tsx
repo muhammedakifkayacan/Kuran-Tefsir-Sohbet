@@ -1,0 +1,501 @@
+import React, { useState, useEffect } from 'react';
+import { User, Download, BookOpen, Radio, BookCheck, StickyNote, Maximize2, Minimize2, Home } from 'lucide-react';
+import { Header } from './components/Header';
+import { BottomNav } from './components/BottomNav';
+import { QuranReader } from './components/QuranReader';
+import { SohbetView } from './components/SohbetView';
+import { TeacherNotesView } from './components/TeacherNotesView';
+import { AudioPlayerBar } from './components/AudioPlayerBar';
+import { VoiceRecorderModal } from './components/VoiceRecorderModal';
+import { WelcomeModal } from './components/WelcomeModal';
+import { ExportImportNotesModal } from './components/ExportImportNotesModal';
+import { UserProfileModal } from './components/UserProfileModal';
+
+import { NavTab, Surah, Ayah, VerseNote, Reciter, SohbetSession } from './types';
+import { QURAN_SURAHS, RECITERS } from './data/quranData';
+import { INITIAL_SOHBET_SESSIONS } from './data/sohbetData';
+import { fetchSurahFromApi } from './utils/quranApi';
+
+export default function App() {
+  // Mobile Frame Toggle
+  const [isMobileFrame, setIsMobileFrame] = useState<boolean>(false);
+
+  // Modals & Welcome Screen State
+  const [dontShowAgain, setDontShowAgain] = useState<boolean>(() => {
+    return localStorage.getItem('kuran_welcome_dismissed') === 'true';
+  });
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState<boolean>(() => {
+    return localStorage.getItem('kuran_welcome_dismissed') !== 'true';
+  });
+  const [isExportImportOpen, setIsExportImportOpen] = useState<boolean>(false);
+  const [isUserProfileOpen, setIsUserProfileOpen] = useState<boolean>(false);
+
+
+  // Sync dontShowAgain setting
+  useEffect(() => {
+    localStorage.setItem('kuran_welcome_dismissed', dontShowAgain ? 'true' : 'false');
+  }, [dontShowAgain]);
+
+  // Last Reading Position State
+  const [lastReadPosition, setLastReadPosition] = useState<{
+    surahId: number;
+    surahName: string;
+    verseNumber: number;
+    pageNumber: number;
+    updatedAt: string;
+  } | null>(() => {
+    const saved = localStorage.getItem('kuran_last_read');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // Re-read last read position from localStorage when welcome opens
+  useEffect(() => {
+    if (isWelcomeOpen) {
+      const saved = localStorage.getItem('kuran_last_read');
+      if (saved) setLastReadPosition(JSON.parse(saved));
+    }
+  }, [isWelcomeOpen]);
+
+  // Full Screen Mode & Reader Settings State
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+  const [pageTheme, setPageTheme] = useState<'ivory' | 'mint' | 'white' | 'dark'>('ivory');
+  const [fontSize, setFontSize] = useState<'md' | 'lg' | 'xl' | '2xl'>('xl');
+  const [showTajweed, setShowTajweed] = useState<boolean>(true);
+  const [showTranslation, setShowTranslation] = useState<boolean>(true);
+
+  // Immersive overlays visibility in Full Screen Reading Mode
+  const [areOverlaysVisible, setAreOverlaysVisible] = useState<boolean>(true);
+  const [showImmersiveTip, setShowImmersiveTip] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isFullScreen) {
+      setAreOverlaysVisible(true);
+      setShowImmersiveTip(true);
+      const timer = setTimeout(() => {
+        setShowImmersiveTip(false);
+      }, 4000);
+      return () => clearTimeout(timer);
+    } else {
+      setShowImmersiveTip(false);
+    }
+  }, [isFullScreen]);
+
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<NavTab>('quran');
+
+  // Automatically exit full screen reading mode when leaving Quran tab
+  useEffect(() => {
+    if (activeTab !== 'quran') {
+      setIsFullScreen(false);
+    }
+  }, [activeTab]);
+
+  // Quran Reader State
+  const [selectedSurah, setSelectedSurah] = useState<Surah>(QURAN_SURAHS[0]); // Fatiha
+  const [isLoadingSurah, setIsLoadingSurah] = useState<boolean>(false);
+  const [surahError, setSurahError] = useState<string | null>(null);
+  const [activeAyah, setActiveAyah] = useState<Ayah | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [selectedReciter, setSelectedReciter] = useState<Reciter>(RECITERS[0]);
+  const [playbackRate, setPlaybackRate] = useState<number>(1.0);
+
+  // Sohbet Sessions State
+  const [sohbetSessions, setSohbetSessions] = useState<SohbetSession[]>(() => {
+    const saved = localStorage.getItem('kuran_app_sohbets');
+    return saved ? JSON.parse(saved) : INITIAL_SOHBET_SESSIONS;
+  });
+
+  // Verse Notes State
+  const [verseNotes, setVerseNotes] = useState<VerseNote[]>(() => {
+    const saved = localStorage.getItem('kuran_app_notes');
+    return saved
+      ? JSON.parse(saved)
+      : [
+          {
+            id: 'note_1',
+            surahId: 67,
+            surahName: 'Mülk Sûresi',
+            verseNumber: 3,
+            tag: 'Tecvit',
+            noteText: 'İdgam-ı Maal Gunne kuralında tutma süresi 1.5 elif miktarına tamamlanacak.',
+            createdAt: '2026-07-20 14:30',
+          },
+        ];
+  });
+
+  // Voice Recorder Modal State
+  const [isVoiceRecorderOpen, setIsVoiceRecorderOpen] = useState(false);
+  const [recordedVoiceUrl, setRecordedVoiceUrl] = useState<string | null>(null);
+  const [recordedVoiceTranscript, setRecordedVoiceTranscript] = useState<string>('');
+
+  // Sync Sohbet Sessions to LocalStorage
+  useEffect(() => {
+    localStorage.setItem('kuran_app_sohbets', JSON.stringify(sohbetSessions));
+  }, [sohbetSessions]);
+
+  // Sync Notes to LocalStorage
+  useEffect(() => {
+    localStorage.setItem('kuran_app_notes', JSON.stringify(verseNotes));
+  }, [verseNotes]);
+
+  // Global Escape key listener to close modals / full screen
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        if (isUserProfileOpen) setIsUserProfileOpen(false);
+        if (isExportImportOpen) setIsExportImportOpen(false);
+        if (isVoiceRecorderOpen) setIsVoiceRecorderOpen(false);
+        if (isWelcomeOpen) setIsWelcomeOpen(false);
+        if (isFullScreen) setIsFullScreen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isUserProfileOpen, isExportImportOpen, isVoiceRecorderOpen, isWelcomeOpen, isFullScreen]);
+
+  // Handlers
+  const loadSurah = async (id: number) => {
+    setIsLoadingSurah(true);
+    setSurahError(null);
+    try {
+      const s = await fetchSurahFromApi(id);
+      setSelectedSurah(s);
+    } catch (err) {
+      setSurahError('Sûre yüklenirken bir sorun oluştu. Lütfen internet bağlantınızı kontrol edin.');
+    } finally {
+      setIsLoadingSurah(false);
+    }
+  };
+
+  const handlePlayAyah = (ayah: Ayah) => {
+    if (activeAyah?.number === ayah.number && isPlaying) {
+      setIsPlaying(false);
+    } else {
+      setActiveAyah(ayah);
+      setIsPlaying(true);
+    }
+  };
+
+  const handleNextAyah = () => {
+    if (!activeAyah) return;
+    const currentIndex = selectedSurah.verses.findIndex((v) => v.number === activeAyah.number);
+    if (currentIndex < selectedSurah.verses.length - 1) {
+      setActiveAyah(selectedSurah.verses[currentIndex + 1]);
+      setIsPlaying(true);
+    } else {
+      setIsPlaying(false);
+    }
+  };
+
+  const handlePrevAyah = () => {
+    if (!activeAyah) return;
+    const currentIndex = selectedSurah.verses.findIndex((v) => v.number === activeAyah.number);
+    if (currentIndex > 0) {
+      setActiveAyah(selectedSurah.verses[currentIndex - 1]);
+      setIsPlaying(true);
+    }
+  };
+
+  const handleSaveVerseNote = (noteData: Omit<VerseNote, 'id' | 'createdAt'>) => {
+    const newNote: VerseNote = {
+      ...noteData,
+      id: `note_${Date.now()}`,
+      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+    };
+    setVerseNotes([newNote, ...verseNotes]);
+  };
+
+  const handleDeleteNote = (id: string) => {
+    setVerseNotes(verseNotes.filter((n) => n.id !== id));
+  };
+
+  const handleAddSohbetSession = (newSohbet: SohbetSession) => {
+    setSohbetSessions([newSohbet, ...sohbetSessions]);
+  };
+
+  const handleDeleteSohbetSession = (id: string) => {
+    setSohbetSessions(sohbetSessions.filter((s) => s.id !== id));
+  };
+
+  const handleResumeReading = (surahId: number, pageNumber?: number) => {
+    loadSurah(surahId);
+    setActiveTab('quran');
+  };
+
+  const handleImportNotes = (importedNotes: VerseNote[], mode: 'merge' | 'replace') => {
+    if (mode === 'replace') {
+      setVerseNotes(importedNotes);
+    } else {
+      const existingIds = new Set(verseNotes.map((n) => n.id));
+      const newItems = importedNotes.filter((n) => !existingIds.has(n.id));
+      setVerseNotes([...newItems, ...verseNotes]);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-stone-100 text-slate-900 flex flex-col items-center justify-center font-sans antialiased selection:bg-amber-400 selection:text-slate-950">
+      {/* Main Container Wrapper */}
+      <div
+        className={`w-full min-h-screen flex flex-col bg-[#FAF8F5] ${
+          isFullScreen && activeTab === 'quran'
+            ? pageTheme === 'mint'
+              ? 'bg-[#F2F7F4]'
+              : pageTheme === 'white'
+              ? 'bg-[#FFFFFF]'
+              : 'bg-[#FAF8F5]'
+            : ''
+        }`}
+      >
+        {/* App Top Header - Fixed & Consistent Always */}
+        <Header
+          isMobileFrame={isMobileFrame}
+          setIsMobileFrame={setIsMobileFrame}
+          onOpenAiAssistant={() => setActiveTab('notes')}
+          onOpenWelcomeModal={() => setIsWelcomeOpen(true)}
+          onOpenExportImportModal={() => setIsExportImportOpen(true)}
+          onOpenUserProfileModal={() => setIsUserProfileOpen(true)}
+          activeTab={activeTab}
+          onNavigateTab={(tab) => setActiveTab(tab)}
+        />
+
+        {/* Scrollable View Content Area */}
+        <main className="flex-1 overflow-y-auto w-full max-w-5xl mx-auto px-2 sm:px-4">
+          {activeTab === 'quran' && (
+            <QuranReader
+              selectedSurah={selectedSurah}
+              setSelectedSurah={setSelectedSurah}
+              loadSurah={loadSurah}
+              isLoadingSurah={isLoadingSurah}
+              surahError={surahError}
+              isFullScreen={isFullScreen}
+              setIsFullScreen={setIsFullScreen}
+              areOverlaysVisible={areOverlaysVisible}
+              pageTheme={pageTheme}
+              setPageTheme={setPageTheme}
+              fontSize={fontSize}
+              setFontSize={setFontSize}
+              showTajweed={showTajweed}
+              setShowTajweed={setShowTajweed}
+              showTranslation={showTranslation}
+              setShowTranslation={setShowTranslation}
+              activeAyah={activeAyah}
+              setActiveAyah={setActiveAyah}
+              isPlaying={isPlaying}
+              onPlayAyah={handlePlayAyah}
+              onOpenAiTajweedExplain={(surahName, verseNum, verseText) => {
+                setActiveTab('notes');
+              }}
+              onSaveVerseNote={handleSaveVerseNote}
+              onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
+            />
+          )}
+
+          {activeTab === 'sohbet' && (
+            <SohbetView
+              sohbetSessions={sohbetSessions}
+              onAddSohbetSession={handleAddSohbetSession}
+              onDeleteSohbetSession={handleDeleteSohbetSession}
+              onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
+              recordedVoiceUrl={recordedVoiceUrl}
+              recordedVoiceTranscript={recordedVoiceTranscript}
+            />
+          )}
+
+          {activeTab === 'notes' && (
+            <TeacherNotesView
+              verseNotes={verseNotes}
+              onDeleteNote={handleDeleteNote}
+              onOpenExportImportModal={() => setIsExportImportOpen(true)}
+            />
+          )}
+        </main>
+
+        {/* Floating Recitation Audio Player Bar */}
+        {activeAyah && (!isFullScreen || areOverlaysVisible) && (
+          <AudioPlayerBar
+            currentAyah={activeAyah}
+            surahName={selectedSurah.nameTurkish}
+            isPlaying={isPlaying}
+            onPlayPause={() => setIsPlaying(!isPlaying)}
+            onNextAyah={handleNextAyah}
+            onPrevAyah={handlePrevAyah}
+            selectedReciter={selectedReciter}
+            onSelectReciter={setSelectedReciter}
+            onClose={() => {
+              setIsPlaying(false);
+              setActiveAyah(null);
+            }}
+            playbackRate={playbackRate}
+            setPlaybackRate={setPlaybackRate}
+          />
+        )}
+
+        {/* Floating Full-screen Overlay Control Pill Bar */}
+        {isFullScreen && areOverlaysVisible && (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-white/95 text-stone-900 backdrop-blur-2xl px-3.5 py-2 rounded-full shadow-xl border border-stone-200/90 flex items-center gap-2 sm:gap-3 text-xs animate-fade-in max-w-[95vw] overflow-x-auto scrollbar-none">
+            {/* Theme Selector Color Dots */}
+            <div className="flex items-center gap-1.5 pr-2 border-r border-stone-200">
+              {(['ivory', 'mint', 'white', 'sepia'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setPageTheme(t as any)}
+                  className={`w-5 h-5 rounded-full border transition-all ${
+                    t === 'ivory'
+                      ? 'bg-[#FCFBF7] border-amber-300'
+                      : t === 'mint'
+                      ? 'bg-[#F2F7F2] border-emerald-300'
+                      : t === 'white'
+                      ? 'bg-[#FFFFFF] border-stone-300'
+                      : 'bg-[#FAF3E0] border-amber-400'
+                  } ${pageTheme === t ? 'ring-2 ring-amber-600 scale-110 shadow-2xs' : 'opacity-70 hover:opacity-100'}`}
+                  title={t === 'ivory' ? 'Fildişi Tema' : t === 'mint' ? 'Nane Yeşili Tema' : t === 'white' ? 'Kar Beyazı Tema' : 'Sepya Tema'}
+                />
+              ))}
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setActiveTab('quran')}
+                className={`px-3 py-1.5 rounded-full font-bold transition-all flex items-center gap-1.5 ${
+                  activeTab === 'quran'
+                    ? 'bg-[#D4AF37] text-stone-950 shadow-sm'
+                    : 'text-stone-300 hover:text-white'
+                }`}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Kur'an</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsFullScreen(false);
+                  setActiveTab('sohbet');
+                }}
+                className={`px-3 py-1.5 rounded-full font-bold transition-all flex items-center gap-1.5 ${
+                  activeTab === 'sohbet'
+                    ? 'bg-[#D4AF37] text-stone-950 shadow-sm'
+                    : 'text-stone-300 hover:text-white'
+                }`}
+              >
+                <Radio className="w-3.5 h-3.5" />
+                <span>Sohbet</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsFullScreen(false);
+                  setActiveTab('notes');
+                }}
+                className={`px-3 py-1.5 rounded-full font-bold transition-all flex items-center gap-1.5 ${
+                  activeTab === 'notes'
+                    ? 'bg-[#D4AF37] text-stone-950 shadow-sm'
+                    : 'text-stone-300 hover:text-white'
+                }`}
+              >
+                <StickyNote className="w-3.5 h-3.5" />
+                <span>Notlar</span>
+              </button>
+            </div>
+
+            <div className="w-px h-4 bg-stone-800 my-auto mx-0.5" />
+
+            {/* Quick Action Icons & Fullscreen Exit */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setIsExportImportOpen(true)}
+                title="Notları Dışa/İçe Aktar"
+                className="p-1.5 rounded-full text-amber-300 hover:bg-stone-800 transition-colors"
+              >
+                <Download className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={() => setIsUserProfileOpen(true)}
+                title="Kullanıcı Girişi / Profil"
+                className="p-1.5 rounded-full text-amber-300 hover:bg-stone-800 transition-colors"
+              >
+                <User className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={() => setIsFullScreen(false)}
+                title="Tam Ekrandan Çık"
+                className="p-1.5 rounded-full text-stone-300 hover:text-white hover:bg-stone-800 transition-colors"
+              >
+                <Minimize2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Native Mobile Bottom Navigation */}
+        {!isFullScreen && (
+          <BottomNav
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            unresolvedNotesCount={verseNotes.length}
+          />
+        )}
+      </div>
+
+      {/* Immersive Reading Mode Toast Guide */}
+      {isFullScreen && showImmersiveTip && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-amber-800 text-white backdrop-blur-md px-6 py-3.5 rounded-2xl text-xs font-semibold shadow-xl border border-amber-700/50 flex items-center gap-3 animate-bounce">
+          <span className="text-base">📖</span>
+          <span><b>Tam Ekran Okuma Modu:</b> Menüleri gizlemek / göstermek için sayfada boş bir yere dokunun.</span>
+        </div>
+      )}
+
+      {/* Welcome & Resume Modal */}
+      <WelcomeModal
+        isOpen={isWelcomeOpen}
+        onClose={() => setIsWelcomeOpen(false)}
+        lastReadPosition={lastReadPosition}
+        onResumeReading={handleResumeReading}
+        onNavigateTab={(tab) => setActiveTab(tab)}
+        notesCount={verseNotes.length}
+        dontShowAgain={dontShowAgain}
+        setDontShowAgain={setDontShowAgain}
+      />
+
+      {/* Filtered Notes Export & Import Modal */}
+      <ExportImportNotesModal
+        isOpen={isExportImportOpen}
+        onClose={() => setIsExportImportOpen(false)}
+        verseNotes={verseNotes}
+        onImportNotes={handleImportNotes}
+      />
+
+      {/* User Profile & Login Modal */}
+      <UserProfileModal
+        isOpen={isUserProfileOpen}
+        onClose={() => setIsUserProfileOpen(false)}
+        notesCount={verseNotes.length}
+        lastReadPosition={lastReadPosition}
+        fontSize={fontSize}
+        setFontSize={setFontSize}
+        pageTheme={pageTheme}
+        setPageTheme={setPageTheme}
+        showTajweed={showTajweed}
+        setShowTajweed={setShowTajweed}
+        showTranslation={showTranslation}
+        setShowTranslation={setShowTranslation}
+      />
+
+      {/* Voice Recorder Modal */}
+      <VoiceRecorderModal
+        isOpen={isVoiceRecorderOpen}
+        onClose={() => setIsVoiceRecorderOpen(false)}
+        onSaveRecording={(url, transcript) => {
+          setRecordedVoiceUrl(url);
+          if (transcript) setRecordedVoiceTranscript(transcript);
+          setIsVoiceRecorderOpen(false);
+        }}
+        title="Ders & Sohbet Ses Kaydı"
+        subtitle="Sohbet veya ders için ses kaydı alınıyor"
+      />
+    </div>
+  );
+}

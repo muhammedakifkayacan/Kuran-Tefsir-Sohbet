@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@keyframes pageTurnNext {
+  0% {
+    transform: perspective(1500px) rotateY(0deg) scale(1);
+    transform-origin: left center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  35% {
+    transform: perspective(1500px) rotateY(-28deg) skewY(-2deg) scale(0.96);
+    transform-origin: left center;
+    box-shadow: -25px 25px 40px rgba(0, 0, 0, 0.35);
+  }
+  70% {
+    transform: perspective(1500px) rotateY(-10deg) skewY(-0.5deg) scale(0.99);
+    transform-origin: left center;
+    box-shadow: -10px 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    transform: perspective(1500px) rotateY(0deg) scale(1);
+    transform-origin: left center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes pageTurnPrev {
+  0% {
+    transform: perspective(1500px) rotateY(0deg) scale(1);
+    transform-origin: right center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  35% {
+    transform: perspective(1500px) rotateY(28deg) skewY(2deg) scale(0.96);
+    transform-origin: right center;
+    box-shadow: 25px 25px 40px rgba(0, 0, 0, 0.35);
+  }
+  70% {
+    transform: perspective(1500px) rotateY(10deg) skewY(0.5deg) scale(0.99);
+    transform-origin: right center;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    transform: perspective(1500px) rotateY(0deg) scale(1);
+    transform-origin: right center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.animate-page-peel-next {
+  animation: pageTurnNext 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  will-change: transform, box-shadow;
+}
+
+.animate-page-peel-prev {
+  animation: pageTurnPrev 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  will-change: transform, box-shadow;
+}
+

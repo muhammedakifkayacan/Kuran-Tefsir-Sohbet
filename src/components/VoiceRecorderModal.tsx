@@ -1,0 +1,320 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Mic, Square, Play, Pause, Trash2, Check, AlertCircle, Download, ShieldCheck, HardDrive } from 'lucide-react';
+
+interface VoiceRecorderModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSaveRecording: (audioUrl: string, audioTranscript?: string) => void;
+  title?: string;
+  subtitle?: string;
+}
+
+export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
+  isOpen,
+  onClose,
+  onSaveRecording,
+  title = 'Kayıt Al',
+  subtitle = 'Ders, sohbet veya sesli not kaydet (Tarayıcıda %100 Ücretsiz)',
+}) => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [liveTranscript, setLiveTranscript] = useState<string>('');
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recognitionRef = useRef<any>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioPlaybackRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      handleReset();
+    }
+  }, [isOpen]);
+
+  const startRecording = async () => {
+    setErrorMsg(null);
+    setLiveTranscript('');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
+        // Stop track streams
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorder.start(100);
+      setIsRecording(true);
+      setRecordingTime(0);
+
+      // Initialize Browser Speech Recognition concurrently
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      if (SpeechRecognition) {
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = 'tr-TR';
+          recognition.onresult = (event: any) => {
+            let fullText = '';
+            for (let i = 0; i < event.results.length; i++) {
+              fullText += event.results[i][0].transcript + ' ';
+            }
+            setLiveTranscript(fullText.trim());
+          };
+          recognition.start();
+          recognitionRef.current = recognition;
+        } catch (srErr) {
+          console.warn('SpeechRecognition start error:', srErr);
+        }
+      }
+
+      timerRef.current = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+    } catch (err: any) {
+      console.error('Microphone error:', err);
+      setErrorMsg('Mikrofon erişimi alınamadı veya engellendi. Simüle kayıt modu aktif.');
+      simulateRecording();
+    }
+  };
+
+  const simulateRecording = () => {
+    setIsRecording(true);
+    setRecordingTime(0);
+    timerRef.current = setInterval(() => {
+      setRecordingTime((prev) => prev + 1);
+    }, 1000);
+  };
+
+  const stopRecording = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setIsRecording(false);
+
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {}
+    }
+
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    } else {
+      const dummyBlob = new Blob(['simulated audio content'], { type: 'audio/webm' });
+      setAudioUrl(URL.createObjectURL(dummyBlob));
+    }
+  };
+
+  const handlePlayAudio = () => {
+    if (!audioUrl) return;
+
+    if (!audioPlaybackRef.current) {
+      audioPlaybackRef.current = new Audio(audioUrl);
+      audioPlaybackRef.current.onended = () => setIsPlaying(false);
+    }
+
+    if (isPlaying) {
+      audioPlaybackRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioPlaybackRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    }
+  };
+
+  const handleReset = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {}
+    }
+    setIsRecording(false);
+    setRecordingTime(0);
+    setAudioUrl(null);
+    setLiveTranscript('');
+    setIsPlaying(false);
+  };
+
+  const handleSave = () => {
+    if (audioUrl) {
+      onSaveRecording(audioUrl, liveTranscript.trim() || undefined);
+      onClose();
+    }
+  };
+
+  const handleDownloadAudio = () => {
+    if (!audioUrl) return;
+    const a = document.createElement('a');
+    a.href = audioUrl;
+    a.download = `kuran_ders_ses_kaydi_${new Date().toISOString().slice(0, 10)}.webm`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  if (!isOpen) return null;
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white border border-stone-200 rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-4">
+        {/* Header */}
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-900 flex items-center justify-center mx-auto mb-2 border border-amber-200">
+            <Mic className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-slate-900">{title}</h3>
+          <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>
+        </div>
+
+        {errorMsg && (
+          <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
+        {/* Timer / Waveform visualizer */}
+        <div className="bg-stone-50 rounded-2xl p-4 text-center border border-stone-200">
+          <span className="text-3xl font-mono font-bold text-slate-900">
+            {formatTime(recordingTime)}
+          </span>
+
+          {isRecording && (
+            <div className="flex items-center justify-center gap-1 mt-3">
+              {[...Array(9)].map((_, i) => (
+                <span
+                  key={i}
+                  className="w-1 bg-[#D4AF37] rounded-full animate-bounce"
+                  style={{
+                    height: `${Math.random() * 20 + 10}px`,
+                    animationDelay: `${i * 0.15}s`,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex flex-col gap-3 w-full">
+          {/* Live Transcript / Speech-to-Text Box */}
+          {(isRecording || audioUrl || liveTranscript) && (
+            <div className="w-full text-left space-y-1">
+              <label className="text-[11px] font-bold text-stone-700 flex items-center justify-between">
+                <span>🎙️ Ses Kaydı Transkripti (Konuşulan Metin):</span>
+                {isRecording && <span className="text-amber-600 animate-pulse text-[10px]">● Canlı Çözümleniyor</span>}
+              </label>
+              <textarea
+                value={liveTranscript}
+                onChange={(e) => setLiveTranscript(e.target.value)}
+                placeholder="Konuşulanlar buraya canlı aktarılır. Dilerseniz el ile de düzenleyebilirsiniz..."
+                className="w-full h-20 p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 resize-none focus:ring-1 focus:ring-amber-500 outline-none"
+              />
+            </div>
+          )}
+
+          <div className="flex items-center justify-center gap-3">
+            {!isRecording && !audioUrl && (
+              <button
+                onClick={startRecording}
+                className="w-14 h-14 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-600/30 hover:scale-105 active:scale-95 transition-all"
+              >
+                <Mic className="w-6 h-6" />
+              </button>
+            )}
+
+            {isRecording && (
+              <button
+                onClick={stopRecording}
+                className="w-14 h-14 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all animate-pulse"
+              >
+                <Square className="w-5 h-5 fill-current" />
+              </button>
+            )}
+
+            {audioUrl && (
+              <div className="flex flex-col gap-2.5 w-full">
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={handlePlayAudio}
+                    className="w-12 h-12 rounded-full bg-[#1C1A17] text-[#F3EFE0] flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all"
+                  >
+                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 fill-[#F3EFE0] ml-0.5" />}
+                  </button>
+
+                  <button
+                    onClick={handleReset}
+                    className="w-10 h-10 rounded-full bg-stone-100 text-slate-600 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                    title="Yeniden Çek"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    onClick={handleSave}
+                    className="px-4 py-2.5 rounded-2xl bg-[#1C1A17] text-[#F3EFE0] font-semibold text-xs flex items-center gap-1.5 shadow-md hover:bg-stone-800 active:scale-95 transition-all"
+                  >
+                    <Check className="w-4 h-4 text-[#D4AF37]" />
+                    Kaydet
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadAudio}
+                  className="w-full py-2.5 px-3 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-emerald-100 transition-colors shadow-sm"
+                >
+                  <Download className="w-4 h-4 text-emerald-600" />
+                  <span>Ses Dosyasını Cihaza İndir (.webm)</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 0 Kredi & Gizlilik Bilgilendirme Kutusu */}
+        <div className="p-3 bg-stone-50 border border-stone-200/80 rounded-2xl text-[11px] text-stone-600 space-y-1">
+          <div className="flex items-center gap-1.5 font-bold text-slate-800">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>%100 Yerel Kayıt — 0 Kredi Harcar</span>
+          </div>
+          <p className="leading-relaxed text-slate-600">
+            Kayıt tamamen tarayıcınızın geçici belleğinde gerçekleşir. 1 saatlik sohbet veya ders kaydı da alsanız sunucuya yüklenmez ve <strong>kredi harcamaz</strong>. Nota dönüştükten sonra sesi cihazınıza indirip sunucuda yer tutmadan saklayabilirsiniz.
+          </p>
+        </div>
+
+        {/* Close Button */}
+        <div className="text-center pt-2">
+          <button
+            onClick={onClose}
+            className="text-xs text-slate-500 hover:text-slate-800 font-medium"
+          >
+            Vazgeç
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
