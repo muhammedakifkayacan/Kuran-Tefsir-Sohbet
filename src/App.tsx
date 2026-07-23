@@ -12,6 +12,7 @@ import { ExportImportNotesModal } from './components/ExportImportNotesModal';
 import { UserProfileModal } from './components/UserProfileModal';
 import { AuthLandingModal } from './components/AuthLandingModal';
 import { AuthGuardModal } from './components/AuthGuardModal';
+import { InteractiveTour } from './components/InteractiveTour';
 
 import { NavTab, Surah, Ayah, VerseNote, Reciter, SohbetSession } from './types';
 import { QURAN_SURAHS, RECITERS } from './data/quranData';
@@ -93,6 +94,14 @@ export default function App() {
   const [isWelcomeOpen, setIsWelcomeOpen] = useState<boolean>(false);
   const [isExportImportOpen, setIsExportImportOpen] = useState<boolean>(false);
   const [isUserProfileOpen, setIsUserProfileOpen] = useState<boolean>(false);
+  const [isTourOpen, setIsTourOpen] = useState<boolean>(false);
+
+  const handleStartTour = () => {
+    setIsWelcomeOpen(false);
+    setIsUserProfileOpen(false);
+    setIsAuthLandingOpen(false);
+    setIsTourOpen(true);
+  };
 
 
   // Sync dontShowAgain setting
@@ -320,6 +329,7 @@ export default function App() {
           onOpenExportImportModal={() => setIsExportImportOpen(true)}
           onOpenUserProfileModal={() => setIsUserProfileOpen(true)}
           onOpenAuthLandingModal={() => setIsAuthLandingOpen(true)}
+          onStartTour={handleStartTour}
           user={user}
           activeTab={activeTab}
           onNavigateTab={(tab) => setActiveTab(tab)}
@@ -528,6 +538,7 @@ export default function App() {
         notesCount={verseNotes.length}
         dontShowAgain={dontShowAgain}
         setDontShowAgain={setDontShowAgain}
+        onStartTour={handleStartTour}
       />
 
       {/* Filtered Notes Export & Import Modal */}
@@ -552,6 +563,7 @@ export default function App() {
         setShowTajweed={setShowTajweed}
         showTranslation={showTranslation}
         setShowTranslation={setShowTranslation}
+        onStartTour={handleStartTour}
       />
 
       {/* Split Screen Onboarding & Auth Landing Modal */}
@@ -585,6 +597,14 @@ export default function App() {
         }}
         title="Ders & Sohbet Ses Kaydı"
         subtitle="Sohbet veya ders için ses kaydı alınıyor"
+      />
+
+      {/* Interactive Onboarding Tour */}
+      <InteractiveTour
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        activeTab={activeTab}
+        onNavigateTab={(tab) => setActiveTab(tab)}
       />
     </div>
   );

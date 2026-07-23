@@ -201,6 +201,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
           </div>
 
           <button
+            id="tour-ai-report"
             onClick={() => {
               if (!user && onRequireAuth) {
                 onRequireAuth('Sohbet meclisi ve ders kaydı eklemek için lütfen oturum açın.');
@@ -208,7 +209,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
               }
               setIsAddModalOpen(true);
             }}
-            className="px-4 py-2.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all shrink-0 w-full sm:w-auto justify-center"
+            className="px-4 py-2.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs active:scale-95 transition-all shrink-0 w-full sm:w-auto justify-center cursor-pointer"
           >
             <Plus className="w-4 h-4 text-white" />
             <span>Sohbet Ekle</span>

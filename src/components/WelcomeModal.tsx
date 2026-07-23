@@ -18,6 +18,7 @@ interface WelcomeModalProps {
   notesCount: number;
   dontShowAgain: boolean;
   setDontShowAgain: (val: boolean) => void;
+  onStartTour?: () => void;
 }
 
 export const WelcomeModal: React.FC<WelcomeModalProps> = ({
@@ -27,6 +28,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
   onResumeReading,
   dontShowAgain,
   setDontShowAgain,
+  onStartTour,
 }) => {
   if (!isOpen) return null;
 
@@ -110,6 +112,25 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
               Başla
             </button>
           </div>
+        )}
+
+        {/* Tour Launcher Button */}
+        {onStartTour && (
+          <button
+            onClick={() => {
+              onClose();
+              onStartTour();
+            }}
+            className="w-full py-2.5 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-between shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <span>🧭</span>
+              <span>Uygulama Rehberini Başlat</span>
+            </span>
+            <span className="text-[10px] bg-amber-950 text-white px-2 py-0.5 rounded-full font-bold">
+              Interaktif Tur ➔
+            </span>
+          </button>
         )}
 
         {/* Minimal Daily Reflection */}

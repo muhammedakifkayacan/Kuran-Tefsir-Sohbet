@@ -11,6 +11,7 @@ interface HeaderProps {
   onOpenExportImportModal?: () => void;
   onOpenUserProfileModal?: () => void;
   onOpenAuthLandingModal?: () => void;
+  onStartTour?: () => void;
   user?: { name: string; email: string; avatar: string } | null;
   activeTab?: NavTab;
   onNavigateTab?: (tab: NavTab) => void;
@@ -24,6 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenExportImportModal,
   onOpenUserProfileModal,
   onOpenAuthLandingModal,
+  onStartTour,
   user,
   activeTab = 'quran',
   onNavigateTab,
@@ -47,6 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 max-w-6xl mx-auto w-full">
         {/* Logo & Title */}
         <div
+          id="tour-header-logo"
           onClick={onOpenWelcomeModal}
           className="flex items-center gap-2.5 cursor-pointer group shrink-0"
           title="Karşılama Ekranı"
@@ -69,9 +72,10 @@ export const Header: React.FC<HeaderProps> = ({
           {/* User Account or Split Screen Login Button */}
           {user ? (
             <button
+              id="tour-user-profile"
               onClick={onOpenUserProfileModal}
               title={`Hesabım (${user.name})`}
-              className="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-stone-900 transition-all active:scale-95 flex items-center gap-1.5 text-xs border border-amber-200/80 shadow-xs"
+              className="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-stone-900 transition-all active:scale-95 flex items-center gap-1.5 text-xs border border-amber-200/80 shadow-xs cursor-pointer"
             >
               {user.avatar ? (
                 <img src={user.avatar} alt={user.name} className="w-4 h-4 rounded-full" />
@@ -82,9 +86,10 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           ) : (
             <button
+              id="tour-user-profile"
               onClick={onOpenAuthLandingModal || onOpenUserProfileModal}
               title="Giriş Yap / Tanıtım Ekranı"
-              className="px-2.5 py-1.5 rounded-xl bg-[#1C1A17] hover:bg-stone-800 text-[#D4AF37] transition-all active:scale-95 flex items-center gap-1.5 text-xs border border-stone-800 shadow-xs"
+              className="px-2.5 py-1.5 rounded-xl bg-[#1C1A17] hover:bg-stone-800 text-[#D4AF37] transition-all active:scale-95 flex items-center gap-1.5 text-xs border border-stone-800 shadow-xs cursor-pointer"
             >
               <User className="w-4 h-4 text-[#D4AF37]" />
               <span className="font-bold text-[11px]">Giriş Yap</span>
@@ -276,7 +281,20 @@ export const Header: React.FC<HeaderProps> = ({
                   className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all"
                 >
                   <Home className="w-4 h-4 text-amber-700 shrink-0" />
-                  <span>Karşılama Ekranı & Son Konum</span>
+                  <span>Karşılama Ekranı</span>
+                </button>
+              )}
+
+              {onStartTour && (
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    onStartTour();
+                  }}
+                  className="p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                >
+                  <span className="text-sm">🧭</span>
+                  <span>Uygulama Rehberi (Tur)</span>
                 </button>
               )}
             </div>

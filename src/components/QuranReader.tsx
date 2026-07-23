@@ -1022,7 +1022,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     const lastVerseInPage = pageVerses[pageVerses.length - 1];
 
     return (
-      <div className={`relative z-20 flex items-center justify-between border rounded-2xl p-2 px-3 sm:px-4 shadow-xs transition-all duration-300 ${themeStyles.cardBg} ${themeStyles.cardBorder} ${
+      <div id="tour-surah-selector" className={`relative z-20 flex items-center justify-between border rounded-2xl p-2 px-3 sm:px-4 shadow-xs transition-all duration-300 ${themeStyles.cardBg} ${themeStyles.cardBorder} ${
         isFullScreen && !areOverlaysVisible
           ? 'opacity-0 -translate-y-6 pointer-events-none h-0 overflow-hidden mb-0'
           : 'opacity-100 translate-y-0 mb-3'

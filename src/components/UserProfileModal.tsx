@@ -15,6 +15,7 @@ interface UserProfileModalProps {
   setShowTajweed?: (val: boolean) => void;
   showTranslation?: boolean;
   setShowTranslation?: (val: boolean) => void;
+  onStartTour?: () => void;
 }
 
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({
@@ -30,6 +31,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   setShowTajweed = (_v) => {},
   showTranslation = true,
   setShowTranslation = (_v) => {},
+  onStartTour,
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'settings'>('profile');
   const [user, setUser] = useState<{ name: string; email: string; avatar: string } | null>(() => {
@@ -243,6 +245,27 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Interactive Tour Launcher Button */}
+            {onStartTour && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onStartTour();
+                }}
+                className="w-full py-3 px-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200/90 text-xs font-bold flex items-center justify-between shadow-2xs active:scale-95 transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-lg bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-xs">
+                    🧭
+                  </span>
+                  <span>Interaktif Uygulama Turu (Rehber)</span>
+                </div>
+                <span className="text-[10px] bg-amber-200/80 px-2 py-0.5 rounded-full font-extrabold text-amber-900">
+                  Başlat ➔
+                </span>
+              </button>
+            )}
           </>
         ) : (
           /* Settings Tab */
