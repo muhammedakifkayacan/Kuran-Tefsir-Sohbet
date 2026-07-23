@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { User, LogOut, ShieldCheck, Bookmark, StickyNote, X, Cloud, Sliders, Type, Palette, Eye } from 'lucide-react';
+import { User, LogOut, ShieldCheck, Bookmark, StickyNote, X, Cloud, Sliders, Type, Palette, Eye, AlertCircle } from 'lucide-react';
+import { loginWithGoogle, logoutFirebase } from '../lib/firebase';
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -38,32 +39,39 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   if (!isOpen) return null;
 
-  const handleSimulatedGoogleLogin = () => {
+  const handleSimulatedGoogleLogin = async () => {
     setIsLoading(true);
-    
-    // Prompt user for their real name and email for account setup on Vercel
-    setTimeout(() => {
-      const userEmail = window.prompt('Lütfen Google E-Posta Adresinizi Giriniz:', 'ornek@gmail.com');
-      if (!userEmail) {
-        setIsLoading(false);
-        return;
+    setErrorMessage(null);
+    try {
+      const firebaseUser = await loginWithGoogle();
+      if (firebaseUser) {
+        const realUser = {
+          name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Kullanıcı',
+          email: firebaseUser.email || '',
+          avatar: firebaseUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(firebaseUser.displayName || firebaseUser.email || 'Kullanici')}`,
+        };
+        setUser(realUser);
+        localStorage.setItem('kuran_user_profile', JSON.stringify(realUser));
+        localStorage.removeItem('kuran_app_guest_mode');
       }
-      const userName = window.prompt('Lütfen Adınızı ve Soyadınızı Giriniz:', userEmail.split('@')[0]);
-
-      const realUser = {
-        name: userName || userEmail.split('@')[0],
-        email: userEmail,
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName || userEmail)}`,
-      };
-      setUser(realUser);
-      localStorage.setItem('kuran_user_profile', JSON.stringify(realUser));
+    } catch (err: any) {
+      console.error("Google login error:", err);
+      setErrorMessage(err?.message || 'Google ile giriş yapılırken bir hata oluştu.');
+    } finally {
       setIsLoading(false);
-    }, 300);
+    }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await logoutFirebase();
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
     setUser(null);
     localStorage.removeItem('kuran_user_profile');
   };

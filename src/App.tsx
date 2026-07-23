@@ -17,6 +17,8 @@ import { NavTab, Surah, Ayah, VerseNote, Reciter, SohbetSession } from './types'
 import { QURAN_SURAHS, RECITERS } from './data/quranData';
 import { INITIAL_SOHBET_SESSIONS } from './data/sohbetData';
 import { fetchSurahFromApi } from './utils/quranApi';
+import { auth } from './lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function App() {
   // Mobile Frame Toggle
@@ -42,6 +44,26 @@ export default function App() {
   // Controls Auth Guard Warning Modal when a guest tries to add notes or sohbet
   const [isAuthGuardOpen, setIsAuthGuardOpen] = useState<boolean>(false);
   const [authGuardMessage, setAuthGuardMessage] = useState<string>('');
+
+  // Subscribe to Firebase Auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const loggedUser = {
+          name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Kullanıcı',
+          email: firebaseUser.email || '',
+          avatar: firebaseUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(firebaseUser.displayName || firebaseUser.email || 'Kullanici')}`,
+        };
+        setUser(loggedUser);
+        setIsGuest(false);
+        localStorage.setItem('kuran_user_profile', JSON.stringify(loggedUser));
+        localStorage.removeItem('kuran_app_guest_mode');
+        setIsAuthLandingOpen(false);
+        setIsAuthGuardOpen(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleLoginSuccess = (loggedUser: { name: string; email: string; avatar: string }) => {
     setUser(loggedUser);

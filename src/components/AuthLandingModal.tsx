@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, BookOpen, Mic, StickyNote, ShieldCheck, Eye, X, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Sparkles, BookOpen, Mic, StickyNote, ShieldCheck, Eye, X, CheckCircle2, ChevronRight, AlertCircle } from 'lucide-react';
+import { loginWithGoogle } from '../lib/firebase';
 
 interface AuthLandingModalProps {
   isOpen: boolean;
@@ -21,27 +22,35 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
   const [nameInput, setNameInput] = useState('');
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      const userEmail = window.prompt('Google Hesabı E-Posta Adresiniz:', 'ahmet.yilmaz@gmail.com');
-      if (!userEmail) {
-        setIsLoading(false);
-        return;
+    setErrorMessage(null);
+    try {
+      const firebaseUser = await loginWithGoogle();
+      if (firebaseUser) {
+        const loggedUser = {
+          name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Kullanıcı',
+          email: firebaseUser.email || '',
+          avatar: firebaseUser.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(firebaseUser.displayName || firebaseUser.email || 'Kullanici')}`,
+        };
+        onLoginSuccess(loggedUser);
       }
-      const userName = window.prompt('Adınız ve Soyadınız:', userEmail.split('@')[0]);
-
-      const loggedUser = {
-        name: userName || userEmail.split('@')[0],
-        email: userEmail,
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName || userEmail)}`,
-      };
+    } catch (err: any) {
+      console.error("Google login error:", err);
+      if (err?.code === 'auth/popup-closed-by-user') {
+        setErrorMessage('Giriş penceresi kapatıldı.');
+      } else if (err?.code === 'auth/cancelled-popup-request') {
+        // Ignored duplicate click
+      } else {
+        setErrorMessage(err?.message || 'Google ile giriş yapılırken bir hata oluştu.');
+      }
+    } finally {
       setIsLoading(false);
-      onLoginSuccess(loggedUser);
-    }, 300);
+    }
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -248,6 +257,14 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
             <div className="p-4 bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl text-xs font-medium flex items-center gap-3 shadow-xs">
               <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
               <span>{initialMessage}</span>
+            </div>
+          )}
+
+          {/* Error Message if Login fails */}
+          {errorMessage && (
+            <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl text-xs font-medium flex items-center gap-3 shadow-xs">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <span>{errorMessage}</span>
             </div>
           )}
 
