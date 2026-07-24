@@ -1,6 +1,6 @@
 {
   "name": "Kur'an & Tefsir Rehberi",
   "description": "Hocalar için masaüstü uyumlu Kur'an-ı Kerim okuma, sohbet kaydetme ve ders notu alma platformu.",
-  "requestFramePermissions": [],
+  "requestFramePermissions": ["geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

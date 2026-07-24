@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Radio, Mic, Plus, MapPin, Sparkles, Share2, Trash2, Calendar as CalendarIcon, Clock, Check, RefreshCw, Volume2, ChevronDown, ChevronUp, Bell, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SohbetSession } from '../types';
@@ -7,6 +8,7 @@ import { getGoogleCalendarUrl, downloadIcsFile } from '../utils/calendarUtils';
 interface SohbetViewProps {
   sohbetSessions: SohbetSession[];
   onAddSohbetSession: (newSession: SohbetSession) => void;
+  onUpdateSohbetSession?: (updatedSession: SohbetSession) => void;
   onDeleteSohbetSession: (id: string) => void;
   onOpenVoiceRecorder: () => void;
   recordedVoiceUrl?: string | null;
@@ -18,6 +20,7 @@ interface SohbetViewProps {
 export const SohbetView: React.FC<SohbetViewProps> = ({
   sohbetSessions,
   onAddSohbetSession,
+  onUpdateSohbetSession,
   onDeleteSohbetSession,
   onOpenVoiceRecorder,
   recordedVoiceUrl,
@@ -27,6 +30,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchVenue, setSearchVenue] = useState<string>('');
+  const [activeRecordingSessionId, setActiveRecordingSessionId] = useState<string | null>(null);
 
   // Expansion state for details
   const [expandedSessionIds, setExpandedSessionIds] = useState<Record<string, boolean>>({});
@@ -48,6 +52,27 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
       setAudioTranscriptInput(recordedVoiceTranscript);
     }
   }, [recordedVoiceTranscript]);
+
+  // Handle voice recording for an existing session
+  React.useEffect(() => {
+    if (recordedVoiceUrl && activeRecordingSessionId && onUpdateSohbetSession) {
+      const targetSession = sohbetSessions.find((s) => s.id === activeRecordingSessionId);
+      if (targetSession) {
+        const updated: SohbetSession = {
+          ...targetSession,
+          audioRecordingUrl: recordedVoiceUrl,
+          audioTranscript: recordedVoiceTranscript || targetSession.audioTranscript,
+        };
+        onUpdateSohbetSession(updated);
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 },
+        });
+      }
+      setActiveRecordingSessionId(null);
+    }
+  }, [recordedVoiceUrl, recordedVoiceTranscript, activeRecordingSessionId, sohbetSessions, onUpdateSohbetSession]);
 
   // AI Summary State
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
@@ -356,14 +381,38 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                       </div>
                     )}
 
-                    {/* Audio URL indicator */}
-                    {session.audioRecordingUrl && (
-                      <div className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-50/80 text-amber-900 text-xs font-semibold border border-amber-200/60">
-                        <Volume2 className="w-4 h-4 text-amber-800 shrink-0" />
-                        <span>Ses Kaydı Mevcut</span>
-                        <audio src={session.audioRecordingUrl} controls className="h-6 w-full max-w-[180px] ml-auto" />
+                    {/* Audio URL indicator & Voice Record Action */}
+                    <div className="p-3 rounded-2xl bg-amber-50/80 text-amber-900 text-xs font-semibold border border-amber-200/80 space-y-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950">
+                          <Mic className="w-4 h-4 text-amber-800 shrink-0" />
+                          <span>Ders Ses Kaydı</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveRecordingSessionId(session.id);
+                            onOpenVoiceRecorder();
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-95"
+                        >
+                          <Mic className="w-3.5 h-3.5 text-amber-200 animate-pulse" />
+                          <span>{session.audioRecordingUrl ? 'Yeniden Ses Kaydı Al' : '🎙️ Vakti Geldi, Kaydı Başlat'}</span>
+                        </button>
                       </div>
-                    )}
+
+                      {session.audioRecordingUrl ? (
+                        <div className="flex items-center gap-2 pt-1 border-t border-amber-200/60">
+                          <Volume2 className="w-4 h-4 text-amber-800 shrink-0" />
+                          <span className="text-[11px] font-medium text-amber-900">Kayıtlı Ses:</span>
+                          <audio src={session.audioRecordingUrl} controls className="h-7 w-full max-w-[220px] ml-auto" />
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-amber-800/90 font-normal italic">
+                          Bu sohbet dersini önceden oluşturdunuz. Vakti geldiğinde yukarıdaki "Kaydı Başlat" butonuna basarak canlı ses kaydı alabilirsiniz.
+                        </p>
+                      )}
+                    </div>
 
                     {/* Calendar Integration & Notification Box */}
                     <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">

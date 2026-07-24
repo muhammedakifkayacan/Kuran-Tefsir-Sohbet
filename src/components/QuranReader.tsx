@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight, Share2, Copy, CheckSquare, Square } from 'lucide-react';
 import { Surah, Ayah, VerseNote } from '../types';
 import { ALL_SURAHS } from '../data/surahList';
 import { fetchSurahFromApi } from '../utils/quranApi';
@@ -30,6 +31,7 @@ interface QuranReaderProps {
   setShowTranslation?: (val: boolean) => void;
   user?: { name: string; email: string; avatar: string } | null;
   onRequireAuth?: (message: string) => void;
+  targetVerseNumber?: number | null;
 }
 
 // 14 Tilavet Secdesi Ayeti Listesi (Sûre No ve Ayet No)
@@ -360,10 +362,30 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   setShowTranslation: propSetShowTranslation,
   user,
   onRequireAuth,
+  targetVerseNumber,
 }) => {
   // Reading Mode state
   const [viewMode, setViewMode] = useState<'mushaf' | 'meal' | 'detailed'>('mushaf');
   const [selectedMushafAyah, setSelectedMushafAyah] = useState<Ayah | null>(null);
+
+  // Auto highlight verse when targetVerseNumber prop changes
+  useEffect(() => {
+    if (targetVerseNumber && selectedSurah && selectedSurah.verses) {
+      const vObj = selectedSurah.verses.find((v) => v.number === targetVerseNumber);
+      if (vObj) {
+        setSelectedMushafAyah(vObj);
+        if (vObj.page && vObj.page !== selectedPage) {
+          setSelectedPage(vObj.page);
+        }
+        setTimeout(() => {
+          const el = document.getElementById(`verse-${vObj.number}`) || document.getElementById(`ayah-${vObj.number}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 350);
+      }
+    }
+  }, [targetVerseNumber, selectedSurah]);
 
   const [localShowTajweed, setLocalShowTajweed] = useState(true);
   const [showTransliteration, setShowTransliteration] = useState(true);
@@ -1226,6 +1248,115 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const [isFontPopoverOpen, setIsFontPopoverOpen] = useState<boolean>(false);
   const [pageNotice, setPageNotice] = useState<number | null>(null);
 
+  // Çoklu Ayet Seçimi & Paylaşım Durumları
+  const [isMultiSelectMode, setIsMultiSelectMode] = useState<boolean>(false);
+  const [selectedVerseNumbers, setSelectedVerseNumbers] = useState<number[]>([]);
+  const [shareModalVerses, setShareModalVerses] = useState<Ayah[] | null>(null);
+  const [shareOptions, setShareOptions] = useState({
+    includeArabic: true,
+    includeTranslation: true,
+    includeTransliteration: false,
+    includeMetadata: true,
+  });
+  const [copySuccessToast, setCopySuccessToast] = useState<boolean>(false);
+
+  const toggleVerseSelection = (verseNumber: number) => {
+    setSelectedVerseNumbers((prev) =>
+      prev.includes(verseNumber)
+        ? prev.filter((n) => n !== verseNumber)
+        : [...prev, verseNumber].sort((a, b) => a - b)
+    );
+  };
+
+  const selectAllPageVerses = () => {
+    const pageVerseNumbers = pageVerses.map((v) => v.number);
+    const allSelected = pageVerseNumbers.every((n) => selectedVerseNumbers.includes(n));
+    if (allSelected) {
+      setSelectedVerseNumbers((prev) => prev.filter((n) => !pageVerseNumbers.includes(n)));
+    } else {
+      setSelectedVerseNumbers((prev) => Array.from(new Set([...prev, ...pageVerseNumbers])).sort((a, b) => a - b));
+    }
+  };
+
+  const clearVerseSelection = () => {
+    setSelectedVerseNumbers([]);
+  };
+
+  const exitMultiSelectMode = () => {
+    setIsMultiSelectMode(false);
+    setSelectedVerseNumbers([]);
+  };
+
+  const getFormattedShareText = (verses: Ayah[] | null): string => {
+    if (!verses || verses.length === 0) return '';
+    const sorted = [...verses].sort((a, b) => a.number - b.number);
+
+    const body = sorted.map((v) => {
+      const parts: string[] = [];
+      if (shareOptions.includeArabic && v.arabic) {
+        parts.push(v.arabic);
+      }
+      if (shareOptions.includeTranslation && v.translation) {
+        parts.push(`"${v.translation}"`);
+      }
+      if (shareOptions.includeTransliteration && v.transliteration) {
+        parts.push(`Okunuşu: ${v.transliteration}`);
+      }
+      if (shareOptions.includeMetadata && parts.length > 0) {
+        parts.push(`(${selectedSurah.nameTurkish} Sûresi, ${v.number}. Ayet)`);
+      }
+      return parts.join('\n');
+    }).join('\n\n---\n\n');
+
+    let footer = '';
+    if (shareOptions.includeMetadata) {
+      if (sorted.length === 1) {
+        footer = `\n\n— ${selectedSurah.nameTurkish} Sûresi, ${sorted[0].number}. Ayet (Sayfa ${sorted[0].page})`;
+      } else {
+        const minNum = sorted[0].number;
+        const maxNum = sorted[sorted.length - 1].number;
+        footer = `\n\n— ${selectedSurah.nameTurkish} Sûresi, ${minNum}-${maxNum}. Ayetler`;
+      }
+    }
+
+    return `${body}${footer}`;
+  };
+
+  const handleCopyText = (verses: Ayah[]) => {
+    const text = getFormattedShareText(verses);
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('📋 Ayet metni panoya kopyalandı!');
+      setCopySuccessToast(true);
+      setTimeout(() => setCopySuccessToast(false), 2000);
+    }).catch(() => {
+      showToast('Kopyalama başarısız oldu.');
+    });
+  };
+
+  const handleShareNative = async (verses: Ayah[]) => {
+    const text = getFormattedShareText(verses);
+    if (!text) return;
+
+    const title = verses.length === 1
+      ? `${selectedSurah.nameTurkish} Sûresi ${verses[0].number}. Ayet`
+      : `${selectedSurah.nameTurkish} Sûresi (${verses.length} Ayet)`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text,
+        });
+        showToast(' Paylaşıldı');
+      } catch (err) {
+        console.log('Share error or cancelled:', err);
+      }
+    } else {
+      handleCopyText(verses);
+    }
+  };
+
   // Touch and Mouse Drag Gestures for Page Turning & Page Peel Animation
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchStartY, setTouchStartY] = useState<number | null>(null);
@@ -1636,6 +1767,25 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             <span className="hidden sm:inline text-xs font-semibold">Ara</span>
           </button>
 
+          {/* Quick Font Size Controls */}
+          <div className="flex items-center bg-stone-100/90 rounded-xl p-0.5 border border-stone-200">
+            <button
+              onClick={() => setFontSize(Math.max(18, fontSize - 2))}
+              className="p-1 px-1.5 hover:bg-white rounded-lg text-[10px] font-extrabold text-stone-700 transition-all cursor-pointer"
+              title="Yazı Boyutunu Küçült"
+            >
+              A-
+            </button>
+            <span className="text-[10px] font-bold text-stone-400 px-0.5">|</span>
+            <button
+              onClick={() => setFontSize(Math.min(48, fontSize + 2))}
+              className="p-1 px-1.5 hover:bg-white rounded-lg text-xs font-extrabold text-stone-900 transition-all cursor-pointer"
+              title="Yazı Boyutunu Büyüt"
+            >
+              A+
+            </button>
+          </div>
+
           {/* Audio Recitation Dinle Button (Tour Target & Quick Recitation Play) */}
           <button
             id="tour-audio-controls"
@@ -1645,15 +1795,38 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 onPlayAyah(firstAyahInPage);
               }
             }}
-            className={`p-1.5 px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer ${
+            className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
               isPlaying
                 ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs'
                 : 'bg-stone-100/90 hover:bg-emerald-50 text-stone-800 border-stone-200'
             }`}
             title="Sayfadaki Ayetleri Dinle"
           >
-            <Volume2 className={`w-4 h-4 ${isPlaying ? 'text-white animate-pulse' : 'text-emerald-700'}`} />
-            <span className="hidden sm:inline text-xs font-semibold">{isPlaying ? 'Durdur' : 'Dinle'}</span>
+            <Volume2 className={`w-3.5 h-3.5 ${isPlaying ? 'text-white animate-pulse' : 'text-emerald-700'}`} />
+            <span className="text-xs font-semibold">{isPlaying ? 'Durdur' : 'Dinle'}</span>
+          </button>
+
+          {/* Çoklu Seç Butonu */}
+          <button
+            onClick={() => {
+              if (isMultiSelectMode) {
+                exitMultiSelectMode();
+              } else {
+                setIsMultiSelectMode(true);
+                showToast('Çoklu Ayet Seçim Modu Açıldı. Ayetlere dokunarak seçebilirsiniz.');
+              }
+            }}
+            className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
+              isMultiSelectMode || selectedVerseNumbers.length > 0
+                ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                : 'bg-stone-100/90 hover:bg-amber-50 text-stone-800 border-stone-200'
+            }`}
+            title="Çoklu Ayet Seçimi"
+          >
+            <CheckSquare className={`w-3.5 h-3.5 ${isMultiSelectMode || selectedVerseNumbers.length > 0 ? 'text-white' : 'text-amber-700'}`} />
+            <span className="text-xs font-semibold">
+              {isMultiSelectMode ? 'Açık' : 'Seç'}
+            </span>
           </button>
 
           {/* Filtre / Okuma Ayarları İkon Butonu */}
@@ -1663,15 +1836,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 setIsFilterMenuOpen(!isFilterMenuOpen);
                 if (isPageMenuOpen) setIsPageMenuOpen(false);
               }}
-              className={`p-1.5 px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 ${
+              className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
                 isFilterMenuOpen
                   ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
                   : 'bg-stone-100/90 hover:bg-amber-50 text-stone-800 border-stone-200'
               }`}
               title="Filtreler & Okuma Ayarları (Sûre, Görünüm, Yazı Boyutu)"
             >
-              <SlidersHorizontal className={`w-4 h-4 ${isFilterMenuOpen ? 'text-white' : 'text-amber-700'}`} />
-              <span className="hidden sm:inline text-xs font-semibold">Filtrele</span>
+              <SlidersHorizontal className={`w-3.5 h-3.5 ${isFilterMenuOpen ? 'text-white' : 'text-amber-700'}`} />
+              <span className="text-xs font-semibold">Ayarlar</span>
             </button>
 
             {/* Filter / Settings Popover */}
@@ -1710,32 +1883,50 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   {/* Görünüm Modu */}
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Görünüm Modu</label>
-                    <div className="grid grid-cols-3 gap-1 bg-stone-100 p-1 rounded-xl text-xs font-bold">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-stone-100 p-1 rounded-xl text-xs font-bold">
                       <button
-                        onClick={() => setViewMode('mushaf')}
-                        className={`py-1.5 px-1 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
-                          viewMode === 'mushaf' ? 'bg-white text-amber-950 shadow-xs font-extrabold' : 'text-stone-500 hover:text-stone-800'
+                        onClick={() => {
+                          setViewMode('mushaf');
+                          setShowTranslation(false);
+                        }}
+                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                          viewMode === 'mushaf' && !showTranslation ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
                         }`}
                       >
-                        <BookOpen className="w-3 h-3 text-amber-600" />
-                        <span>Mushaf</span>
+                        <BookOpen className="w-3 h-3 text-amber-500" />
+                        <span>Arapça</span>
                       </button>
+
+                      <button
+                        onClick={() => {
+                          setViewMode('mushaf');
+                          setShowTranslation(true);
+                        }}
+                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                          viewMode === 'mushaf' && showTranslation ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
+                        }`}
+                      >
+                        <BookOpen className="w-3 h-3 text-amber-500" />
+                        <span>Arapça + Meal</span>
+                      </button>
+
                       <button
                         onClick={() => setViewMode('meal')}
-                        className={`py-1.5 px-1 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
-                          viewMode === 'meal' ? 'bg-white text-amber-950 shadow-xs font-extrabold' : 'text-stone-500 hover:text-stone-800'
+                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                          viewMode === 'meal' ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
                         }`}
                       >
-                        <FileText className="w-3 h-3 text-amber-600" />
+                        <FileText className="w-3 h-3 text-amber-500" />
                         <span>Meal</span>
                       </button>
+
                       <button
                         onClick={() => setViewMode('detailed')}
-                        className={`py-1.5 px-1 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
-                          viewMode === 'detailed' ? 'bg-white text-amber-950 shadow-xs font-extrabold' : 'text-stone-500 hover:text-stone-800'
+                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                          viewMode === 'detailed' ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
                         }`}
                       >
-                        <List className="w-3 h-3 text-amber-600" />
+                        <List className="w-3 h-3 text-amber-500" />
                         <span>Detaylı</span>
                       </button>
                     </div>
@@ -2485,48 +2676,119 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   <span>Sayfa {selectedPage} • {selectedSurah.juzNumber}. Cüz</span>
                 </div>
 
-                {/* Pure Flowing Arabic Text block */}
-                <div className={`text-right dir-rtl leading-loose text-justify tracking-wide select-none transition-colors ${themeStyles.arabicText}`}>
-                  {pageVerses.map((verse) => {
-                    const isSelected = selectedMushafAyah?.number === verse.number;
-                    const isPlayingCurrently = activeAyah?.number === verse.number && isPlaying;
-                    const isTarteelMatched = isTarteelTracking && (selectedMushafAyah?.number === verse.number || tarteelLastMatch?.verseNumber === verse.number);
-                    const isBookmarked = bookmarkedVerses.includes(verse.number);
-                    const isSajdah = checkIsSajdahVerse(selectedSurah.id, verse.number);
+                {/* Arabic Flowing Text or Stacked Arabic + Translation Cards */}
+                {showTranslation ? (
+                  <div className="space-y-3.5 text-right dir-rtl">
+                    {pageVerses.map((verse) => {
+                      const isSelected = selectedMushafAyah?.number === verse.number;
+                      const isMultiSelected = selectedVerseNumbers.includes(verse.number);
+                      const isPlayingCurrently = activeAyah?.number === verse.number && isPlaying;
+                      const isBookmarked = bookmarkedVerses.includes(verse.number);
+                      const isSajdah = checkIsSajdahVerse(selectedSurah.id, verse.number);
 
-                    return (
-                      <span
-                        key={verse.number}
-                        id={`verse-${verse.number}`}
-                        onClick={() => setSelectedMushafAyah(verse)}
-                        className={`cursor-pointer inline transition-all duration-200 px-1 py-1 rounded-lg interactive-ayah ${
-                          isTarteelMatched
-                            ? 'bg-emerald-400/40 dark:bg-emerald-600/50 text-stone-950 dark:text-emerald-100 shadow-xl ring-2 ring-emerald-500 ring-offset-2 ring-offset-stone-50 dark:ring-offset-stone-900 rounded-xl px-1.5 py-1 border border-emerald-500/70 font-extrabold animate-pulse'
-                            : isSelected
-                            ? themeStyles.activeHighlight
-                            : isPlayingCurrently
-                            ? 'bg-amber-500/25 text-stone-950 dark:text-white shadow-sm ring-2 ring-[#D4AF37]'
-                            : isSajdah
-                            ? 'bg-amber-100/80 dark:bg-amber-900/30 text-stone-950 ring-1 ring-amber-500/50'
-                            : themeStyles.hoverHighlight
-                        }`}
-                      >
-                        {/* Highlighted text styling */}
-                        <span className={`font-serif ${fontSizeClass}`}>
-                          {verse.arabic}
-                        </span>
+                      return (
+                        <div
+                          key={verse.number}
+                          id={`verse-${verse.number}`}
+                          onClick={() => {
+                            if (isMultiSelectMode) {
+                              toggleVerseSelection(verse.number);
+                            } else {
+                              setSelectedMushafAyah(verse);
+                            }
+                          }}
+                          className={`cursor-pointer transition-all duration-200 p-4 rounded-2xl border text-right interactive-ayah ${
+                            isMultiSelected
+                              ? 'bg-amber-400/30 dark:bg-amber-600/40 border-amber-500 ring-2 ring-amber-600 shadow-md'
+                              : isSelected
+                              ? 'bg-amber-100/90 border-amber-400 dark:bg-amber-900/50 shadow-sm'
+                              : isPlayingCurrently
+                              ? 'bg-emerald-50 border-emerald-400'
+                              : 'bg-stone-50/80 dark:bg-stone-800/50 border-stone-200/80 hover:bg-amber-50/50'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-3 pb-2.5 border-b border-stone-200/60">
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[11px] font-mono font-bold ${
+                                isMultiSelected ? 'bg-amber-600 text-white' : 'bg-amber-100 text-amber-900 border border-amber-300'
+                              }`}>
+                                {isSajdah && <span className="mr-0.5 font-serif text-xs">۩</span>}
+                                Ayet {verse.number}
+                              </span>
+                              {isBookmarked && (
+                                <span className="text-[10px] bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded-md font-bold">
+                                  🔖 Kaydedildi
+                                </span>
+                              )}
+                            </div>
 
-                        {/* Traditional Gold Verse Number Seal with Sajdah indicator */}
-                        <span className={`inline-flex items-center justify-center mx-1.5 px-1.5 py-0.5 h-6 rounded-full border text-[10px] font-mono font-bold align-middle select-none transition-colors ${
-                          isSajdah ? 'bg-amber-700 text-white border-amber-800 shadow-sm ring-2 ring-amber-400' : themeStyles.verseSeal
-                        }`}>
-                          {isSajdah && <span className="mr-0.5 font-serif text-xs font-black">۩</span>}
-                          {verse.number}
+                            <span className={`font-serif leading-loose ${fontSizeClass} text-stone-900 dark:text-amber-100`}>
+                              {verse.arabic}
+                            </span>
+                          </div>
+
+                          <div className="pt-2.5 text-left dir-ltr text-xs sm:text-sm text-stone-800 dark:text-stone-200 font-sans leading-relaxed">
+                            <span className="font-bold text-amber-900 dark:text-amber-300 mr-1.5">({verse.number})</span>
+                            {verse.translation}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className={`text-right dir-rtl leading-loose text-justify tracking-wide select-none transition-colors ${themeStyles.arabicText}`}>
+                    {pageVerses.map((verse) => {
+                      const isSelected = selectedMushafAyah?.number === verse.number;
+                      const isMultiSelected = selectedVerseNumbers.includes(verse.number);
+                      const isPlayingCurrently = activeAyah?.number === verse.number && isPlaying;
+                      const isTarteelMatched = isTarteelTracking && (selectedMushafAyah?.number === verse.number || tarteelLastMatch?.verseNumber === verse.number);
+                      const isBookmarked = bookmarkedVerses.includes(verse.number);
+                      const isSajdah = checkIsSajdahVerse(selectedSurah.id, verse.number);
+
+                      return (
+                        <span
+                          key={verse.number}
+                          id={`verse-${verse.number}`}
+                          onClick={() => {
+                            if (isMultiSelectMode) {
+                              toggleVerseSelection(verse.number);
+                            } else {
+                              setSelectedMushafAyah(verse);
+                            }
+                          }}
+                          className={`cursor-pointer inline transition-all duration-200 px-1 py-1 rounded-lg interactive-ayah ${
+                            isMultiSelected
+                              ? 'bg-amber-400/50 dark:bg-amber-600/60 text-stone-950 dark:text-amber-100 shadow-md ring-2 ring-amber-600 rounded-xl px-1.5 py-1 font-extrabold'
+                              : isTarteelMatched
+                              ? 'bg-emerald-400/40 dark:bg-emerald-600/50 text-stone-950 dark:text-emerald-100 shadow-xl ring-2 ring-emerald-500 ring-offset-2 ring-offset-stone-50 dark:ring-offset-stone-900 rounded-xl px-1.5 py-1 border border-emerald-500/70 font-extrabold animate-pulse'
+                              : isSelected
+                              ? themeStyles.activeHighlight
+                              : isPlayingCurrently
+                              ? 'bg-amber-500/25 text-stone-950 dark:text-white shadow-sm ring-2 ring-[#D4AF37]'
+                              : isSajdah
+                              ? 'bg-amber-100/80 dark:bg-amber-900/30 text-stone-950 ring-1 ring-amber-500/50'
+                              : themeStyles.hoverHighlight
+                          }`}
+                        >
+                          {/* Highlighted text styling */}
+                          <span className={`font-serif ${fontSizeClass}`}>
+                            {verse.arabic}
+                          </span>
+
+                          {/* Traditional Gold Verse Number Seal with Sajdah indicator */}
+                          <span className={`inline-flex items-center justify-center mx-1.5 px-1.5 py-0.5 h-6 rounded-full border text-[10px] font-mono font-bold align-middle select-none transition-colors ${
+                            isMultiSelected
+                              ? 'bg-amber-600 text-white border-amber-700 shadow-sm'
+                              : isSajdah ? 'bg-amber-700 text-white border-amber-800 shadow-sm ring-2 ring-amber-400' : themeStyles.verseSeal
+                          }`}>
+                            {isSajdah && <span className="mr-0.5 font-serif text-xs font-black">۩</span>}
+                            {verse.number}
+                          </span>
                         </span>
-                      </span>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* Help tip at the bottom */}
                 <p className={`text-center text-[10px] mt-6 pt-3 border-t border-[#D4AF37]/10 font-semibold transition-colors flex items-center justify-center gap-1.5 ${themeStyles.textMuted}`}>
@@ -2646,6 +2908,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       {/* --- VIEW MODE 2: TRADITIONAL DETAILED VERSE LIST --- */}
       {viewMode === 'detailed' && (
         <div className="space-y-4">
+          {renderPageNavigationControl()}
           {/* Detailed Filters panel */}
           {(!isFullScreen || areOverlaysVisible) && (
             <div className="bg-white rounded-3xl p-4 border border-stone-200/80 shadow-sm space-y-3">
@@ -2726,6 +2989,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           {/* Verse Items */}
           <div className="space-y-4">
             {filteredVerses.map((verse) => {
+              const isSelected = selectedMushafAyah?.number === verse.number;
               const isCurrentActive = activeAyah?.number === verse.number;
               const isTarteelMatched = isTarteelTracking && (selectedMushafAyah?.number === verse.number || activeAyah?.number === verse.number);
               const isBookmarked = bookmarkedVerses.includes(verse.number);
@@ -2735,14 +2999,17 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 <div
                   key={verse.number}
                   id={`ayah-${verse.number}`}
-                  className={`relative rounded-3xl p-5 transition-all duration-200 border interactive-ayah ${
+                  onClick={() => setSelectedMushafAyah(verse)}
+                  className={`relative rounded-3xl p-5 transition-all duration-200 border interactive-ayah cursor-pointer ${
                     isTarteelMatched
                       ? 'bg-emerald-50/95 dark:bg-emerald-950/40 border-2 border-emerald-500 shadow-xl ring-2 ring-emerald-500/80 scale-[1.01]'
+                      : isSelected
+                      ? 'bg-amber-100/95 border-2 border-amber-500 shadow-lg ring-2 ring-amber-400/80 scale-[1.01]'
                       : isCurrentActive
                       ? 'bg-amber-50/80 border-amber-400 shadow-md ring-1 ring-amber-400/30'
                       : isSajdah
                       ? 'bg-amber-50/40 border-amber-300 shadow-sm'
-                      : 'bg-white border-stone-200 hover:border-stone-300 shadow-sm'
+                      : 'bg-white border-stone-200 hover:border-amber-300 shadow-sm'
                   }`}
                 >
                   {/* Tarteel Active Recitation Badge */}
@@ -2777,11 +3044,27 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   {/* Item header */}
                   <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-stone-100 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className={`w-7 h-7 rounded-full font-bold flex items-center justify-center font-mono text-xs border ${
-                        isSajdah ? 'bg-amber-700 text-white border-amber-800' : 'bg-amber-50 text-amber-900 border-amber-200'
-                      }`}>
-                        {verse.number}
-                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!isMultiSelectMode) setIsMultiSelectMode(true);
+                          toggleVerseSelection(verse.number);
+                        }}
+                        className={`p-1 px-2 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
+                          selectedVerseNumbers.includes(verse.number)
+                            ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                            : 'bg-stone-50 text-stone-700 border-stone-200 hover:border-amber-400'
+                        }`}
+                        title="Ayet Seç"
+                      >
+                        {selectedVerseNumbers.includes(verse.number) ? (
+                          <CheckSquare className="w-3.5 h-3.5" />
+                        ) : (
+                          <Square className="w-3.5 h-3.5 text-stone-400" />
+                        )}
+                        <span>{verse.number}</span>
+                      </button>
+
                       <span className="text-slate-500 font-semibold text-[11px]">
                         {verse.page}. Sayfa • {verse.juz}. Cüz
                       </span>
@@ -2899,6 +3182,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                         <Edit3 className="w-3.5 h-3.5 text-emerald-700" />
                         <span>Not Al</span>
                       </button>
+
+                      <button
+                        onClick={() => setShareModalVerses([verse])}
+                        className="p-2 px-2.5 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200/80 transition-colors flex items-center gap-1 font-semibold text-xs cursor-pointer"
+                        title="Ayeti Paylaş veya Kopyala"
+                      >
+                        <Share2 className="w-3.5 h-3.5 text-amber-700" />
+                        <span className="hidden sm:inline">Paylaş</span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -2968,29 +3260,37 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           )}
 
           {/* Quick Actions Row inside Tooltip */}
-          <div className="grid grid-cols-5 gap-1.5 pt-1">
+          <div className="grid grid-cols-6 gap-1 pt-1">
             <button
               onClick={() => onPlayAyah(selectedMushafAyah)}
-              className={`py-2 px-1 rounded-2xl text-[11px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
+              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
                 activeAyah?.number === selectedMushafAyah.number && isPlaying
                   ? 'bg-amber-600 text-white shadow-md'
                   : 'bg-stone-100 text-stone-800 hover:bg-amber-100 hover:text-amber-900 border border-stone-200'
               }`}
             >
-              <Volume2 className="w-4 h-4 text-amber-700" />
+              <Volume2 className="w-3.5 h-3.5 text-amber-700" />
               <span>{activeAyah?.number === selectedMushafAyah.number && isPlaying ? 'Durdur' : 'Dinle'}</span>
             </button>
 
             <button
               onClick={() => setShowTooltipTranslation(!showTooltipTranslation)}
-              className={`py-2 px-1 rounded-2xl text-[11px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
+              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
                 showTooltipTranslation
                   ? 'bg-amber-100 text-amber-900 border border-amber-300'
                   : 'bg-stone-100 text-stone-800 hover:bg-amber-100 hover:text-amber-900 border border-stone-200'
               }`}
             >
-              <BookOpen className="w-4 h-4 text-amber-700" />
+              <BookOpen className="w-3.5 h-3.5 text-amber-700" />
               <span>{showTooltipTranslation ? 'Gizle' : 'Meal'}</span>
+            </button>
+
+            <button
+              onClick={() => setShareModalVerses([selectedMushafAyah])}
+              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
+            >
+              <Share2 className="w-3.5 h-3.5 text-amber-700" />
+              <span>Paylaş</span>
             </button>
 
             <button
@@ -3002,29 +3302,29 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 setActiveNoteModalAyah(selectedMushafAyah);
                 setNoteTextInput('');
               }}
-              className="py-2 px-1 rounded-2xl text-[11px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex flex-col items-center justify-center gap-1 transition-all"
+              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
             >
-              <Edit3 className="w-4 h-4 text-amber-700" />
+              <Edit3 className="w-3.5 h-3.5 text-amber-700" />
               <span>Not Al</span>
             </button>
 
             <button
               onClick={() => toggleBookmark(selectedMushafAyah.number)}
-              className={`py-2 px-1 rounded-2xl text-[11px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
+              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
                 bookmarkedVerses.includes(selectedMushafAyah.number)
                   ? 'bg-amber-100 text-amber-900 border border-amber-300'
                   : 'bg-stone-100 text-stone-800 hover:bg-amber-100 hover:text-amber-900 border border-stone-200'
               }`}
             >
-              <Bookmark className={`w-4 h-4 ${bookmarkedVerses.includes(selectedMushafAyah.number) ? 'fill-current text-amber-600' : 'text-amber-700'}`} />
+              <Bookmark className={`w-3.5 h-3.5 ${bookmarkedVerses.includes(selectedMushafAyah.number) ? 'fill-current text-amber-600' : 'text-amber-700'}`} />
               <span>{bookmarkedVerses.includes(selectedMushafAyah.number) ? 'Kaydedildi' : 'Kaydet'}</span>
             </button>
 
             <button
               onClick={() => onOpenAiTajweedExplain(selectedSurah.nameTurkish, selectedMushafAyah.number, selectedMushafAyah.arabic)}
-              className="py-2 px-1 rounded-2xl text-[11px] font-bold bg-amber-600 text-white hover:bg-amber-700 border border-amber-600 flex flex-col items-center justify-center gap-1 transition-all shadow-2xs"
+              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-600 text-white hover:bg-amber-700 border border-amber-600 flex flex-col items-center justify-center gap-1 transition-all shadow-2xs cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-amber-200" />
+              <Sparkles className="w-3.5 h-3.5 text-amber-200" />
               <span>AI Sor</span>
             </button>
           </div>
@@ -3201,6 +3501,239 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           >
             Durdur
           </button>
+        </div>
+      )}
+
+      {/* Floating Multi-Select Bottom Action Bar */}
+      {(isMultiSelectMode || selectedVerseNumbers.length > 0) && (
+        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-lg bg-stone-900/95 text-white backdrop-blur-2xl p-3.5 rounded-3xl border border-stone-700 shadow-2xl animate-fade-in space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-amber-500 text-stone-950 font-black text-xs flex items-center justify-center">
+                {selectedVerseNumbers.length}
+              </span>
+              <span className="text-xs font-bold text-stone-200">
+                Ayet Seçildi
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-xs font-semibold">
+              <button
+                onClick={selectAllPageVerses}
+                className="px-2.5 py-1 rounded-xl bg-stone-800 hover:bg-stone-700 text-amber-300 border border-stone-700 transition-all text-[11px] cursor-pointer"
+              >
+                {pageVerses.every((v) => selectedVerseNumbers.includes(v.number))
+                  ? 'Sayfa Seçimini Kaldır'
+                  : 'Tüm Sayfayı Seç'}
+              </button>
+              <button
+                onClick={clearVerseSelection}
+                className="px-2 py-1 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 border border-stone-700 transition-all text-[11px] cursor-pointer"
+              >
+                Temizle
+              </button>
+            </div>
+          </div>
+
+          {/* Actions Row */}
+          <div className="grid grid-cols-5 gap-1 pt-1">
+            <button
+              disabled={selectedVerseNumbers.length === 0}
+              onClick={() => {
+                const selectedVerses = selectedSurah.verses.filter((v) => selectedVerseNumbers.includes(v.number));
+                setShareModalVerses(selectedVerses);
+              }}
+              className="py-2.5 px-1 rounded-2xl bg-amber-600 hover:bg-amber-500 disabled:opacity-40 text-white text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 shadow-sm transition-all cursor-pointer"
+            >
+              <Share2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Paylaş</span>
+            </button>
+
+            <button
+              disabled={selectedVerseNumbers.length === 0}
+              onClick={() => {
+                const selectedVerses = selectedSurah.verses.filter((v) => selectedVerseNumbers.includes(v.number));
+                handleCopyText(selectedVerses);
+              }}
+              className="py-2.5 px-1 rounded-2xl bg-stone-800 hover:bg-stone-700 disabled:opacity-40 text-stone-200 border border-stone-700 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer"
+            >
+              <Copy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">Kopyala</span>
+            </button>
+
+            <button
+              disabled={selectedVerseNumbers.length === 0}
+              onClick={() => {
+                const sortedNums = [...selectedVerseNumbers].sort((a, b) => a - b);
+                const targetVerse = selectedSurah.verses.find((v) => v.number === sortedNums[0]);
+                if (targetVerse) {
+                  setActiveNoteModalAyah(targetVerse);
+                  setNoteTagInput('Önemli');
+                  if (sortedNums.length > 1) {
+                    setNoteTextInput(`[Seçilen Ayetler: ${selectedSurah.nameTurkish} Sûresi, ${sortedNums.join(', ')}. Ayetler]\n`);
+                  } else {
+                    setNoteTextInput('');
+                  }
+                }
+              }}
+              className="py-2.5 px-1 rounded-2xl bg-amber-700 hover:bg-amber-600 disabled:opacity-40 text-white border border-amber-600 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer"
+            >
+              <Edit3 className="w-3.5 h-3.5 text-amber-200 shrink-0" />
+              <span className="truncate">Not Al</span>
+            </button>
+
+            <button
+              disabled={selectedVerseNumbers.length === 0}
+              onClick={() => {
+                selectedVerseNumbers.forEach((vNum) => {
+                  if (!bookmarkedVerses.includes(vNum)) {
+                    toggleBookmark(vNum);
+                  }
+                });
+                showToast(`🔖 ${selectedVerseNumbers.length} Ayet Kaydedildi! Hoca Notlarım > Kaydedilenler sekmesinden görebilirsiniz.`);
+              }}
+              className="py-2.5 px-1 rounded-2xl bg-stone-800 hover:bg-stone-700 disabled:opacity-40 text-stone-200 border border-stone-700 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer"
+            >
+              <Bookmark className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="truncate">Kaydet</span>
+            </button>
+
+            <button
+              onClick={exitMultiSelectMode}
+              className="py-2.5 px-1 rounded-2xl bg-stone-800 hover:bg-rose-950 text-rose-300 border border-stone-700 text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Kapat</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Ayet Paylaş Seçenekleri Modalı */}
+      {shareModalVerses && shareModalVerses.length > 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in">
+          <div className="bg-white border border-stone-200 rounded-3xl p-5 sm:p-6 w-full max-w-lg shadow-2xl space-y-4 text-slate-900 relative">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <div>
+                <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
+                  <Share2 className="w-5 h-5 text-amber-700" />
+                  <span>Ayet Paylaş</span>
+                </h3>
+                <p className="text-xs text-stone-500 font-medium">
+                  {shareModalVerses.length === 1
+                    ? `${selectedSurah.nameTurkish} Sûresi, ${shareModalVerses[0].number}. Ayet`
+                    : `${selectedSurah.nameTurkish} Sûresi (${shareModalVerses.length} Ayet Seçildi)`}
+                </p>
+              </div>
+              <button
+                onClick={() => setShareModalVerses(null)}
+                className="p-1.5 rounded-full hover:bg-stone-100 text-stone-500 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Paylaşım İçerik Seçenekleri */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-stone-700 block">Dahil Edilecek İçerikler:</label>
+              <div className="grid grid-cols-2 gap-2 text-xs font-medium">
+                <button
+                  type="button"
+                  onClick={() => setShareOptions(prev => ({ ...prev, includeArabic: !prev.includeArabic }))}
+                  className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
+                    shareOptions.includeArabic
+                      ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
+                      : 'bg-stone-50 border-stone-200 text-stone-600'
+                  }`}
+                >
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                    shareOptions.includeArabic ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 bg-white'
+                  }`}>
+                    {shareOptions.includeArabic && <Check className="w-3 h-3 stroke-[3]" />}
+                  </div>
+                  <span>Arapça Metin</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShareOptions(prev => ({ ...prev, includeTranslation: !prev.includeTranslation }))}
+                  className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
+                    shareOptions.includeTranslation
+                      ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
+                      : 'bg-stone-50 border-stone-200 text-stone-600'
+                  }`}
+                >
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                    shareOptions.includeTranslation ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 bg-white'
+                  }`}>
+                    {shareOptions.includeTranslation && <Check className="w-3 h-3 stroke-[3]" />}
+                  </div>
+                  <span>Türkçe Meal</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShareOptions(prev => ({ ...prev, includeTransliteration: !prev.includeTransliteration }))}
+                  className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
+                    shareOptions.includeTransliteration
+                      ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
+                      : 'bg-stone-50 border-stone-200 text-stone-600'
+                  }`}
+                >
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                    shareOptions.includeTransliteration ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 bg-white'
+                  }`}>
+                    {shareOptions.includeTransliteration && <Check className="w-3 h-3 stroke-[3]" />}
+                  </div>
+                  <span>Okunuş (Latin)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShareOptions(prev => ({ ...prev, includeMetadata: !prev.includeMetadata }))}
+                  className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
+                    shareOptions.includeMetadata
+                      ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
+                      : 'bg-stone-50 border-stone-200 text-stone-600'
+                  }`}
+                >
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center ${
+                    shareOptions.includeMetadata ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 bg-white'
+                  }`}>
+                    {shareOptions.includeMetadata && <Check className="w-3 h-3 stroke-[3]" />}
+                  </div>
+                  <span>Sure ve Ayet Adı</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Önizleme Alanı */}
+            <div>
+              <label className="text-[11px] font-bold text-stone-500 block mb-1">Paylaşım Metni Önizlemesi:</label>
+              <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl text-xs text-stone-800 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed select-all dir-auto">
+                {getFormattedShareText(shareModalVerses) || <span className="text-stone-400 italic font-sans">En az bir içerik seçiniz...</span>}
+              </div>
+            </div>
+
+            {/* Butonlar */}
+            <div className="flex items-center gap-2 pt-2 border-t border-stone-100">
+              <button
+                onClick={() => handleCopyText(shareModalVerses)}
+                className="flex-1 py-2.5 px-3 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-2 transition-all border border-stone-200 active:scale-95 cursor-pointer"
+              >
+                <Copy className="w-4 h-4 text-amber-700" />
+                <span>{copySuccessToast ? 'Kopyalandı!' : 'Metni Kopyala'}</span>
+              </button>
+
+              <button
+                onClick={() => handleShareNative(shareModalVerses)}
+                className="flex-1 py-2.5 px-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Paylaş</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { BookOpen, Radio, StickyNote } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Home, BookOpen, Radio, StickyNote } from 'lucide-react';
 import { NavTab } from '../types';
 
 interface BottomNavProps {
@@ -14,50 +15,69 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   unresolvedNotesCount = 0,
 }) => {
   const tabs: { id: NavTab; label: string; icon: React.FC<{ className?: string }>; badge?: number }[] = [
+    { id: 'home', label: '🏠 Ana Sayfa', icon: Home },
     { id: 'quran', label: '📖 Kur\'an Oku', icon: BookOpen },
     { id: 'sohbet', label: '💬 Ders & Sohbet', icon: Radio },
     { id: 'notes', label: '📝 Notlarım & AI', icon: StickyNote, badge: unresolvedNotesCount },
   ];
 
   return (
-    <nav className="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200 px-2 py-2 shadow-sm">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-2xl border-t border-stone-200/80 px-2 py-2 shadow-2xl pb-safe">
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
 
           return (
-            <button
+            <motion.button
               key={tab.id}
               id={`tour-tab-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative flex flex-col items-center justify-center py-1.5 px-3.5 rounded-2xl transition-all duration-200 active:scale-95 cursor-pointer ${
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.04 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              className={`relative flex flex-col items-center justify-center py-1.5 px-4 rounded-2xl cursor-pointer ${
                 isActive
                   ? 'text-emerald-950 font-bold'
                   : 'text-stone-500 hover:text-emerald-800 font-medium'
               }`}
             >
-              {/* Active Indicator Background */}
+              {/* Active Apple Pill Indicator */}
               {isActive && (
-                <span className="absolute inset-0 bg-emerald-50 rounded-2xl border border-emerald-200/80 -z-10" />
+                <motion.span
+                  layoutId="activeBottomTabPill"
+                  transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                  className="absolute inset-0 bg-emerald-50 rounded-2xl border border-emerald-200/90 shadow-2xs -z-10"
+                />
               )}
 
               <div className="relative">
-                <Icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'scale-110 text-emerald-800' : ''}`} />
+                <motion.div
+                  animate={{ scale: isActive ? 1.15 : 1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                >
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-emerald-800' : 'text-stone-500'}`} />
+                </motion.div>
 
                 {/* Badge if exists */}
                 {Boolean(tab.badge && tab.badge > 0) && (
-                  <span className="absolute -top-1.5 -right-2 bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[16px] text-center shadow-xs">
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                    className="absolute -top-1.5 -right-2 bg-emerald-700 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[16px] text-center shadow-xs"
+                  >
                     {tab.badge}
-                  </span>
+                  </motion.span>
                 )}
               </div>
 
               <span className="text-[11px] mt-1 tracking-tight leading-none">{tab.label}</span>
-            </button>
+            </motion.button>
           );
         })}
       </div>
     </nav>
   );
 };
+

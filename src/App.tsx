@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { User, Download, BookOpen, Radio, BookCheck, StickyNote, Maximize2, Minimize2, Home } from 'lucide-react';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
@@ -13,6 +14,9 @@ import { UserProfileModal } from './components/UserProfileModal';
 import { AuthLandingModal } from './components/AuthLandingModal';
 import { AuthGuardModal } from './components/AuthGuardModal';
 import { InteractiveTour } from './components/InteractiveTour';
+import { HomeDashboard } from './components/HomeDashboard';
+import { QiblaFinderModal } from './components/QiblaFinderModal';
+import { RiyazusSalihinModal } from './components/RiyazusSalihinModal';
 
 import { NavTab, Surah, Ayah, VerseNote, Reciter, SohbetSession } from './types';
 import { QURAN_SURAHS, RECITERS } from './data/quranData';
@@ -177,7 +181,11 @@ export default function App() {
   }, [isFullScreen]);
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<NavTab>('quran');
+  const [activeTab, setActiveTab] = useState<NavTab>('home');
+
+  // Qibla & Riyazus Modals
+  const [isQiblaModalOpen, setIsQiblaModalOpen] = useState<boolean>(false);
+  const [isRiyazusModalOpen, setIsRiyazusModalOpen] = useState<boolean>(false);
 
   // Automatically exit full screen reading mode when leaving Quran tab
   useEffect(() => {
@@ -229,7 +237,8 @@ export default function App() {
     localStorage.setItem('kuran_app_sohbets', JSON.stringify(sohbetSessions));
   }, [sohbetSessions]);
 
-  // Sync Notes to LocalStorage
+  // Target verse auto-highlight state
+  const [targetVerseNumber, setTargetVerseNumber] = useState<number | null>(null);
   useEffect(() => {
     localStorage.setItem('kuran_app_notes', JSON.stringify(verseNotes));
   }, [verseNotes]);
@@ -310,6 +319,10 @@ export default function App() {
     setSohbetSessions([newSohbet, ...sohbetSessions]);
   };
 
+  const handleUpdateSohbetSession = (updatedSession: SohbetSession) => {
+    setSohbetSessions((prev) => prev.map((s) => (s.id === updatedSession.id ? updatedSession : s)));
+  };
+
   const handleDeleteSohbetSession = (id: string) => {
     setSohbetSessions(sohbetSessions.filter((s) => s.id !== id));
   };
@@ -353,71 +366,126 @@ export default function App() {
           onOpenUserProfileModal={() => setIsUserProfileOpen(true)}
           onOpenAuthLandingModal={() => setIsAuthLandingOpen(true)}
           onStartTour={handleStartTour}
+          onOpenQiblaFinder={() => setIsQiblaModalOpen(true)}
+          onOpenRiyazusModal={() => setIsRiyazusModalOpen(true)}
           user={user}
           activeTab={activeTab}
           onNavigateTab={(tab) => setActiveTab(tab)}
         />
 
         {/* Scrollable View Content Area */}
-        <main className="flex-1 overflow-y-auto w-full max-w-5xl mx-auto px-2 sm:px-4">
-          {activeTab === 'quran' && (
-            <QuranReader
-              selectedSurah={selectedSurah}
-              setSelectedSurah={setSelectedSurah}
-              loadSurah={loadSurah}
-              isLoadingSurah={isLoadingSurah}
-              surahError={surahError}
-              isFullScreen={isFullScreen}
-              setIsFullScreen={setIsFullScreen}
-              areOverlaysVisible={areOverlaysVisible}
-              pageTheme={pageTheme}
-              setPageTheme={setPageTheme}
-              fontSize={fontSize}
-              setFontSize={setFontSize}
-              showTajweed={showTajweed}
-              setShowTajweed={setShowTajweed}
-              showTranslation={showTranslation}
-              setShowTranslation={setShowTranslation}
-              activeAyah={activeAyah}
-              setActiveAyah={setActiveAyah}
-              isPlaying={isPlaying}
-              onPlayAyah={handlePlayAyah}
-              onOpenAiTajweedExplain={(_surahName, _verseNum, _verseText) => {
-                setActiveTab('notes');
-              }}
-              onSaveVerseNote={handleSaveVerseNote}
-              onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
-              user={user}
-              onRequireAuth={handleRequireAuth}
-            />
-          )}
+        <main className="flex-1 overflow-y-auto w-full max-w-5xl mx-auto px-2 sm:px-4 pb-28 sm:pb-36 relative">
+          <AnimatePresence mode="wait">
+            {activeTab === 'home' && (
+              <motion.div
+                key="home"
+                initial={{ opacity: 0, y: 10, scale: 0.985 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.985 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+              >
+                <HomeDashboard
+                  onNavigateTab={(tab) => setActiveTab(tab)}
+                  onOpenQiblaFinder={() => setIsQiblaModalOpen(true)}
+                  onOpenRiyazusModal={() => setIsRiyazusModalOpen(true)}
+                  onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
+                  sohbetSessions={sohbetSessions}
+                  verseNotes={verseNotes}
+                />
+              </motion.div>
+            )}
 
-          {activeTab === 'sohbet' && (
-            <SohbetView
-              sohbetSessions={sohbetSessions}
-              onAddSohbetSession={handleAddSohbetSession}
-              onDeleteSohbetSession={handleDeleteSohbetSession}
-              onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
-              recordedVoiceUrl={recordedVoiceUrl}
-              recordedVoiceTranscript={recordedVoiceTranscript}
-              user={user}
-              onRequireAuth={handleRequireAuth}
-            />
-          )}
+            {activeTab === 'quran' && (
+              <motion.div
+                key="quran"
+                initial={{ opacity: 0, y: 10, scale: 0.985 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.985 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+              >
+                <QuranReader
+                  selectedSurah={selectedSurah}
+                  setSelectedSurah={setSelectedSurah}
+                  loadSurah={loadSurah}
+                  isLoadingSurah={isLoadingSurah}
+                  surahError={surahError}
+                  isFullScreen={isFullScreen}
+                  setIsFullScreen={setIsFullScreen}
+                  areOverlaysVisible={areOverlaysVisible}
+                  pageTheme={pageTheme}
+                  setPageTheme={setPageTheme}
+                  fontSize={fontSize}
+                  setFontSize={setFontSize}
+                  showTajweed={showTajweed}
+                  setShowTajweed={setShowTajweed}
+                  showTranslation={showTranslation}
+                  setShowTranslation={setShowTranslation}
+                  activeAyah={activeAyah}
+                  setActiveAyah={setActiveAyah}
+                  isPlaying={isPlaying}
+                  onPlayAyah={handlePlayAyah}
+                  onOpenAiTajweedExplain={(_surahName, _verseNum, _verseText) => {
+                    setActiveTab('notes');
+                  }}
+                  onSaveVerseNote={handleSaveVerseNote}
+                  onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
+                  user={user}
+                  onRequireAuth={handleRequireAuth}
+                  targetVerseNumber={targetVerseNumber}
+                />
+              </motion.div>
+            )}
 
-          {activeTab === 'notes' && (
-            <TeacherNotesView
-              verseNotes={verseNotes}
-              onDeleteNote={handleDeleteNote}
-              onOpenExportImportModal={() => setIsExportImportOpen(true)}
-            />
-          )}
+            {activeTab === 'sohbet' && (
+              <motion.div
+                key="sohbet"
+                initial={{ opacity: 0, y: 10, scale: 0.985 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.985 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+              >
+                <SohbetView
+                  sohbetSessions={sohbetSessions}
+                  onAddSohbetSession={handleAddSohbetSession}
+                  onUpdateSohbetSession={handleUpdateSohbetSession}
+                  onDeleteSohbetSession={handleDeleteSohbetSession}
+                  onOpenVoiceRecorder={() => setIsVoiceRecorderOpen(true)}
+                  recordedVoiceUrl={recordedVoiceUrl}
+                  recordedVoiceTranscript={recordedVoiceTranscript}
+                  user={user}
+                  onRequireAuth={handleRequireAuth}
+                />
+              </motion.div>
+            )}
+
+            {activeTab === 'notes' && (
+              <motion.div
+                key="notes"
+                initial={{ opacity: 0, y: 10, scale: 0.985 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.985 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+              >
+                <TeacherNotesView
+                  verseNotes={verseNotes}
+                  onDeleteNote={handleDeleteNote}
+                  onOpenExportImportModal={() => setIsExportImportOpen(true)}
+                  onNavigateToVerse={(surahId, verseNumber) => {
+                    setTargetVerseNumber(verseNumber);
+                    loadSurah(surahId);
+                    setActiveTab('quran');
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
 
         {/* Floating Recitation Audio Player Bar */}
         {activeAyah && (!isFullScreen || areOverlaysVisible) && (
           <AudioPlayerBar
             currentAyah={activeAyah}
+            surahId={selectedSurah.id}
             surahName={selectedSurah.nameTurkish}
             isPlaying={isPlaying}
             onPlayPause={() => setIsPlaying(!isPlaying)}
@@ -623,6 +691,18 @@ export default function App() {
         }}
         title="Ders & Sohbet Ses Kaydı"
         subtitle="Sohbet veya ders için ses kaydı alınıyor"
+      />
+
+      {/* Qibla Finder Modal */}
+      <QiblaFinderModal
+        isOpen={isQiblaModalOpen}
+        onClose={() => setIsQiblaModalOpen(false)}
+      />
+
+      {/* Riyazus Salihin Hadiths Modal */}
+      <RiyazusSalihinModal
+        isOpen={isRiyazusModalOpen}
+        onClose={() => setIsRiyazusModalOpen(false)}
       />
 
       {/* Interactive Onboarding Tour */}

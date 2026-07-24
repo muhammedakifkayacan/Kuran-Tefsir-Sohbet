@@ -1,4 +1,4 @@
-export type NavTab = 'quran' | 'sohbet' | 'notes';
+export type NavTab = 'home' | 'quran' | 'sohbet' | 'notes';
 
 export interface SohbetSession {
   id: string;

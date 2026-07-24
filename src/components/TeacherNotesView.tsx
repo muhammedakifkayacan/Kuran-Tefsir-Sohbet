@@ -1,22 +1,81 @@
-import React, { useState } from 'react';
-import { StickyNote, Sparkles, Trash2, Send, Bot, User, RefreshCw, Download, Upload, Copy, Check, Search, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { StickyNote, Sparkles, Trash2, Send, Bot, User, RefreshCw, Download, Upload, Copy, Check, Search, X, Bookmark, BookOpen } from 'lucide-react';
 import { VerseNote } from '../types';
+import { ALL_SURAHS } from '../data/surahList';
 
 interface TeacherNotesViewProps {
   verseNotes: VerseNote[];
   onDeleteNote: (id: string) => void;
   onOpenExportImportModal?: () => void;
+  onNavigateToVerse?: (surahId: number, verseNumber: number) => void;
 }
 
 export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
   verseNotes,
   onDeleteNote,
   onOpenExportImportModal,
+  onNavigateToVerse,
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'notes' | 'ai'>('notes');
+  const [activeSubTab, setActiveSubTab] = useState<'notes' | 'bookmarks' | 'ai'>('notes');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [searchNoteQuery, setSearchNoteQuery] = useState<string>('');
   const [copiedNoteId, setCopiedNoteId] = useState<string | null>(null);
+
+  // Bookmarks loaded from localStorage
+  const [allBookmarks, setAllBookmarks] = useState<{ surahId: number; surahName: string; verseNumber: number }[]>([]);
+
+  const loadBookmarks = () => {
+    const list: { surahId: number; surahName: string; verseNumber: number }[] = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('kuran_bookmarks_')) {
+          const surahId = parseInt(key.replace('kuran_bookmarks_', ''), 10);
+          const surahObj = ALL_SURAHS.find((s) => s.id === surahId);
+          const versesStr = localStorage.getItem(key);
+          if (versesStr) {
+            const vNums: number[] = JSON.parse(versesStr);
+            if (Array.isArray(vNums)) {
+              vNums.forEach((vNum) => {
+                list.push({
+                  surahId,
+                  surahName: surahObj ? surahObj.nameTurkish : `${surahId}. Sûre`,
+                  verseNumber: vNum,
+                });
+              });
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setAllBookmarks(list.sort((a, b) => a.surahId - b.surahId || a.verseNumber - b.verseNumber));
+  };
+
+  useEffect(() => {
+    loadBookmarks();
+  }, [activeSubTab]);
+
+  const handleDeleteBookmark = (surahId: number, verseNum: number) => {
+    const key = `kuran_bookmarks_${surahId}`;
+    const existing = localStorage.getItem(key);
+    if (existing) {
+      try {
+        const arr: number[] = JSON.parse(existing);
+        const updated = arr.filter((v) => v !== verseNum);
+        if (updated.length > 0) {
+          localStorage.setItem(key, JSON.stringify(updated));
+        } else {
+          localStorage.removeItem(key);
+        }
+        setAllBookmarks((prev) => prev.filter((b) => !(b.surahId === surahId && b.verseNumber === verseNum)));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   const handleCopyNote = (note: VerseNote) => {
     const textToCopy = `${note.surahName} ${note.verseNumber}. Ayet (${note.tag}):\n${note.noteText}`;
@@ -113,29 +172,65 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-1.5 p-1 bg-stone-100 rounded-2xl">
-          <button
+        <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-2xl relative text-xs">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             onClick={() => setActiveSubTab('notes')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`relative py-2 px-1 rounded-xl font-bold transition-colors cursor-pointer text-center ${
               activeSubTab === 'notes'
-                ? 'bg-white text-amber-900 shadow-sm font-bold'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Ayet Notları ({verseNotes.length})
-          </button>
-
-          <button
-            onClick={() => setActiveSubTab('ai')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-              activeSubTab === 'ai'
-                ? 'bg-amber-700 text-white shadow-2xs font-bold'
+                ? 'text-amber-900 font-bold'
                 : 'text-stone-600 hover:text-stone-900'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-            AI Asistan
-          </button>
+            {activeSubTab === 'notes' && (
+              <motion.span
+                layoutId="activeSubTabPill"
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className="absolute inset-0 bg-white rounded-xl shadow-xs border border-stone-200/60 -z-0"
+              />
+            )}
+            <span className="relative z-10 truncate">Ayet Notlarım ({verseNotes.length})</span>
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveSubTab('bookmarks')}
+            className={`relative py-2 px-1 rounded-xl font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer text-center ${
+              activeSubTab === 'bookmarks'
+                ? 'text-amber-900 font-bold'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            {activeSubTab === 'bookmarks' && (
+              <motion.span
+                layoutId="activeSubTabPill"
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className="absolute inset-0 bg-white rounded-xl shadow-xs border border-stone-200/60 -z-0"
+              />
+            )}
+            <Bookmark className="w-3.5 h-3.5 relative z-10 text-amber-600 shrink-0" />
+            <span className="relative z-10 truncate">Kaydedilenler ({allBookmarks.length})</span>
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveSubTab('ai')}
+            className={`relative py-2 px-1 rounded-xl font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer text-center ${
+              activeSubTab === 'ai'
+                ? 'text-white font-bold'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            {activeSubTab === 'ai' && (
+              <motion.span
+                layoutId="activeSubTabPill"
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className="absolute inset-0 bg-amber-700 rounded-xl shadow-xs -z-0"
+              />
+            )}
+            <Sparkles className="w-3.5 h-3.5 relative z-10 text-amber-200 shrink-0" />
+            <span className="relative z-10 truncate">AI Asistan</span>
+          </motion.button>
         </div>
       </div>
 
@@ -255,8 +350,17 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
                       </div>
                     </div>
 
-                    <p className="text-xs font-bold text-slate-900">
-                      {note.surahName} — {note.verseNumber}. Ayet
+                    <p className="text-xs font-bold text-slate-900 flex items-center justify-between">
+                      <span>{note.surahName} — {note.verseNumber}. Ayet</span>
+                      {onNavigateToVerse && (
+                        <button
+                          onClick={() => onNavigateToVerse(note.surahId, note.verseNumber)}
+                          className="text-[11px] font-bold text-amber-800 hover:text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-all cursor-pointer"
+                        >
+                          <BookOpen className="w-3 h-3 text-amber-700" />
+                          <span>Ayete Git</span>
+                        </button>
+                      )}
                     </p>
 
                     <p className="text-xs text-slate-700 bg-stone-50 p-3 rounded-2xl border border-stone-200/80 leading-relaxed italic">
@@ -265,6 +369,88 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
                   </div>
 
                   <p className="text-[10px] text-slate-400 text-right font-mono mt-2">{note.createdAt}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : activeSubTab === 'bookmarks' ? (
+        /* Kaydedilen Ayetler (Yer İşaretleri) View */
+        <div className="space-y-4">
+          <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 text-amber-900 text-xs flex items-start justify-between gap-3 shadow-2xs">
+            <div className="flex items-start gap-2.5">
+              <Bookmark className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-bold text-sm text-amber-950">Kaydedilen Ayetler (Yer İşaretleri)</h3>
+                <p className="text-amber-800 text-[11px] mt-0.5 leading-relaxed">
+                  Kur'an okurken veya çoklu ayet seçerken "Kaydet" seçeneği ile işaretlediğiniz tüm ayetler burada listelenir.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={loadBookmarks}
+              className="p-2 rounded-xl bg-white border border-amber-200 text-amber-900 hover:bg-amber-100 transition-all shrink-0 cursor-pointer text-xs font-bold flex items-center gap-1"
+              title="Listeyi Yenile"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Yenile</span>
+            </button>
+          </div>
+
+          {allBookmarks.length === 0 ? (
+            <div className="bg-white rounded-3xl p-8 border border-dashed border-stone-300 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto text-xl font-bold">
+                🔖
+              </div>
+              <p className="text-sm font-bold text-stone-800">Henüz kaydedilmiş yer işareti bulunmuyor</p>
+              <p className="text-xs text-stone-500 max-w-md mx-auto">
+                Kur'an sayfasında okurken ayet kartındaki 🔖 ikonuna dokunarak veya "Çoklu Seç" menüsünden "Kaydet"e basarak ayetleri buraya kaydedebilirsiniz.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {allBookmarks.map((bm, idx) => (
+                <div
+                  key={`${bm.surahId}-${bm.verseNumber}-${idx}`}
+                  onClick={() => {
+                    if (onNavigateToVerse) {
+                      onNavigateToVerse(bm.surahId, bm.verseNumber);
+                    }
+                  }}
+                  className="bg-white hover:bg-amber-50/50 rounded-2xl p-4 border border-stone-200/90 hover:border-amber-400 shadow-2xs hover:shadow-md transition-all space-y-2 flex flex-col justify-between cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-xl bg-amber-100 group-hover:bg-amber-700 group-hover:text-white text-amber-900 font-bold text-xs flex items-center justify-center border border-amber-200 transition-colors">
+                        {bm.verseNumber}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-xs text-stone-900 group-hover:text-amber-950 transition-colors">{bm.surahName}</h4>
+                        <span className="text-[10px] text-stone-500 font-medium">{bm.verseNumber}. Ayet</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteBookmark(bm.surahId, bm.verseNumber);
+                      }}
+                      className="p-1.5 rounded-xl hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-colors cursor-pointer"
+                      title="Yer İşaretini Kaldır"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="pt-1 flex items-center justify-between text-xs font-semibold text-stone-600">
+                    <span className="text-[11px] text-amber-800 font-medium flex items-center gap-1">
+                      📌 Kaydedildi
+                    </span>
+                    <span className="text-[11px] font-bold text-amber-900 group-hover:underline flex items-center gap-1">
+                      <BookOpen className="w-3.5 h-3.5 text-amber-700" />
+                      Ayete Git →
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

@@ -1,10 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, X } from 'lucide-react';
 import { Ayah, Reciter } from '../types';
 import { RECITERS } from '../data/quranData';
 
 interface AudioPlayerBarProps {
   currentAyah: Ayah | null;
+  surahId?: number;
   surahName: string;
   isPlaying: boolean;
   onPlayPause: () => void;
@@ -19,6 +21,7 @@ interface AudioPlayerBarProps {
 
 export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
   currentAyah,
+  surahId,
   surahName,
   isPlaying,
   onPlayPause,
@@ -36,6 +39,16 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
   const [isLooping, setIsLooping] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Helper to dynamically calculate EveryAyah audio URL based on selected reciter
+  const getAudioUrlForReciter = (reciter: Reciter, sId?: number, ayahObj?: Ayah | null) => {
+    if (!ayahObj) return '';
+    if (reciter?.baseUrl && sId && ayahObj.number) {
+      const pad = (n: number, z = 3) => String(n).padStart(z, '0');
+      return `${reciter.baseUrl}${pad(sId)}${pad(ayahObj.number)}.mp3`;
+    }
+    return ayahObj.audioUrl || '';
+  };
+
   useEffect(() => {
     if (!currentAyah) return;
 
@@ -44,7 +57,14 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
     }
 
     const audio = audioRef.current;
-    audio.src = currentAyah.audioUrl;
+    
+    const targetAudioUrl = getAudioUrlForReciter(selectedReciter, surahId, currentAyah);
+
+    // Only set audio.src if URL actually changed to prevent resetting currentTime on pause/resume
+    if (!audio.src || (audio.src !== targetAudioUrl && !audio.src.endsWith(targetAudioUrl))) {
+      audio.src = targetAudioUrl;
+      audio.load();
+    }
     audio.playbackRate = playbackRate;
     audio.loop = isLooping;
 
@@ -81,7 +101,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [currentAyah, isPlaying]);
+  }, [currentAyah, surahId, selectedReciter, isPlaying]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -112,8 +132,15 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
   };
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 z-30 px-4 max-w-lg mx-auto pointer-events-auto">
-      <div className="bg-stone-50/95 text-stone-900 backdrop-blur-xl rounded-2xl p-4 border border-stone-200/90 shadow-xl space-y-2.5">
+    <AnimatePresence>
+      <motion.div
+        initial={{ y: 40, opacity: 0, scale: 0.95 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 40, opacity: 0, scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 450, damping: 28 }}
+        className="fixed bottom-16 left-0 right-0 z-30 px-4 max-w-lg mx-auto pointer-events-auto"
+      >
+        <div className="bg-stone-50/95 text-stone-900 backdrop-blur-xl rounded-2xl p-4 border border-stone-200/90 shadow-xl space-y-2.5">
         {/* Progress Bar */}
         <div className="relative w-full h-1.5 bg-stone-200 rounded-full overflow-hidden group cursor-pointer">
           <input
@@ -231,6 +258,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
           </button>
         </div>
       </div>
-    </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };

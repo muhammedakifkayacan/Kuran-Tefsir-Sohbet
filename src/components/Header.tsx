@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { Smartphone, Monitor, Sparkles, Download, Home, User, Menu, X, BookOpen, Radio, BookCheck, StickyNote, Sliders, ChevronRight, Compass } from 'lucide-react';
 import { NavTab } from '../types';
 
@@ -12,6 +13,8 @@ interface HeaderProps {
   onOpenUserProfileModal?: () => void;
   onOpenAuthLandingModal?: () => void;
   onStartTour?: () => void;
+  onOpenQiblaFinder?: () => void;
+  onOpenRiyazusModal?: () => void;
   user?: { name: string; email: string; avatar: string } | null;
   activeTab?: NavTab;
   onNavigateTab?: (tab: NavTab) => void;
@@ -26,6 +29,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenUserProfileModal,
   onOpenAuthLandingModal,
   onStartTour,
+  onOpenQiblaFinder,
+  onOpenRiyazusModal,
   user,
   activeTab = 'quran',
   onNavigateTab,
@@ -152,171 +157,220 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* FULL-SCREEN APPLE MINIMALIST BURGER MENU OVERLAY */}
-      {isMenuOpen && createPortal(
-        <div className="fixed inset-0 z-[99999] bg-stone-50/98 backdrop-blur-3xl text-stone-900 flex flex-col justify-between p-6 sm:p-12 animate-fade-in overflow-y-auto">
-          {/* Top Bar of Fullscreen Overlay */}
-          <div className="flex items-center justify-between max-w-4xl mx-auto w-full">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-bold shadow-sm">
-                <span className="text-xl font-serif">ق</span>
-              </div>
-              <div>
-                <h2 className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
-                  Kur'an & Tefsir Rehberi
-                </h2>
-                <p className="text-xs text-stone-500 font-medium">Sade & Kolay Kullanım</p>
-              </div>
-            </div>
-
-            {/* Close Button */}
-            <button
-              onClick={() => setIsMenuOpen(false)}
-              className="p-2.5 rounded-2xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
+      {createPortal(
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: -10 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              className="fixed inset-0 z-[99999] bg-stone-50/98 backdrop-blur-3xl text-stone-900 flex flex-col justify-between p-6 sm:p-12 overflow-y-auto"
             >
-              <span className="text-xs font-mono font-semibold text-stone-500 hidden sm:inline">ESC</span>
-              <X className="w-5 h-5 text-stone-800" />
-            </button>
-          </div>
-
-          {/* Center Navigation Links */}
-          <div className="max-w-4xl mx-auto w-full my-8 space-y-6">
-            <p className="text-xs font-bold uppercase tracking-widest text-emerald-800 border-b border-stone-200 pb-2">
-              Ana Bölümler
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <button
-                onClick={() => {
-                  onNavigateTab?.('quran');
-                  setIsMenuOpen(false);
-                }}
-                className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group ${
-                  activeTab === 'quran'
-                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
-                    : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-2xl ${activeTab === 'quran' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
-                    <BookOpen className="w-6 h-6" />
+              {/* Top Bar of Fullscreen Overlay */}
+              <div className="flex items-center justify-between max-w-4xl mx-auto w-full">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-bold shadow-sm">
+                    <span className="text-xl font-serif">ق</span>
                   </div>
                   <div>
-                    <h3 className="font-bold text-base sm:text-lg">Kur'an Okuma</h3>
-                    <p className={`text-xs ${activeTab === 'quran' ? 'text-emerald-100' : 'text-stone-500'}`}>Mushaf, Mealli ve Sadece Meal Sayfaları</p>
+                    <h2 className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
+                      Kur'an & Tefsir Rehberi
+                    </h2>
+                    <p className="text-xs text-stone-500 font-medium">Sade & Kolay Kullanım</p>
                   </div>
                 </div>
-                <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'quran' ? 'text-white' : 'text-stone-400'}`} />
-              </button>
 
-              <button
-                onClick={() => {
-                  onNavigateTab?.('sohbet');
-                  setIsMenuOpen(false);
-                }}
-                className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group ${
-                  activeTab === 'sohbet'
-                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
-                    : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-2xl ${activeTab === 'sohbet' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
-                    <Radio className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-base sm:text-lg">Sohbet & Ders</h3>
-                    <p className={`text-xs ${activeTab === 'sohbet' ? 'text-emerald-100' : 'text-stone-500'}`}>Ders Ses Kayıtları ve Sohbet Dinleme</p>
-                  </div>
+                {/* Close Button */}
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-2.5 rounded-2xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <span className="text-xs font-mono font-semibold text-stone-500 hidden sm:inline">ESC</span>
+                  <X className="w-5 h-5 text-stone-800" />
+                </motion.button>
+              </div>
+
+              {/* Center Navigation Links */}
+              <div className="max-w-4xl mx-auto w-full my-8 space-y-6">
+                <p className="text-xs font-bold uppercase tracking-widest text-emerald-800 border-b border-stone-200 pb-2">
+                  Ana Bölümler
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.01 }}
+                    onClick={() => {
+                      onNavigateTab?.('quran');
+                      setIsMenuOpen(false);
+                    }}
+                    className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
+                      activeTab === 'quran'
+                        ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
+                        : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`p-3 rounded-2xl ${activeTab === 'quran' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
+                        <BookOpen className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base sm:text-lg">Kur'an Okuma</h3>
+                        <p className={`text-xs ${activeTab === 'quran' ? 'text-emerald-100' : 'text-stone-500'}`}>Mushaf, Mealli ve Sadece Meal Sayfaları</p>
+                      </div>
+                    </div>
+                    <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'quran' ? 'text-white' : 'text-stone-400'}`} />
+                  </motion.button>
+
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.01 }}
+                    onClick={() => {
+                      onNavigateTab?.('sohbet');
+                      setIsMenuOpen(false);
+                    }}
+                    className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
+                      activeTab === 'sohbet'
+                        ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
+                        : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`p-3 rounded-2xl ${activeTab === 'sohbet' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
+                        <Radio className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base sm:text-lg">Sohbet & Ders</h3>
+                        <p className={`text-xs ${activeTab === 'sohbet' ? 'text-emerald-100' : 'text-stone-500'}`}>Ders Ses Kayıtları ve Sohbet Dinleme</p>
+                      </div>
+                    </div>
+                    <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'sohbet' ? 'text-white' : 'text-stone-400'}`} />
+                  </motion.button>
+
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.01 }}
+                    onClick={() => {
+                      onNavigateTab?.('notes');
+                      setIsMenuOpen(false);
+                    }}
+                    className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
+                      activeTab === 'notes'
+                        ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
+                        : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`p-3 rounded-2xl ${activeTab === 'notes' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
+                        <StickyNote className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base sm:text-lg">Hoca Notlarım</h3>
+                        <p className={`text-xs ${activeTab === 'notes' ? 'text-emerald-100' : 'text-stone-500'}`}>Ayetlere Alınan Tüm Ders Notları</p>
+                      </div>
+                    </div>
+                    <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'notes' ? 'text-white' : 'text-stone-400'}`} />
+                  </motion.button>
                 </div>
-                <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'sohbet' ? 'text-white' : 'text-stone-400'}`} />
-              </button>
 
-              <button
-                onClick={() => {
-                  onNavigateTab?.('notes');
-                  setIsMenuOpen(false);
-                }}
-                className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group ${
-                  activeTab === 'notes'
-                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
-                    : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-2xl ${activeTab === 'notes' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
-                    <StickyNote className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-base sm:text-lg">Hoca Notlarım</h3>
-                    <p className={`text-xs ${activeTab === 'notes' ? 'text-emerald-100' : 'text-stone-500'}`}>Ayetlere Alınan Tüm Ders Notları</p>
-                  </div>
+                {/* Quick Action Cards in Overlay */}
+                <div className="pt-4 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {onOpenQiblaFinder && (
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        onOpenQiblaFinder();
+                        setIsMenuOpen(false);
+                      }}
+                      className="p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                    >
+                      <Compass className="w-4 h-4 text-amber-700 shrink-0" />
+                      <span>🕋 Kıble Pusulası (Kâbe Yönü)</span>
+                    </motion.button>
+                  )}
+
+                  {onOpenRiyazusModal && (
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        onOpenRiyazusModal();
+                        setIsMenuOpen(false);
+                      }}
+                      className="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                    >
+                      <BookOpen className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <span>📖 Riyazü’s-Sâlihîn Hadisler</span>
+                    </motion.button>
+                  )}
+
+                  {onOpenUserProfileModal && (
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        onOpenUserProfileModal();
+                        setIsMenuOpen(false);
+                      }}
+                      className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                    >
+                      <Sliders className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <span>Kullanıcı Profili & Ayarlar</span>
+                    </motion.button>
+                  )}
+
+                  {onOpenExportImportModal && (
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        onOpenExportImportModal();
+                        setIsMenuOpen(false);
+                      }}
+                      className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                    >
+                      <Download className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <span>Notları Aktar (Word / Drive)</span>
+                    </motion.button>
+                  )}
+
+                  {onOpenWelcomeModal && (
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        onOpenWelcomeModal();
+                        setIsMenuOpen(false);
+                      }}
+                      className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                    >
+                      <Home className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <span>Karşılama Ekranı</span>
+                    </motion.button>
+                  )}
+
+                  {onStartTour && (
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        onStartTour();
+                      }}
+                      className="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                    >
+                      <span className="text-sm">🧭</span>
+                      <span>Uygulama Rehberi (Tur)</span>
+                    </motion.button>
+                  )}
                 </div>
-                <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'notes' ? 'text-white' : 'text-stone-400'}`} />
-              </button>
-            </div>
+              </div>
 
-            {/* Quick Action Cards in Overlay */}
-            <div className="pt-4 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {onOpenUserProfileModal && (
-                <button
-                  onClick={() => {
-                    onOpenUserProfileModal();
-                    setIsMenuOpen(false);
-                  }}
-                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
-                >
-                  <Sliders className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>Kullanıcı Profili & Ayarlar</span>
-                </button>
-              )}
-
-              {onOpenExportImportModal && (
-                <button
-                  onClick={() => {
-                    onOpenExportImportModal();
-                    setIsMenuOpen(false);
-                  }}
-                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
-                >
-                  <Download className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>Notları Aktar (Word / Drive)</span>
-                </button>
-              )}
-
-              {onOpenWelcomeModal && (
-                <button
-                  onClick={() => {
-                    onOpenWelcomeModal();
-                    setIsMenuOpen(false);
-                  }}
-                  className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
-                >
-                  <Home className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span>Karşılama Ekranı</span>
-                </button>
-              )}
-
-              {onStartTour && (
-                <button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    onStartTour();
-                  }}
-                  className="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
-                >
-                  <span className="text-sm">🧭</span>
-                  <span>Uygulama Rehberi (Tur)</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Footer Info of Fullscreen Overlay */}
-          <div className="max-w-4xl mx-auto w-full pt-4 border-t border-stone-200 text-center text-xs text-stone-500 flex items-center justify-between">
-            <span>Kur'an & Tefsir Rehberi • Sade ve Yalın Tasarım</span>
-            <span>Kapatmak için ESC'ye basın</span>
-          </div>
-        </div>,
+              {/* Footer Info of Fullscreen Overlay */}
+              <div className="max-w-4xl mx-auto w-full pt-4 border-t border-stone-200 text-center text-xs text-stone-500 flex items-center justify-between">
+                <span>Kur'an & Tefsir Rehberi • Sade ve Yalın Tasarım</span>
+                <span>Kapatmak için ESC'ye basın</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
         document.body
       )}
     </header>
