@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+html, body, #root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  position: relative;
+}
+
 /* UX-Friendly, Natural Horizontal Page Turn Transitions (E-Book / Apple Books Style) */
 @keyframes pageSlideNext {
   0% {

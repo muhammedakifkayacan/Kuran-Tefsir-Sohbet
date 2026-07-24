@@ -330,10 +330,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100 text-slate-900 flex flex-col items-center justify-center font-sans antialiased selection:bg-amber-400 selection:text-slate-950">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-stone-100 text-slate-900 flex flex-col items-center justify-center font-sans antialiased selection:bg-amber-400 selection:text-slate-950">
       {/* Main Container Wrapper */}
       <div
-        className={`w-full min-h-screen flex flex-col bg-[#FAF8F5] ${
+        className={`w-full max-w-full overflow-x-hidden min-h-screen flex flex-col bg-[#FAF8F5] ${
           isFullScreen && activeTab === 'quran'
             ? pageTheme === 'mint'
               ? 'bg-[#F2F7F4]'

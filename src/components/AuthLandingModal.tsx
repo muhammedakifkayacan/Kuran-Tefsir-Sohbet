@@ -88,7 +88,7 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
   const halfRowText = phraseUnit + phraseUnit + phraseUnit;
 
   return (
-    <div className="fixed inset-0 z-50 min-h-screen w-full bg-[#FAF8F5] text-stone-900 flex flex-col-reverse lg:flex-row overflow-y-auto animate-fade-in font-sans selection:bg-stone-200 selection:text-stone-900">
+    <div className="fixed inset-0 z-50 min-h-screen w-full max-w-full bg-[#FAF8F5] text-stone-900 flex flex-col lg:flex-row overflow-y-auto overflow-x-hidden animate-fade-in font-sans selection:bg-stone-200 selection:text-stone-900">
       
       {/* Top Right Close / Skip button */}
       <motion.button
@@ -96,7 +96,7 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
         onClick={onClose}
-        className="absolute top-5 right-5 z-40 px-4 py-2 rounded-full bg-white/80 hover:bg-white text-stone-700 hover:text-stone-950 text-xs font-semibold flex items-center gap-2 backdrop-blur-md border border-stone-200/80 transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer"
+        className="absolute top-4 right-4 sm:top-6 sm:right-6 z-40 px-3.5 py-2 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-stone-950 text-xs font-semibold flex items-center gap-2 backdrop-blur-md border border-stone-200/80 transition-all shadow-sm hover:shadow active:scale-95 cursor-pointer"
         title="Uygulamaya Geç"
       >
         <span>Uygulamaya Geç</span>
@@ -104,7 +104,7 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
       </motion.button>
 
       {/* BACKGROUND ANIMATED CALLIGRAPHY WATERMARK (ALLAHUAKBAR) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-around py-6 z-0">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none flex flex-col justify-around py-6 z-0 max-w-full">
         {/* Row 1 - Left to Right (Ultra-slow serene infinite move) */}
         <motion.div
           className="flex w-max whitespace-nowrap text-6xl sm:text-8xl lg:text-[10rem] font-serif font-bold text-stone-800 tracking-widest opacity-[0.025]"
@@ -136,8 +136,8 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
         </motion.div>
       </div>
 
-      {/* LEFT COLUMN: Apple-Style Light Luxury Feature Showcase */}
-      <div className="flex-1 bg-white/40 lg:bg-transparent p-5 sm:p-10 lg:p-16 flex flex-col justify-between relative z-10 border-t lg:border-t-0 lg:border-r border-stone-200/80 min-h-[40vh] lg:min-h-screen">
+      {/* LEFT COLUMN: Apple-Style Light Luxury Feature Showcase (Hidden on Mobile) */}
+      <div className="hidden lg:flex flex-1 bg-white/40 lg:bg-transparent p-8 sm:p-12 lg:p-16 flex-col justify-between relative z-10 border-r border-stone-200/80 min-h-screen">
         
         {/* Ambient Glow Orbs */}
         <div className="absolute -top-32 -left-32 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
@@ -261,7 +261,7 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
       </div>
 
       {/* RIGHT COLUMN: Clean Apple Minimalist Auth Panel */}
-      <div className="flex-1 bg-white/60 lg:bg-white/30 backdrop-blur-xs text-stone-900 p-5 pt-14 sm:p-10 lg:p-16 flex flex-col justify-center items-center relative z-10 min-h-[50vh] lg:min-h-screen">
+      <div className="flex-1 w-full max-w-full bg-white/60 lg:bg-white/30 backdrop-blur-xs text-stone-900 p-6 sm:p-10 lg:p-16 flex flex-col justify-center items-center relative z-10 min-h-screen">
         
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
