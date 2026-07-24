@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight, Share2, Copy, CheckSquare, Square } from 'lucide-react';
+import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight, Share2, Copy, CheckSquare, Square, MessageCircle } from 'lucide-react';
 import { Surah, Ayah, VerseNote } from '../types';
 import { ALL_SURAHS } from '../data/surahList';
 import { fetchSurahFromApi } from '../utils/quranApi';
@@ -1258,6 +1258,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     includeTransliteration: false,
     includeMetadata: true,
   });
+  const [shareFormatMode, setShareFormatMode] = useState<'standard' | 'whatsapp'>('whatsapp');
   const [copySuccessToast, setCopySuccessToast] = useState<boolean>(false);
 
   const toggleVerseSelection = (verseNumber: number) => {
@@ -1320,6 +1321,50 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     }
 
     return `${body}${footer}`;
+  };
+
+  // WhatsApp Formatted Text Generator (Asterisks * mark bold text in WhatsApp)
+  const getWhatsAppFormattedText = (verses: Ayah[] | null): string => {
+    if (!verses || verses.length === 0) return '';
+    const sorted = [...verses].sort((a, b) => a.number - b.number);
+
+    const header = sorted.length === 1
+      ? `*📖 ${selectedSurah.nameTurkish} Sûresi, ${sorted[0].number}. Ayet*`
+      : `*📖 ${selectedSurah.nameTurkish} Sûresi (${sorted[0].number} - ${sorted[sorted.length - 1].number}. Ayetler)*`;
+
+    const body = sorted.map((v) => {
+      const parts: string[] = [];
+      if (sorted.length > 1) {
+        parts.push(`*📌 ${v.number}. Ayet:*`);
+      }
+      if (shareOptions.includeArabic && v.arabic) {
+        parts.push(v.arabic);
+      }
+      if (shareOptions.includeTranslation && v.translation) {
+        parts.push(`*Meal:* "${v.translation}"`);
+      }
+      if (shareOptions.includeTransliteration && v.transliteration) {
+        parts.push(`*Okunuşu:* ${v.transliteration}`);
+      }
+      if (shareOptions.includeMetadata && sorted.length === 1) {
+        parts.push(`_(${selectedSurah.nameTurkish} Sûresi, ${v.number}. Ayet • Sayfa ${v.page})_`);
+      }
+      return parts.join('\n');
+    }).join('\n\n---\n\n');
+
+    return `${header}\n\n${body}\n\n_KuranDersi Uygulamasından Paylaşıldı_`;
+  };
+
+  const handleCopyWhatsAppText = (verses: Ayah[]) => {
+    const text = getWhatsAppFormattedText(verses);
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('💬 WhatsApp formatında kopyalandı! (*Yıldızlı* bold alanlar hazır)');
+      setCopySuccessToast(true);
+      setTimeout(() => setCopySuccessToast(false), 2000);
+    }).catch(() => {
+      showToast('Kopyalama başarısız oldu.');
+    });
   };
 
   const handleCopyText = (verses: Ayah[]) => {
@@ -3714,27 +3759,73 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               </div>
             </div>
 
+            {/* Format Selection Tab */}
+            <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-2xl border border-stone-200">
+              <button
+                type="button"
+                onClick={() => setShareFormatMode('whatsapp')}
+                className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  shareFormatMode === 'whatsapp'
+                    ? 'bg-emerald-700 text-white shadow-2xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-200" />
+                <span>WhatsApp Formatı (*Yıldızlı*)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShareFormatMode('standard')}
+                className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  shareFormatMode === 'standard'
+                    ? 'bg-amber-700 text-white shadow-2xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5 text-amber-200" />
+                <span>Düz Metin</span>
+              </button>
+            </div>
+
             {/* Önizleme Alanı */}
             <div>
-              <label className="text-[11px] font-bold text-stone-500 block mb-1">Paylaşım Metni Önizlemesi:</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[11px] font-bold text-stone-500 block">Paylaşım Metni Önizlemesi:</label>
+                {shareFormatMode === 'whatsapp' && (
+                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                    *Yıldızlar* WhatsApp'ta Kalın Görünür
+                  </span>
+                )}
+              </div>
               <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl text-xs text-stone-800 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed select-all dir-auto">
-                {getFormattedShareText(shareModalVerses) || <span className="text-stone-400 italic font-sans">En az bir içerik seçiniz...</span>}
+                {(shareFormatMode === 'whatsapp' ? getWhatsAppFormattedText(shareModalVerses) : getFormattedShareText(shareModalVerses)) || (
+                  <span className="text-stone-400 italic font-sans">En az bir içerik seçiniz...</span>
+                )}
               </div>
             </div>
 
             {/* Butonlar */}
-            <div className="flex items-center gap-2 pt-2 border-t border-stone-100">
+            <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-stone-100">
+              <button
+                onClick={() => handleCopyWhatsAppText(shareModalVerses)}
+                className="w-full sm:flex-1 py-2.5 px-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4 text-emerald-200" />
+                <span>{copySuccessToast && shareFormatMode === 'whatsapp' ? 'Kopyalandı!' : 'WhatsApp İçin Kopyala (*)'}</span>
+              </button>
+
               <button
                 onClick={() => handleCopyText(shareModalVerses)}
-                className="flex-1 py-2.5 px-3 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-2 transition-all border border-stone-200 active:scale-95 cursor-pointer"
+                className="w-full sm:flex-1 py-2.5 px-3 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-2 transition-all border border-stone-200 active:scale-95 cursor-pointer"
               >
                 <Copy className="w-4 h-4 text-amber-700" />
-                <span>{copySuccessToast ? 'Kopyalandı!' : 'Metni Kopyala'}</span>
+                <span>Düz Metin Kopyala</span>
               </button>
 
               <button
                 onClick={() => handleShareNative(shareModalVerses)}
-                className="flex-1 py-2.5 px-3 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto py-2.5 px-4 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer"
               >
                 <Share2 className="w-4 h-4" />
                 <span>Paylaş</span>

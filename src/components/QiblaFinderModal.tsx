@@ -203,30 +203,41 @@ export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onCl
         </div>
 
         {/* Location & City Selector Bar */}
-        <div className="p-3 bg-white border-b border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-1.5 w-full sm:w-auto">
-            <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
-            <select
-              value={CITIES_LIST.some((c) => c.name === selectedCityName) ? selectedCityName : 'İstanbul'}
-              onChange={(e) => handleCitySelect(e.target.value)}
-              className="px-2.5 py-1.5 rounded-xl bg-stone-100 border border-stone-200 text-stone-800 font-bold focus:outline-none w-full cursor-pointer"
-            >
-              {CITIES_LIST.map((c) => (
-                <option key={c.name} value={c.name}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+        <div className="p-3 bg-emerald-50/80 border-b border-emerald-100/90 flex flex-col gap-2 text-xs">
+          <div className="flex items-center justify-between">
+            <span className="font-extrabold text-emerald-950 flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Kıble Açısı İçin Coğrafi Konum:</span>
+            </span>
+            <span className="text-[10px] bg-emerald-200/80 text-emerald-900 px-2 py-0.5 rounded-md font-bold">
+              Enlem/Boylam Hesabı
+            </span>
           </div>
 
-          <button
-            onClick={handleGetLocation}
-            disabled={isLocating}
-            className="w-full sm:w-auto px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0"
-          >
-            <LocateFixed className={`w-3.5 h-3.5 text-emerald-700 ${isLocating ? 'animate-spin' : ''}`} />
-            <span>{isLocating ? 'Konum Alınıyor...' : 'Otomatik GPS'}</span>
-          </button>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div className="relative w-full sm:w-auto flex-1">
+              <select
+                value={CITIES_LIST.some((c) => c.name === selectedCityName) ? selectedCityName : 'İstanbul'}
+                onChange={(e) => handleCitySelect(e.target.value)}
+                className="px-2.5 py-1.5 rounded-xl bg-white border border-emerald-200 text-stone-800 font-bold focus:outline-none w-full cursor-pointer shadow-2xs"
+              >
+                {CITIES_LIST.map((c) => (
+                  <option key={c.name} value={c.name}>
+                    {c.name} (Koordinat)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              onClick={handleGetLocation}
+              disabled={isLocating}
+              className="w-full sm:w-auto px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0 shadow-2xs"
+            >
+              <LocateFixed className={`w-3.5 h-3.5 text-emerald-200 ${isLocating ? 'animate-spin' : ''}`} />
+              <span>{isLocating ? 'GPS Alınıyor...' : 'Otomatik GPS'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Main Compass Visual */}
@@ -306,9 +317,13 @@ export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onCl
         </div>
 
         {/* Practical Instruction Note */}
-        <div className="p-3 bg-stone-100 text-[11px] text-stone-600 font-medium text-center border-t border-stone-200 flex items-center justify-center gap-1.5">
-          <Info className="w-4 h-4 text-emerald-700 shrink-0" />
-          <span>Fiziki pusulada Kuzey (K/0°) okunu yöneltiniz; 🕋 Kâbe simgesi doğrudan Kıble açınızı gösterir.</span>
+        <div className="p-3 bg-stone-100 text-[11px] text-stone-700 font-medium text-left border-t border-stone-200 space-y-1">
+          <div className="flex items-start gap-1.5">
+            <Info className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold text-emerald-950">💡 Şehir/Konum Neden Var?</span> Bulunduğunuz yerin enlem ve boylamına göre Kâbe'nin derece (açısı) değişir (Örn: İstanbul 151°, Erzurum 170°). Otomatik GPS ile veya listeden seçerek yaşadığınız yere özel tam kıble açınızı hesaplayabilirsiniz.
+            </div>
+          </div>
         </div>
       </motion.div>
     </div>

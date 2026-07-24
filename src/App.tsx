@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Download, BookOpen, Radio, BookCheck, StickyNote, Maximize2, Minimize2, Home } from 'lucide-react';
+import { User, Download, BookOpen, Radio, BookCheck, StickyNote, Maximize2, Minimize2, Home, RefreshCw, ArrowDown } from 'lucide-react';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
 import { QuranReader } from './components/QuranReader';
@@ -342,8 +342,69 @@ export default function App() {
     }
   };
 
+  // Pull to Refresh State (PWA / Mobile Home Screen reload)
+  const [pullDistance, setPullDistance] = useState<number>(0);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStartApp = (e: React.TouchEvent) => {
+    if (window.scrollY <= 10) {
+      touchStartY.current = e.touches[0].clientY;
+    } else {
+      touchStartY.current = null;
+    }
+  };
+
+  const handleTouchMoveApp = (e: React.TouchEvent) => {
+    if (touchStartY.current === null || isRefreshing) return;
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - touchStartY.current;
+    if (diff > 0 && window.scrollY <= 5) {
+      const damped = Math.min(diff * 0.45, 110);
+      setPullDistance(damped);
+    } else {
+      setPullDistance(0);
+    }
+  };
+
+  const handleTouchEndApp = () => {
+    if (pullDistance >= 60 && !isRefreshing) {
+      setIsRefreshing(true);
+      setPullDistance(75);
+      setTimeout(() => {
+        window.location.reload();
+      }, 350);
+    } else {
+      setPullDistance(0);
+    }
+    touchStartY.current = null;
+  };
+
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-stone-100 text-slate-900 flex flex-col items-center justify-center font-sans antialiased selection:bg-amber-400 selection:text-slate-950">
+    <div
+      onTouchStart={handleTouchStartApp}
+      onTouchMove={handleTouchMoveApp}
+      onTouchEnd={handleTouchEndApp}
+      className="min-h-screen w-full max-w-full overflow-x-hidden bg-stone-100 text-slate-900 flex flex-col items-center justify-center font-sans antialiased selection:bg-amber-400 selection:text-slate-950 relative"
+    >
+      {/* PWA / Standalone Pull-to-Refresh Floating Indicator */}
+      {(pullDistance > 0 || isRefreshing) && (
+        <div
+          style={{ transform: `translateY(${Math.min(pullDistance, 75)}px)` }}
+          className="fixed top-2 left-1/2 -translate-x-1/2 z-[9999] transition-transform duration-75 pointer-events-none"
+        >
+          <div className="bg-emerald-950/95 text-emerald-50 px-4 py-2 rounded-2xl shadow-2xl border border-emerald-500/60 backdrop-blur-md flex items-center gap-2 text-xs font-bold animate-fade-in">
+            <RefreshCw className={`w-4 h-4 text-emerald-300 ${pullDistance >= 60 || isRefreshing ? 'animate-spin' : ''}`} />
+            <span>
+              {isRefreshing
+                ? 'Sayfa Yenileniyor...'
+                : pullDistance >= 60
+                ? 'Bırakın, Sayfa Güncellensin 🔄'
+                : 'Yenilemek İçin Aşağı Çekin ⬇️'}
+            </span>
+          </div>
+        </div>
+      )}
       {/* Main Container Wrapper */}
       <div
         className={`w-full max-w-full overflow-x-hidden min-h-screen flex flex-col bg-[#FAF8F5] ${
