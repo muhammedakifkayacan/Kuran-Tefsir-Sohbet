@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, Search, Copy, Check, Share2, Sparkles, X, Heart, Bookmark, Filter, Quote } from 'lucide-react';
-import { RIYAZUS_SALIHIN_HADITHS, RiyazusHadith } from '../data/riyazusSalihinData';
+import { BookOpen, Search, Copy, Check, Share2, Sparkles, X, Heart, Bookmark, Filter, Quote, Library, ChevronRight, Layers } from 'lucide-react';
+import { RIYAZUS_SALIHIN_BOOKS, RIYAZUS_SALIHIN_HADITHS, RiyazusHadith, RiyazusBook } from '../data/riyazusSalihinData';
 
 interface RiyazusSalihinModalProps {
   isOpen: boolean;
@@ -9,7 +9,9 @@ interface RiyazusSalihinModalProps {
 }
 
 export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen, onClose }) => {
+  const [activeView, setActiveView] = useState<'books' | 'hadiths'>('hadiths');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBookId, setSelectedBookId] = useState<number | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [copiedHadithId, setCopiedHadithId] = useState<number | null>(null);
   const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([]);
@@ -17,20 +19,22 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
 
   if (!isOpen) return null;
 
-  const categories = ['all', 'İhlas & Niyet', 'Sabır & Şükür', 'Doğruluk (Sıdk)', 'Ahlak & Edep', 'Namaz & İbadet', 'Merhamet & Kardeşlik', 'Cömertlik & İnfak'];
+  const categories = ['all', 'İhlas & Niyet', 'Tövbe', 'Sabır & Şükür', 'Doğruluk (Sıdk)', 'Ahlak & Edep', 'Namaz & İbadet', 'Merhamet & Kardeşlik'];
 
   const filteredHadiths = RIYAZUS_SALIHIN_HADITHS.filter((h) => {
+    const matchesBook = selectedBookId === 'all' || h.bookId === selectedBookId;
     const matchesCategory = selectedCategory === 'all' || h.category === selectedCategory;
     const matchesSearch =
       h.turkish.toLowerCase().includes(searchQuery.toLowerCase()) ||
       h.arabic.includes(searchQuery) ||
       h.ravi.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      h.babName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+      h.babName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      h.bookTitle.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesBook && matchesCategory && matchesSearch;
   });
 
   const handleCopyHadith = (hadith: RiyazusHadith) => {
-    const textToCopy = `✨ Riyazü’s-Sâlihîn Hadîs-i Şerîf ✨\n\n📌 ${hadith.babName}\n\n"${hadith.turkish}"\n\n— ${hadith.ravi}\n(${hadith.source})\n\n📖 Kur'an & Tefsir Rehberi Uygulamasından Paylaşıldı`;
+    const textToCopy = `✨ Riyazü’s-Sâlihîn Hadîs-i Şerîf ✨\n\n📖 ${hadith.bookTitle}\n📌 ${hadith.babName}\n\n"${hadith.turkish}"\n\n— ${hadith.ravi}\n(${hadith.source})\n\n📖 Kur'an & Tefsir Rehberi Uygulamasından Paylaşıldı`;
     navigator.clipboard.writeText(textToCopy);
     setCopiedHadithId(hadith.id);
     setTimeout(() => setCopiedHadithId(null), 2000);
@@ -39,6 +43,7 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
   const handlePickRandom = () => {
     const idx = Math.floor(Math.random() * RIYAZUS_SALIHIN_HADITHS.length);
     setRandomHadith(RIYAZUS_SALIHIN_HADITHS[idx]);
+    setActiveView('hadiths');
   };
 
   const toggleBookmark = (id: number) => {
@@ -64,8 +69,8 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
               <BookOpen className="w-5 h-5 text-emerald-100" />
             </div>
             <div>
-              <h2 className="text-base sm:text-xl font-bold tracking-tight">Riyazü’s-Sâlihîn Hadîs-i Şerîfler</h2>
-              <p className="text-xs text-emerald-200 font-medium">İmam Nevevî — Sahih Hadis Külliyatı & Hikmetler</p>
+              <h2 className="text-base sm:text-xl font-bold tracking-tight">Riyazü’s-Sâlihîn Tam Külliyat</h2>
+              <p className="text-xs text-emerald-200 font-medium">İmam Nevevî — 18 Kitap, 300+ Bâb ve Sahih Hadisler</p>
             </div>
           </div>
           <button
@@ -76,15 +81,47 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
           </button>
         </div>
 
-        {/* Controls & Search Toolbar */}
+        {/* View Switcher Tabs & Controls */}
         <div className="p-4 bg-white border-b border-stone-200/80 space-y-3 shrink-0">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-2xl border border-stone-200">
+              <button
+                onClick={() => setActiveView('hadiths')}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeView === 'hadiths' ? 'bg-emerald-800 text-white shadow-xs' : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Quote className="w-3.5 h-3.5" />
+                <span>Hadis Metinleri</span>
+              </button>
+              <button
+                onClick={() => setActiveView('books')}
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeView === 'books' ? 'bg-emerald-800 text-white shadow-xs' : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Library className="w-3.5 h-3.5" />
+                <span> Kitap Fihristi (18 Kitap)</span>
+              </button>
+            </div>
+
+            {/* Random Hadith button */}
+            <button
+              onClick={handlePickRandom}
+              className="px-3.5 py-2 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs border border-amber-200 flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-700 animate-pulse" />
+              <span>🎲 Rastgele Getir</span>
+            </button>
+          </div>
+
+          {/* Search and Book Filter */}
           <div className="flex flex-col sm:flex-row items-center gap-2">
-            {/* Search input */}
             <div className="relative flex-1 w-full">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
               <input
                 type="text"
-                placeholder="Hadis metni, konu veya ravi ara..."
+                placeholder="Hadis metni, konu, kitap veya ravi ara..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-stone-100 border border-stone-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-700/50"
@@ -99,35 +136,27 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
               )}
             </div>
 
-            {/* Random Hadith button */}
-            <button
-              onClick={handlePickRandom}
-              className="px-4 py-2.5 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-950 font-bold text-xs border border-amber-200 flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0 w-full sm:w-auto justify-center"
+            {/* Book Selector Dropdown */}
+            <select
+              value={selectedBookId}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedBookId(val === 'all' ? 'all' : Number(val));
+                setActiveView('hadiths');
+              }}
+              className="w-full sm:w-auto px-3 py-2.5 rounded-2xl bg-stone-100 border border-stone-200 text-xs font-bold text-stone-800 focus:outline-none cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-amber-700 animate-pulse" />
-              <span>🎲 Rastgele Hadis Getir</span>
-            </button>
-          </div>
-
-          {/* Category Filter Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-xl font-bold transition-all whitespace-nowrap cursor-pointer ${
-                  selectedCategory === cat
-                    ? 'bg-emerald-800 text-white shadow-xs'
-                    : 'bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200'
-                }`}
-              >
-                {cat === 'all' ? 'Tüm Konular' : cat}
-              </button>
-            ))}
+              <option value="all">📚 Tüm Kitaplar (18 Bölüm)</option>
+              {RIYAZUS_SALIHIN_BOOKS.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.title}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        {/* Random Highlight Modal Popup if Picked */}
+        {/* Random Highlight Banner */}
         {randomHadith && (
           <div className="p-4 bg-amber-50/90 border-b border-amber-200/90 text-amber-950 flex flex-col gap-2 relative animate-fade-in">
             <div className="flex items-center justify-between">
@@ -147,13 +176,40 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
           </div>
         )}
 
-        {/* Hadith List Container */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
-          {filteredHadiths.length === 0 ? (
+        {/* Content Body: Hadiths List or Book Index */}
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
+          {activeView === 'books' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {RIYAZUS_SALIHIN_BOOKS.map((book) => (
+                <div
+                  key={book.id}
+                  onClick={() => {
+                    setSelectedBookId(book.id);
+                    setActiveView('hadiths');
+                  }}
+                  className="p-4 bg-white rounded-3xl border border-stone-200 hover:border-emerald-500/80 shadow-2xs hover:shadow-md transition-all cursor-pointer space-y-2 group"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-900 font-bold text-xs border border-emerald-200">
+                      {book.title}
+                    </span>
+                    <span className="text-[10px] font-bold text-stone-400 bg-stone-100 px-2 py-0.5 rounded-lg">
+                      {book.chapterCount} Bâb
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-600 font-medium">{book.description}</p>
+                  <div className="flex items-center gap-1 text-xs font-bold text-emerald-800 group-hover:translate-x-1 transition-transform pt-1">
+                    <span>Hadisleri Gör</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredHadiths.length === 0 ? (
             <div className="text-center py-12 space-y-2">
               <Quote className="w-10 h-10 text-stone-300 mx-auto" />
               <p className="text-sm font-bold text-stone-600">Aradığınız kritere uygun hadîs-i şerîf bulunamadı.</p>
-              <p className="text-xs text-stone-400">Arama terimini değiştirebilir veya tüm konular seçeneğine tıklayabilirsiniz.</p>
+              <p className="text-xs text-stone-400">Arama terimini değiştirebilir veya "Tüm Kitaplar" seçeneğine tıklayabilirsiniz.</p>
             </div>
           ) : (
             filteredHadiths.map((hadith) => {
@@ -166,13 +222,13 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
                   className="bg-white rounded-3xl p-5 border border-stone-200/90 shadow-2xs hover:shadow-md transition-all space-y-4"
                 >
                   {/* Card Header */}
-                  <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-xl bg-amber-100/80 text-amber-900 font-bold text-xs border border-amber-200">
-                        {hadith.babName}
+                  <div className="flex flex-wrap items-center justify-between border-b border-stone-100 pb-3 gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-900 font-bold text-xs border border-emerald-200">
+                        {hadith.bookTitle}
                       </span>
-                      <span className="text-[11px] font-bold text-stone-500 bg-stone-100 px-2 py-0.5 rounded-lg">
-                        {hadith.category}
+                      <span className="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-bold text-xs border border-amber-200">
+                        {hadith.babName}
                       </span>
                     </div>
 

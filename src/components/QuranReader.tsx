@@ -1681,337 +1681,344 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     const lastVerseInPage = pageVerses[pageVerses.length - 1];
 
     return (
-      <div id="tour-surah-selector" className={`relative z-20 flex items-center justify-between border rounded-2xl p-2 px-3 sm:px-4 shadow-xs transition-all duration-300 ${themeStyles.cardBg} ${themeStyles.cardBorder} ${
+      <div id="tour-surah-selector" className={`relative z-20 border rounded-2xl p-2 sm:p-3 shadow-xs transition-all duration-300 w-full max-w-full overflow-hidden ${themeStyles.cardBg} ${themeStyles.cardBorder} ${
         isFullScreen && !areOverlaysVisible
           ? 'opacity-0 -translate-y-6 pointer-events-none h-0 overflow-hidden mb-0'
           : 'opacity-100 translate-y-0 mb-3'
       }`}>
-        {/* Önceki Sayfa */}
-        <button
-          disabled={!hasPrevPage}
-          onClick={handlePrevPage}
-          className="px-3 py-1.5 rounded-xl border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 font-bold text-xs flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
-          title="Önceki Sayfa"
-        >
-          <ChevronLeft className="w-4 h-4 text-amber-600" />
-          <span className="hidden sm:inline">Önceki</span>
-        </button>
-
-        {/* Center Page Selector Pill & Filter Icon Button */}
-        <div className="relative flex items-center gap-1.5 sm:gap-2">
-          {/* Page Dropdown Button */}
-          <button
-            onClick={() => {
-              setIsPageMenuOpen(!isPageMenuOpen);
-              if (isFilterMenuOpen) setIsFilterMenuOpen(false);
-            }}
-            className="px-3 sm:px-3.5 py-1.5 rounded-xl border border-amber-300/80 bg-amber-50/80 hover:bg-amber-100 text-amber-950 text-xs font-bold flex items-center gap-1.5 sm:gap-2 shadow-xs transition-all active:scale-95"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-            <span>Sayfa {selectedPage}{pagesInSurah.length > 1 ? ` / ${pagesInSurah[pagesInSurah.length - 1]}` : ''}</span>
-            {firstVerseInPage && lastVerseInPage && (
-              <span className="hidden md:inline text-[10px] font-normal opacity-75 border-l border-amber-400/30 pl-2">
-                ({firstVerseInPage.number} - {lastVerseInPage.number}. Ayetler)
-              </span>
-            )}
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isPageMenuOpen ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* Popover Dropdown for Fast Page Selection */}
-          {isPageMenuOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setIsPageMenuOpen(false)}
-              />
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 p-3 rounded-2xl border border-stone-200 bg-white/95 text-stone-900 shadow-2xl w-64 sm:w-80 backdrop-blur-xl animate-fade-in">
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-stone-200 text-xs font-bold">
-                  <span>Sayfaya Git</span>
-                  <span className="text-[10px] opacity-60">{selectedSurah.nameTurkish} ({pagesInSurah.length} Sayfa)</span>
-                </div>
-
-                <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5 max-h-48 overflow-y-auto p-1 scrollbar-thin">
-                  {pagesInSurah.map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => {
-                        setSelectedPage(p);
-                        setSelectedMushafAyah(null);
-                        setIsPageMenuOpen(false);
-                      }}
-                      className={`py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        selectedPage === p
-                          ? 'bg-amber-500 text-white font-black shadow-md scale-105'
-                          : 'bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-900'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Arama İkon Butonu */}
-          <button
-            onClick={() => {
-              setIsSearchModalOpen(true);
-              if (isFilterMenuOpen) setIsFilterMenuOpen(false);
-              if (isPageMenuOpen) setIsPageMenuOpen(false);
-            }}
-            className="p-1.5 px-2.5 rounded-xl border border-stone-200 bg-stone-100/90 hover:bg-amber-50 text-stone-800 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
-            title="Kur'an-ı Kerim'de Ara"
-          >
-            <Search className="w-4 h-4 text-amber-700" />
-            <span className="hidden sm:inline text-xs font-semibold">Ara</span>
-          </button>
-
-          {/* Quick Font Size Controls */}
-          <div className="flex items-center bg-stone-100/90 rounded-xl p-0.5 border border-stone-200">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 w-full max-w-full">
+          {/* Top Row on Mobile / Main Nav Controls */}
+          <div className="flex items-center justify-between w-full sm:w-auto gap-1.5 sm:gap-2">
+            {/* Önceki Sayfa */}
             <button
-              onClick={() => setFontSize(Math.max(18, fontSize - 2))}
-              className="p-1 px-1.5 hover:bg-white rounded-lg text-[10px] font-extrabold text-stone-700 transition-all cursor-pointer"
-              title="Yazı Boyutunu Küçült"
+              disabled={!hasPrevPage}
+              onClick={handlePrevPage}
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 font-bold text-xs flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 shrink-0 cursor-pointer"
+              title="Önceki Sayfa"
             >
-              A-
-            </button>
-            <span className="text-[10px] font-bold text-stone-400 px-0.5">|</span>
-            <button
-              onClick={() => setFontSize(Math.min(48, fontSize + 2))}
-              className="p-1 px-1.5 hover:bg-white rounded-lg text-xs font-extrabold text-stone-900 transition-all cursor-pointer"
-              title="Yazı Boyutunu Büyüt"
-            >
-              A+
-            </button>
-          </div>
-
-          {/* Audio Recitation Dinle Button (Tour Target & Quick Recitation Play) */}
-          <button
-            id="tour-audio-controls"
-            onClick={() => {
-              const firstAyahInPage = pageVerses[0] || selectedSurah?.verses[0];
-              if (firstAyahInPage) {
-                onPlayAyah(firstAyahInPage);
-              }
-            }}
-            className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
-              isPlaying
-                ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs'
-                : 'bg-stone-100/90 hover:bg-emerald-50 text-stone-800 border-stone-200'
-            }`}
-            title="Sayfadaki Ayetleri Dinle"
-          >
-            <Volume2 className={`w-3.5 h-3.5 ${isPlaying ? 'text-white animate-pulse' : 'text-emerald-700'}`} />
-            <span className="text-xs font-semibold">{isPlaying ? 'Durdur' : 'Dinle'}</span>
-          </button>
-
-          {/* Çoklu Seç Butonu */}
-          <button
-            onClick={() => {
-              if (isMultiSelectMode) {
-                exitMultiSelectMode();
-              } else {
-                setIsMultiSelectMode(true);
-                showToast('Çoklu Ayet Seçim Modu Açıldı. Ayetlere dokunarak seçebilirsiniz.');
-              }
-            }}
-            className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
-              isMultiSelectMode || selectedVerseNumbers.length > 0
-                ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                : 'bg-stone-100/90 hover:bg-amber-50 text-stone-800 border-stone-200'
-            }`}
-            title="Çoklu Ayet Seçimi"
-          >
-            <CheckSquare className={`w-3.5 h-3.5 ${isMultiSelectMode || selectedVerseNumbers.length > 0 ? 'text-white' : 'text-amber-700'}`} />
-            <span className="text-xs font-semibold">
-              {isMultiSelectMode ? 'Açık' : 'Seç'}
-            </span>
-          </button>
-
-          {/* Filtre / Okuma Ayarları İkon Butonu */}
-          <div className="relative">
-            <button
-              onClick={() => {
-                setIsFilterMenuOpen(!isFilterMenuOpen);
-                if (isPageMenuOpen) setIsPageMenuOpen(false);
-              }}
-              className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
-                isFilterMenuOpen
-                  ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
-                  : 'bg-stone-100/90 hover:bg-amber-50 text-stone-800 border-stone-200'
-              }`}
-              title="Filtreler & Okuma Ayarları (Sûre, Görünüm, Yazı Boyutu)"
-            >
-              <SlidersHorizontal className={`w-3.5 h-3.5 ${isFilterMenuOpen ? 'text-white' : 'text-amber-700'}`} />
-              <span className="text-xs font-semibold">Ayarlar</span>
+              <ChevronLeft className="w-4 h-4 text-amber-600" />
+              <span className="hidden xs:inline">Önceki</span>
             </button>
 
-            {/* Filter / Settings Popover */}
-            {isFilterMenuOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsFilterMenuOpen(false)} />
-                <div className="absolute top-full right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 mt-2 z-50 p-3.5 sm:p-4 rounded-3xl border border-stone-200 bg-white/95 text-stone-900 shadow-2xl w-72 sm:w-80 backdrop-blur-2xl animate-fade-in space-y-3.5">
-                  <div className="flex items-center justify-between pb-2 border-b border-stone-100">
-                    <span className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
-                      <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600" />
-                      Okuma Filtreleri & Ayarlar
-                    </span>
-                    <button
-                      onClick={() => setIsFilterMenuOpen(false)}
-                      className="p-1 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-700"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+            {/* Page Dropdown Button */}
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setIsPageMenuOpen(!isPageMenuOpen);
+                  if (isFilterMenuOpen) setIsFilterMenuOpen(false);
+                }}
+                className="px-2.5 sm:px-3.5 py-1.5 rounded-xl border border-amber-300/80 bg-amber-50/80 hover:bg-amber-100 text-amber-950 text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                <span>Sayfa {selectedPage}{pagesInSurah.length > 1 ? ` / ${pagesInSurah[pagesInSurah.length - 1]}` : ''}</span>
+                {firstVerseInPage && lastVerseInPage && (
+                  <span className="hidden md:inline text-[10px] font-normal opacity-75 border-l border-amber-400/30 pl-2">
+                    ({firstVerseInPage.number} - {lastVerseInPage.number}. Ayetler)
+                  </span>
+                )}
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isPageMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
 
-                  {/* Sûre Seçimi */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Sûre Seçimi</label>
-                    <button
-                      onClick={() => {
-                        setIsFilterMenuOpen(false);
-                        setIsSurahModalOpen(true);
-                      }}
-                      className="w-full p-2 px-3 rounded-xl bg-amber-50/80 hover:bg-amber-100/90 border border-amber-200/80 text-stone-900 font-bold text-xs flex items-center justify-between transition-all"
-                    >
-                      <span className="truncate">{selectedSurah.id}. {selectedSurah.nameTurkish.replace(' Sûresi', '')} Sûresi</span>
-                      <span className="text-[10px] text-amber-800 font-semibold shrink-0 ml-1">Değiştir ▾</span>
-                    </button>
-                  </div>
-
-                  {/* Görünüm Modu */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Görünüm Modu</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-stone-100 p-1 rounded-xl text-xs font-bold">
-                      <button
-                        onClick={() => {
-                          setViewMode('mushaf');
-                          setShowTranslation(false);
-                        }}
-                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                          viewMode === 'mushaf' && !showTranslation ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
-                        }`}
-                      >
-                        <BookOpen className="w-3 h-3 text-amber-500" />
-                        <span>Arapça</span>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setViewMode('mushaf');
-                          setShowTranslation(true);
-                        }}
-                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                          viewMode === 'mushaf' && showTranslation ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
-                        }`}
-                      >
-                        <BookOpen className="w-3 h-3 text-amber-500" />
-                        <span>Arapça + Meal</span>
-                      </button>
-
-                      <button
-                        onClick={() => setViewMode('meal')}
-                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                          viewMode === 'meal' ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
-                        }`}
-                      >
-                        <FileText className="w-3 h-3 text-amber-500" />
-                        <span>Meal</span>
-                      </button>
-
-                      <button
-                        onClick={() => setViewMode('detailed')}
-                        className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                          viewMode === 'detailed' ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
-                        }`}
-                      >
-                        <List className="w-3 h-3 text-amber-500" />
-                        <span>Detaylı</span>
-                      </button>
+              {/* Popover Dropdown for Fast Page Selection */}
+              {isPageMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsPageMenuOpen(false)}
+                  />
+                  <div className="fixed sm:absolute top-20 sm:top-full left-1/2 -translate-x-1/2 mt-2 z-50 p-3 rounded-2xl border border-stone-200 bg-white/95 text-stone-900 shadow-2xl w-72 sm:w-80 max-w-[calc(100vw-24px)] backdrop-blur-xl animate-fade-in">
+                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-stone-200 text-xs font-bold">
+                      <span>Sayfaya Git</span>
+                      <span className="text-[10px] opacity-60">{selectedSurah.nameTurkish} ({pagesInSurah.length} Sayfa)</span>
                     </div>
-                  </div>
 
-                  {/* Yazı Boyutu */}
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Yazı Boyutu</label>
-                    <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl">
-                      {(['md', 'lg', 'xl', '2xl'] as const).map((sz) => (
+                    <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5 max-h-48 overflow-y-auto p-1 scrollbar-thin">
+                      {pagesInSurah.map((p) => (
                         <button
-                          key={sz}
-                          onClick={() => setFontSize(sz)}
-                          className={`flex-1 py-1 text-xs rounded-lg font-black uppercase transition-all ${
-                            fontSize === sz ? 'bg-amber-500 text-white shadow-xs' : 'text-stone-500 hover:text-stone-800'
+                          key={p}
+                          onClick={() => {
+                            setSelectedPage(p);
+                            setSelectedMushafAyah(null);
+                            setIsPageMenuOpen(false);
+                          }}
+                          className={`py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                            selectedPage === p
+                              ? 'bg-amber-500 text-white font-black shadow-md scale-105'
+                              : 'bg-stone-100 text-stone-700 hover:bg-amber-100 hover:text-amber-900'
                           }`}
                         >
-                          {sz}
+                          {p}
                         </button>
                       ))}
                     </div>
                   </div>
+                </>
+              )}
+            </div>
 
-                  {/* Yer İşaretli / Kaydedilen Ayetlere Hızlı Geçiş */}
-                  <div className="space-y-1.5 pt-2.5 border-t border-stone-100">
-                    <div className="flex items-center justify-between">
-                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider flex items-center gap-1">
-                        <Bookmark className="w-3 h-3 text-amber-600 fill-amber-500" />
-                        Yer İşaretli / Kaydedilen Ayetler ({bookmarkedVerses.length})
-                      </label>
+            {/* Sonraki Sayfa */}
+            <button
+              disabled={!hasNextPage}
+              onClick={handleNextPage}
+              className="px-2.5 sm:px-3 py-1.5 rounded-xl border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 font-bold text-xs flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 shrink-0 cursor-pointer"
+              title="Sonraki Sayfa"
+            >
+              <span className="hidden xs:inline">Sonraki</span>
+              <ChevronRight className="w-4 h-4 text-amber-600" />
+            </button>
+          </div>
+
+          {/* Action Bar Tools (Compact row on mobile, inline on desktop) */}
+          <div className="flex items-center justify-between sm:justify-end gap-1 sm:gap-1.5 w-full sm:w-auto overflow-x-auto scrollbar-none pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-200/60">
+            {/* Arama İkon Butonu */}
+            <button
+              onClick={() => {
+                setIsSearchModalOpen(true);
+                if (isFilterMenuOpen) setIsFilterMenuOpen(false);
+                if (isPageMenuOpen) setIsPageMenuOpen(false);
+              }}
+              className="p-1.5 px-2 sm:px-2.5 rounded-xl border border-stone-200 bg-stone-100/90 hover:bg-amber-50 text-stone-800 text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0"
+              title="Kur'an-ı Kerim'de Ara"
+            >
+              <Search className="w-4 h-4 text-amber-700" />
+              <span className="text-xs font-semibold">Ara</span>
+            </button>
+
+            {/* Quick Font Size Controls */}
+            <div className="flex items-center bg-stone-100/90 rounded-xl p-0.5 border border-stone-200 shrink-0">
+              <button
+                onClick={() => setFontSize(Math.max(18, fontSize - 2))}
+                className="p-1 px-1.5 hover:bg-white rounded-lg text-[10px] font-extrabold text-stone-700 transition-all cursor-pointer"
+                title="Yazı Boyutunu Küçült"
+              >
+                A-
+              </button>
+              <span className="text-[10px] font-bold text-stone-400 px-0.5">|</span>
+              <button
+                onClick={() => setFontSize(Math.min(48, fontSize + 2))}
+                className="p-1 px-1.5 hover:bg-white rounded-lg text-xs font-extrabold text-stone-900 transition-all cursor-pointer"
+                title="Yazı Boyutunu Büyüt"
+              >
+                A+
+              </button>
+            </div>
+
+            {/* Audio Recitation Dinle Button */}
+            <button
+              id="tour-audio-controls"
+              onClick={() => {
+                const firstAyahInPage = pageVerses[0] || selectedSurah?.verses[0];
+                if (firstAyahInPage) {
+                  onPlayAyah(firstAyahInPage);
+                }
+              }}
+              className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0 ${
+                isPlaying
+                  ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs'
+                  : 'bg-stone-100/90 hover:bg-emerald-50 text-stone-800 border-stone-200'
+              }`}
+              title="Sayfadaki Ayetleri Dinle"
+            >
+              <Volume2 className={`w-3.5 h-3.5 ${isPlaying ? 'text-white animate-pulse' : 'text-emerald-700'}`} />
+              <span className="text-xs font-semibold">{isPlaying ? 'Durdur' : 'Dinle'}</span>
+            </button>
+
+            {/* Çoklu Seç Butonu */}
+            <button
+              onClick={() => {
+                if (isMultiSelectMode) {
+                  exitMultiSelectMode();
+                } else {
+                  setIsMultiSelectMode(true);
+                  showToast('Çoklu Ayet Seçim Modu Açıldı. Ayetlere dokunarak seçebilirsiniz.');
+                }
+              }}
+              className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0 ${
+                isMultiSelectMode || selectedVerseNumbers.length > 0
+                  ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                  : 'bg-stone-100/90 hover:bg-amber-50 text-stone-800 border-stone-200'
+              }`}
+              title="Çoklu Ayet Seçimi"
+            >
+              <CheckSquare className={`w-3.5 h-3.5 ${isMultiSelectMode || selectedVerseNumbers.length > 0 ? 'text-white' : 'text-amber-700'}`} />
+              <span className="text-xs font-semibold">
+                {isMultiSelectMode ? 'Açık' : 'Seç'}
+              </span>
+            </button>
+
+            {/* Filtre / Okuma Ayarları İkon Butonu */}
+            <div className="relative shrink-0">
+              <button
+                onClick={() => {
+                  setIsFilterMenuOpen(!isFilterMenuOpen);
+                  if (isPageMenuOpen) setIsPageMenuOpen(false);
+                }}
+                className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
+                  isFilterMenuOpen
+                    ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
+                    : 'bg-stone-100/90 hover:bg-amber-50 text-stone-800 border-stone-200'
+                }`}
+                title="Filtreler & Okuma Ayarları (Sûre, Görünüm, Yazı Boyutu)"
+              >
+                <SlidersHorizontal className={`w-3.5 h-3.5 ${isFilterMenuOpen ? 'text-white' : 'text-amber-700'}`} />
+                <span className="text-xs font-semibold">Ayarlar</span>
+              </button>
+
+              {/* Filter / Settings Popover */}
+              {isFilterMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsFilterMenuOpen(false)} />
+                  <div className="fixed sm:absolute top-20 sm:top-full right-2 sm:right-0 mt-2 z-50 p-3.5 sm:p-4 rounded-3xl border border-stone-200 bg-white/95 text-stone-900 shadow-2xl w-72 sm:w-80 max-w-[calc(100vw-24px)] backdrop-blur-2xl animate-fade-in space-y-3.5">
+                    <div className="flex items-center justify-between pb-2 border-b border-stone-100">
+                      <span className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600" />
+                        Okuma Filtreleri & Ayarlar
+                      </span>
+                      <button
+                        onClick={() => setIsFilterMenuOpen(false)}
+                        className="p-1 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-700"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-                    {bookmarkedVerses.length === 0 ? (
-                      <div className="text-[11px] text-stone-500 italic bg-stone-50 p-2.5 rounded-xl text-center border border-dashed border-stone-200">
-                        Bu sûrede henüz yer işareti eklenmiş ayet yok. Ayet kartındaki 🔖 ikonuna basarak ekleyebilirsiniz.
+
+                    {/* Sûre Seçimi */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Sûre Seçimi</label>
+                      <button
+                        onClick={() => {
+                          setIsFilterMenuOpen(false);
+                          setIsSurahModalOpen(true);
+                        }}
+                        className="w-full p-2 px-3 rounded-xl bg-amber-50/80 hover:bg-amber-100/90 border border-amber-200/80 text-stone-900 font-bold text-xs flex items-center justify-between transition-all"
+                      >
+                        <span className="truncate">{selectedSurah.id}. {selectedSurah.nameTurkish.replace(' Sûresi', '')} Sûresi</span>
+                        <span className="text-[10px] text-amber-800 font-semibold shrink-0 ml-1">Değiştir ▾</span>
+                      </button>
+                    </div>
+
+                    {/* Görünüm Modu */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Görünüm Modu</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-stone-100 p-1 rounded-xl text-xs font-bold">
+                        <button
+                          onClick={() => {
+                            setViewMode('mushaf');
+                            setShowTranslation(false);
+                          }}
+                          className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                            viewMode === 'mushaf' && !showTranslation ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
+                          }`}
+                        >
+                          <BookOpen className="w-3 h-3 text-amber-500" />
+                          <span>Arapça</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setViewMode('mushaf');
+                            setShowTranslation(true);
+                          }}
+                          className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                            viewMode === 'mushaf' && showTranslation ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
+                          }`}
+                        >
+                          <BookOpen className="w-3 h-3 text-amber-500" />
+                          <span>Arapça + Meal</span>
+                        </button>
+
+                        <button
+                          onClick={() => setViewMode('meal')}
+                          className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                            viewMode === 'meal' ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
+                          }`}
+                        >
+                          <FileText className="w-3 h-3 text-amber-500" />
+                          <span>Meal</span>
+                        </button>
+
+                        <button
+                          onClick={() => setViewMode('detailed')}
+                          className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                            viewMode === 'detailed' ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 hover:text-stone-900'
+                          }`}
+                        >
+                          <List className="w-3 h-3 text-amber-500" />
+                          <span>Detaylı</span>
+                        </button>
                       </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1 scrollbar-thin">
-                        {[...bookmarkedVerses].sort((a, b) => a - b).map((vNum) => {
-                          const verseObj = selectedSurah.verses.find((v) => v.number === vNum);
-                          return (
-                            <button
-                              key={vNum}
-                              onClick={() => {
-                                if (verseObj) {
-                                  setSelectedPage(verseObj.page);
-                                  setSelectedMushafAyah(verseObj);
-                                  setActiveAyah(verseObj);
-                                  setIsFilterMenuOpen(false);
-                                  showToast(`📌 ${vNum}. Ayete gidildi (Sayfa ${verseObj.page})`);
-                                }
-                              }}
-                              className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-500 text-amber-900 hover:text-white border border-amber-200 text-xs font-bold transition-all active:scale-95 flex items-center gap-1 shadow-2xs"
-                              title={`Ayet ${vNum}'e git (Sayfa ${verseObj?.page || ''})`}
-                            >
-                              <Bookmark className="w-3 h-3 text-amber-600 fill-amber-500 shrink-0" />
-                              <span>Ayet {vNum}</span>
-                              {verseObj && <span className="opacity-75 text-[10px] font-normal"> (S.{verseObj.page})</span>}
-                            </button>
-                          );
-                        })}
+                    </div>
+
+                    {/* Yazı Boyutu */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Yazı Boyutu</label>
+                      <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl">
+                        {(['md', 'lg', 'xl', '2xl'] as const).map((sz) => (
+                          <button
+                            key={sz}
+                            onClick={() => setFontSize(sz)}
+                            className={`flex-1 py-1 text-xs rounded-lg font-black uppercase transition-all ${
+                              fontSize === sz ? 'bg-amber-500 text-white shadow-xs' : 'text-stone-500 hover:text-stone-800'
+                            }`}
+                          >
+                            {sz}
+                          </button>
+                        ))}
                       </div>
-                    )}
+                    </div>
+
+                    {/* Yer İşaretli / Kaydedilen Ayetlere Hızlı Geçiş */}
+                    <div className="space-y-1.5 pt-2.5 border-t border-stone-100">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider flex items-center gap-1">
+                          <Bookmark className="w-3 h-3 text-amber-600 fill-amber-500" />
+                          Yer İşaretli / Kaydedilen Ayetler ({bookmarkedVerses.length})
+                        </label>
+                      </div>
+                      {bookmarkedVerses.length === 0 ? (
+                        <div className="text-[11px] text-stone-500 italic bg-stone-50 p-2.5 rounded-xl text-center border border-dashed border-stone-200">
+                          Bu sûrede henüz yer işareti eklenmiş ayet yok. Ayet kartındaki 🔖 ikonuna basarak ekleyebilirsiniz.
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1 scrollbar-thin">
+                          {[...bookmarkedVerses].sort((a, b) => a - b).map((vNum) => {
+                            const verseObj = selectedSurah.verses.find((v) => v.number === vNum);
+                            return (
+                              <button
+                                key={vNum}
+                                onClick={() => {
+                                  if (verseObj) {
+                                    setSelectedPage(verseObj.page);
+                                    setSelectedMushafAyah(verseObj);
+                                    setActiveAyah(verseObj);
+                                    setIsFilterMenuOpen(false);
+                                    showToast(`📌 ${vNum}. Ayete gidildi (Sayfa ${verseObj.page})`);
+                                  }
+                                }}
+                                className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-500 text-amber-900 hover:text-white border border-amber-200 text-xs font-bold transition-all active:scale-95 flex items-center gap-1 shadow-2xs"
+                                title={`Ayet ${vNum}'e git (Sayfa ${verseObj?.page || ''})`}
+                              >
+                                <Bookmark className="w-3 h-3 text-amber-600 fill-amber-500 shrink-0" />
+                                <span>Ayet {vNum}</span>
+                                {verseObj && <span className="opacity-75 text-[10px] font-normal"> (S.{verseObj.page})</span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Sonraki Sayfa */}
-        <button
-          disabled={!hasNextPage}
-          onClick={handleNextPage}
-          className="px-3 py-1.5 rounded-xl border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 font-bold text-xs flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95"
-          title="Sonraki Sayfa"
-        >
-          <span className="hidden sm:inline">Sonraki</span>
-          <ChevronRight className="w-4 h-4 text-amber-600" />
-        </button>
       </div>
     );
   };
 
   return (
-    <div className={`mx-auto animate-fade-in w-full transition-all duration-300 ${themeStyles.textMain} ${
+    <div className={`mx-auto animate-fade-in w-full max-w-full overflow-x-hidden transition-all duration-300 ${themeStyles.textMain} ${
       isFullScreen
         ? 'p-3 sm:p-5 max-w-none space-y-4'
         : 'p-3 sm:p-6 max-w-5xl space-y-4 pb-28'

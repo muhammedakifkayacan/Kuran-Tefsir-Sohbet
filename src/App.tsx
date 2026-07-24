@@ -374,7 +374,7 @@ export default function App() {
         />
 
         {/* Scrollable View Content Area */}
-        <main className="flex-1 overflow-y-auto w-full max-w-5xl mx-auto px-2 sm:px-4 pb-28 sm:pb-36 relative">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden w-full max-w-5xl mx-auto px-2 sm:px-4 pb-28 sm:pb-36 relative">
           <AnimatePresence mode="wait">
             {activeTab === 'home' && (
               <motion.div
