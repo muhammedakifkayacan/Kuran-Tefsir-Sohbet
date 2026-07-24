@@ -201,7 +201,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
           </div>
 
           <button
-            id="tour-ai-report"
+            id="tour-sohbet-add"
             onClick={() => {
               if (!user && onRequireAuth) {
                 onRequireAuth('Sohbet meclisi ve ders kaydı eklemek için lütfen oturum açın.');
@@ -401,6 +401,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                     <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100">
                       <div className="flex items-center gap-2">
                         <button
+                          id="tour-ai-summary"
                           onClick={() => {
                             if (!session.aiSummary) {
                               handleGenerateSummaryForExisting(session);
