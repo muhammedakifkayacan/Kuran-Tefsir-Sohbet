@@ -60,15 +60,6 @@ export const TOUR_STEPS: TourStep[] = [
     preferredPosition: 'bottom',
   },
   {
-    id: 'step_ai_summary',
-    targetId: 'tour-ai-summary',
-    tab: 'sohbet',
-    title: 'Yapay Zekâ Ders Özeti 🤖',
-    badge: 'Akıllı Analiz',
-    description: "Kayıtlı sohbet derslerinde bu butona tıklayarak ders notlarından ve ses kaydından yapay zekâ desteğiyle özet ve hikmetli nükteler oluşturabilirsiniz.",
-    preferredPosition: 'top',
-  },
-  {
     id: 'step_notes_view',
     targetId: 'tour-tab-notes',
     tab: 'notes',
