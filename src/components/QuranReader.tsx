@@ -3039,22 +3039,22 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                             isMultiSelected
                               ? 'bg-amber-400/30 dark:bg-amber-600/40 border-amber-500 ring-2 ring-amber-600 shadow-md'
                               : isSelected
-                              ? 'bg-amber-100/90 border-amber-400 dark:bg-amber-900/50 shadow-sm'
+                              ? 'bg-amber-100/90 border-amber-400 dark:bg-amber-900/50 dark:border-amber-600 shadow-sm'
                               : isPlayingCurrently
-                              ? 'bg-emerald-50 border-emerald-400'
-                              : 'bg-stone-50/80 dark:bg-stone-800/50 border-stone-200/80 hover:bg-amber-50/50'
+                              ? 'bg-emerald-50 border-emerald-400 dark:bg-emerald-950/50 dark:border-emerald-600'
+                              : 'bg-stone-50/80 dark:bg-stone-800/50 border-stone-200/80 dark:border-stone-700 hover:bg-amber-50/50 dark:hover:bg-stone-700/50'
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-3 pb-2.5 border-b border-stone-200/60">
+                          <div className="flex items-start justify-between gap-3 pb-2.5 border-b border-stone-200/60 dark:border-stone-700/60">
                             <div className="flex items-center gap-1.5 shrink-0">
                               <span className={`inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[11px] font-mono font-bold ${
-                                isMultiSelected ? 'bg-amber-600 text-white' : 'bg-amber-100 text-amber-900 border border-amber-300'
+                                isMultiSelected ? 'bg-amber-600 text-white' : 'bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-stone-700'
                               }`}>
                                 {isSajdah && <span className="mr-0.5 font-serif text-xs">۩</span>}
                                 Ayet {verse.number}
                               </span>
                               {isBookmarked && (
-                                <span className="text-[10px] bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded-md font-bold">
+                                <span className="text-[10px] bg-amber-200 dark:bg-stone-800 text-amber-900 dark:text-amber-300 px-1.5 py-0.5 rounded-md font-bold border border-amber-300 dark:border-stone-700">
                                   🔖 Kaydedildi
                                 </span>
                               )}
@@ -3342,12 +3342,12 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     isTarteelMatched
                       ? 'bg-emerald-50/95 dark:bg-emerald-950/40 border-2 border-emerald-500 shadow-xl ring-2 ring-emerald-500/80 scale-[1.01]'
                       : isSelected
-                      ? 'bg-amber-100/95 border-2 border-amber-500 shadow-lg ring-2 ring-amber-400/80 scale-[1.01]'
+                      ? 'bg-amber-100/95 dark:bg-amber-950/70 border-2 border-amber-500 shadow-lg ring-2 ring-amber-400/80 scale-[1.01]'
                       : isCurrentActive
-                      ? 'bg-amber-50/80 border-amber-400 shadow-md ring-1 ring-amber-400/30'
+                      ? 'bg-amber-50/80 dark:bg-stone-850 border-amber-400 dark:border-amber-600 shadow-md ring-1 ring-amber-400/30'
                       : isSajdah
-                      ? 'bg-amber-50/40 border-amber-300 shadow-sm'
-                      : 'bg-white border-stone-200 hover:border-amber-300 shadow-sm'
+                      ? 'bg-amber-50/40 dark:bg-stone-850 border-amber-300 dark:border-stone-700 shadow-sm'
+                      : 'bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-amber-300 dark:hover:border-stone-700 shadow-sm'
                   }`}
                 >
                   {/* Tarteel Active Recitation Badge */}
@@ -3359,19 +3359,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   )}
                   {/* Tilavet Secdesi Uyarısı (Ayet Bazlı) */}
                   {isSajdah && (
-                    <div className="mb-3.5 p-3 bg-amber-500/15 border-2 border-amber-500/80 rounded-2xl text-amber-950 flex items-center justify-between gap-2.5 text-xs font-bold shadow-xs">
+                    <div className="mb-3.5 p-3 bg-amber-500/15 border-2 border-amber-500/80 rounded-2xl text-amber-950 dark:text-amber-100 flex items-center justify-between gap-2.5 text-xs font-bold shadow-xs">
                       <div className="flex items-center gap-2.5">
                         <span className="w-8 h-8 rounded-xl bg-amber-700 text-white flex items-center justify-center font-serif text-base font-black shrink-0 shadow-xs">
                           ۩
                         </span>
                         <div>
-                          <div className="font-extrabold text-amber-950 text-xs flex items-center gap-2">
+                          <div className="font-extrabold text-amber-950 dark:text-amber-100 text-xs flex items-center gap-2">
                             <span>TİLAVET SECDESİ AYETİ</span>
                             <span className="px-2 py-0.5 rounded bg-amber-700 text-white text-[10px] uppercase">
                               Secde Gerektirir
                             </span>
                           </div>
-                          <div className="text-[11px] text-amber-900 font-medium mt-0.5">
+                          <div className="text-[11px] text-amber-900 dark:text-amber-200 font-medium mt-0.5">
                             Bu ayeti okuduğunuzda veya okunuşunu dinlediğinizde Tilavet Secdesi yapılması vaciptir (Şâfiî'de sünnet).
                           </div>
                         </div>
@@ -3380,7 +3380,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   )}
 
                   {/* Item header */}
-                  <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-stone-100 text-xs">
+                  <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-stone-100 dark:border-stone-800 text-xs">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={(e) => {
@@ -3391,23 +3391,23 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                         className={`p-1 px-2 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition-all cursor-pointer ${
                           selectedVerseNumbers.includes(verse.number)
                             ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                            : 'bg-stone-50 text-stone-700 border-stone-200 hover:border-amber-400'
+                            : 'bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-amber-400'
                         }`}
                         title="Ayet Seç"
                       >
                         {selectedVerseNumbers.includes(verse.number) ? (
                           <CheckSquare className="w-3.5 h-3.5" />
                         ) : (
-                          <Square className="w-3.5 h-3.5 text-stone-400" />
+                          <Square className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500" />
                         )}
                         <span>{verse.number}</span>
                       </button>
 
-                      <span className="text-slate-500 font-semibold text-[11px]">
+                      <span className="text-slate-500 dark:text-stone-400 font-semibold text-[11px]">
                         {verse.page}. Sayfa • {verse.juz}. Cüz
                       </span>
                       {isSajdah && (
-                        <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-bold">
+                        <span className="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 text-[10px] font-bold">
                           ۩ Secde Ayeti
                         </span>
                       )}
@@ -3416,10 +3416,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => toggleBookmark(verse.number)}
-                        className={`p-1.5 rounded-lg transition-colors ${
+                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                           isBookmarked
-                            ? 'text-amber-700 bg-amber-50'
-                            : 'text-stone-400 hover:text-amber-600'
+                            ? 'text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-stone-800'
+                            : 'text-stone-400 dark:text-stone-500 hover:text-amber-600 dark:hover:text-amber-400'
                         }`}
                         title="Yer İşareti"
                       >
@@ -3432,11 +3432,11 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   <div className="my-4 text-right dir-rtl leading-relaxed">
                     {showTajweed && verse.tajweedMarkup ? (
                       <div
-                        className={`font-serif text-stone-950 ${fontSizeClass}`}
+                        className={`font-serif text-stone-950 dark:text-amber-100 ${fontSizeClass}`}
                         dangerouslySetInnerHTML={{ __html: verse.tajweedMarkup.text }}
                       />
                     ) : (
-                      <p className={`font-serif text-stone-950 ${fontSizeClass}`}>
+                      <p className={`font-serif text-stone-950 dark:text-amber-100 ${fontSizeClass}`}>
                         {verse.arabic}
                       </p>
                     )}
@@ -3448,9 +3448,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       {verse.tajweedMarkup.rules.map((rl, idx) => (
                         <span
                           key={idx}
-                          className="text-[10px] px-2.5 py-1 rounded-full bg-[#FCFBF7] text-stone-700 border border-amber-200/50 font-medium"
+                          className="text-[10px] px-2.5 py-1 rounded-full bg-[#FCFBF7] dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-amber-200/50 dark:border-stone-700 font-medium"
                         >
-                          <strong className="text-amber-800 mr-1">{rl.word}:</strong>
+                          <strong className="text-amber-800 dark:text-amber-400 mr-1">{rl.word}:</strong>
                           {rl.note}
                         </span>
                       ))}
@@ -3459,27 +3459,27 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
                   {/* Transliteration */}
                   {showTransliteration && (
-                    <p className="text-xs font-mono text-stone-600 mt-2 bg-stone-50 p-3 rounded-xl border border-stone-200/60">
+                    <p className="text-xs font-mono text-stone-600 dark:text-stone-300 mt-2 bg-stone-50 dark:bg-stone-800 p-3 rounded-xl border border-stone-200/60 dark:border-stone-700">
                       {verse.transliteration}
                     </p>
                   )}
 
                   {/* Translation */}
                   {showTranslation && (
-                    <p className="text-xs text-stone-800 mt-3 italic leading-relaxed bg-[#FCFBF7] p-3 rounded-xl border border-amber-600/5">
+                    <p className="text-xs text-stone-800 dark:text-stone-200 mt-3 italic leading-relaxed bg-[#FCFBF7] dark:bg-stone-800 p-3 rounded-xl border border-amber-600/5 dark:border-stone-700">
                       "{verse.translation}"
                     </p>
                   )}
 
                   {/* Interaction bar */}
-                  <div className="flex items-center justify-between gap-1 mt-5 pt-3 border-t border-stone-100">
+                  <div className="flex items-center justify-between gap-1 mt-5 pt-3 border-t border-stone-100 dark:border-stone-800">
                     <button
                       id="tour-audio-controls"
                       onClick={() => onPlayAyah(verse)}
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                         isCurrentActive && isPlaying
                           ? 'bg-emerald-700 text-white shadow-xs'
-                          : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200'
+                          : 'bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700'
                       }`}
                     >
                       <Volume2 className="w-3.5 h-3.5" />
@@ -3489,10 +3489,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => setActiveTafsirAyah(verse)}
-                        className="px-2.5 py-1.5 rounded-xl bg-amber-100/90 text-amber-950 hover:bg-amber-200 border border-amber-300 transition-colors flex items-center gap-1 font-bold text-xs cursor-pointer shadow-2xs"
+                        className="px-2.5 py-1.5 rounded-xl bg-amber-100/90 dark:bg-stone-800 text-amber-950 dark:text-amber-200 hover:bg-amber-200 dark:hover:bg-stone-700 border border-amber-300 dark:border-stone-700 transition-colors flex items-center gap-1 font-bold text-xs cursor-pointer shadow-2xs"
                         title="Ayet Tefsirine Bak"
                       >
-                        <FileText className="w-3.5 h-3.5 text-amber-800" />
+                        <FileText className="w-3.5 h-3.5 text-amber-800 dark:text-amber-400" />
                         <span>Tefsire Bak</span>
                       </button>
 
@@ -3500,15 +3500,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                         onClick={() =>
                           onOpenAiTajweedExplain(selectedSurah.nameTurkish, verse.number, verse.arabic)
                         }
-                        className="p-2 rounded-xl bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200/80 transition-colors cursor-pointer"
+                        className="p-2 rounded-xl bg-emerald-50 dark:bg-stone-800 text-emerald-900 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-stone-700 border border-emerald-200/80 dark:border-stone-700 transition-colors cursor-pointer"
                         title="AI Tecvit Tahlili"
                       >
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                       </button>
 
                       <button
                         onClick={onOpenVoiceRecorder}
-                        className="p-2 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-100 transition-colors cursor-pointer"
+                        className="p-2 rounded-xl bg-rose-50 dark:bg-stone-800 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-stone-700 border border-rose-100 dark:border-stone-700 transition-colors cursor-pointer"
                         title="Ses Kaydı Al"
                       >
                         <Mic className="w-3.5 h-3.5" />
@@ -3523,19 +3523,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           setActiveNoteModalAyah(verse);
                           setNoteTextInput('');
                         }}
-                        className="p-2 rounded-xl bg-emerald-50 text-emerald-900 hover:bg-emerald-100 border border-emerald-200/80 transition-colors flex items-center gap-1 font-semibold text-xs cursor-pointer"
+                        className="p-2 rounded-xl bg-emerald-50 dark:bg-stone-800 text-emerald-900 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-stone-700 border border-emerald-200/80 dark:border-stone-700 transition-colors flex items-center gap-1 font-semibold text-xs cursor-pointer"
                         title="Ayet Notu Ekle"
                       >
-                        <Edit3 className="w-3.5 h-3.5 text-emerald-700" />
+                        <Edit3 className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                         <span>Not Al</span>
                       </button>
 
                       <button
                         onClick={() => setShareModalVerses([verse])}
-                        className="p-2 px-2.5 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200/80 transition-colors flex items-center gap-1 font-semibold text-xs cursor-pointer"
+                        className="p-2 px-2.5 rounded-xl bg-amber-50 dark:bg-stone-800 text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-stone-700 border border-amber-200/80 dark:border-stone-700 transition-colors flex items-center gap-1 font-semibold text-xs cursor-pointer"
                         title="Ayeti Paylaş veya Kopyala"
                       >
-                        <Share2 className="w-3.5 h-3.5 text-amber-700" />
+                        <Share2 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                         <span className="hidden sm:inline">Paylaş</span>
                       </button>
                     </div>
@@ -3551,40 +3551,40 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
       {/* Floating Selected Ayah Tooltip Popover (Tam Ekranda veya Normal Modda Ayet Üstü Tooltip Seçenekleri) */}
       {selectedMushafAyah && (
-        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-lg bg-white/98 text-stone-900 backdrop-blur-2xl p-4 rounded-3xl border border-amber-300/80 shadow-2xl animate-fade-in space-y-3">
+        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-lg bg-white/98 dark:bg-stone-900/98 text-stone-900 dark:text-stone-100 backdrop-blur-2xl p-4 rounded-3xl border border-amber-300/80 dark:border-stone-700 shadow-2xl animate-fade-in space-y-3">
           {/* Header */}
-          <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+          <div className="flex items-center justify-between pb-2 border-b border-stone-200 dark:border-stone-800">
             <div className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-amber-600 text-white font-black text-[11px] flex items-center justify-center font-mono shadow-xs">
                 {selectedMushafAyah.number}
               </span>
-              <span className="text-xs font-bold text-amber-900">
+              <span className="text-xs font-bold text-amber-900 dark:text-amber-300">
                 {selectedSurah.nameTurkish} Sûresi, {selectedMushafAyah.number}. Ayet
               </span>
-              <span className="text-[10px] text-stone-500">
+              <span className="text-[10px] text-stone-500 dark:text-stone-400">
                 (Sayfa {selectedMushafAyah.page})
               </span>
             </div>
 
             <button
               onClick={() => setSelectedMushafAyah(null)}
-              className="px-2.5 py-1 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all text-xs font-medium flex items-center gap-1.5 active:scale-95 border border-stone-200"
+              className="px-2.5 py-1 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 transition-all text-xs font-medium flex items-center gap-1.5 active:scale-95 border border-stone-200 dark:border-stone-700 cursor-pointer"
               title="Kapat (ESC)"
             >
-              <span className="text-[10px] font-mono text-stone-600 bg-stone-200/80 px-1.5 py-0.5 rounded border border-stone-300">ESC</span>
+              <span className="text-[10px] font-mono text-stone-600 dark:text-stone-300 bg-stone-200/80 dark:bg-stone-700 px-1.5 py-0.5 rounded border border-stone-300 dark:border-stone-600">ESC</span>
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Tilavet Secdesi Uyarısı (Seçili Ayet İçin) */}
           {checkIsSajdahVerse(selectedSurah.id, selectedMushafAyah.number) && (
-            <div className="p-2.5 bg-amber-500/20 border-2 border-amber-500 rounded-2xl text-amber-950 flex items-center gap-2.5 text-xs font-bold">
+            <div className="p-2.5 bg-amber-500/20 dark:bg-amber-950/40 border-2 border-amber-500 rounded-2xl text-amber-950 dark:text-amber-100 flex items-center gap-2.5 text-xs font-bold">
               <span className="w-7 h-7 rounded-xl bg-amber-700 text-white flex items-center justify-center font-serif font-black text-sm shrink-0 shadow-xs">
                 ۩
               </span>
               <div>
-                <span className="font-extrabold text-amber-950 block">TİLAVET SECDESİ AYETİ</span>
-                <span className="text-[10px] text-amber-900 block font-semibold leading-tight">
+                <span className="font-extrabold text-amber-950 dark:text-amber-100 block">TİLAVET SECDESİ AYETİ</span>
+                <span className="text-[10px] text-amber-900 dark:text-amber-200 block font-semibold leading-tight">
                   Bu ayeti okuduğunuzda veya okunuşunu dinlediğinizde Tilavet Secdesi yapılması vaciptir (Şâfiî'de sünnet).
                 </span>
               </div>
@@ -3592,18 +3592,18 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           )}
 
           {/* Selected Ayah Arabic snippet */}
-          <div className="p-2.5 bg-amber-50/70 rounded-2xl border border-amber-200/70 text-right dir-rtl font-serif text-lg text-amber-950 max-h-24 overflow-y-auto leading-relaxed">
+          <div className="p-2.5 bg-amber-50/70 dark:bg-stone-800/80 rounded-2xl border border-amber-200/70 dark:border-stone-700 text-right dir-rtl font-serif text-lg text-amber-950 dark:text-amber-100 max-h-24 overflow-y-auto leading-relaxed">
             {selectedMushafAyah.arabic}
           </div>
 
           {/* Expandable Translation inside Tooltip */}
           {showTooltipTranslation && (
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs italic text-stone-700 leading-relaxed max-h-36 overflow-y-auto space-y-1">
-              <div className="text-[10px] font-bold text-amber-800 not-italic uppercase tracking-wider">
+            <div className="p-3 bg-stone-50 dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700 text-xs italic text-stone-700 dark:text-stone-200 leading-relaxed max-h-36 overflow-y-auto space-y-1">
+              <div className="text-[10px] font-bold text-amber-800 dark:text-amber-400 not-italic uppercase tracking-wider">
                 {MEAL_SOURCES.find((m) => m.id === selectedMealSource)?.name || 'Türkçe Meali'}
               </div>
               <div>"{getAuthorMealText(selectedMushafAyah.arabic, selectedMushafAyah.translation, selectedMealSource)}"</div>
-              <div className="text-[10px] font-mono not-italic text-amber-800 pt-1 border-t border-stone-200">
+              <div className="text-[10px] font-mono not-italic text-amber-800 dark:text-amber-300 pt-1 border-t border-stone-200 dark:border-stone-700">
                 Okunuşu: {selectedMushafAyah.transliteration}
               </div>
             </div>
@@ -3613,25 +3613,25 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 pt-1">
             <button
               onClick={() => onPlayAyah(selectedMushafAyah)}
-              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
+              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                 activeAyah?.number === selectedMushafAyah.number && isPlaying
                   ? 'bg-amber-600 text-white shadow-md'
-                  : 'bg-stone-100 text-stone-800 hover:bg-amber-100 hover:text-amber-900 border border-stone-200'
+                  : 'bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 hover:bg-amber-100 dark:hover:bg-amber-950/50 hover:text-amber-900 dark:hover:text-amber-200 border border-stone-200 dark:border-stone-700'
               }`}
             >
-              <Volume2 className="w-3.5 h-3.5 text-amber-700" />
+              <Volume2 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
               <span className="truncate">{activeAyah?.number === selectedMushafAyah.number && isPlaying ? 'Durdur' : 'Dinle'}</span>
             </button>
 
             <button
               onClick={() => setShowTooltipTranslation(!showTooltipTranslation)}
-              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
+              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                 showTooltipTranslation
-                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                  : 'bg-stone-100 text-stone-800 hover:bg-amber-100 hover:text-amber-900 border border-stone-200'
+                  ? 'bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-stone-700'
+                  : 'bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 hover:bg-amber-100 dark:hover:bg-amber-950/50 hover:text-amber-900 dark:hover:text-amber-200 border border-stone-200 dark:border-stone-700'
               }`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-amber-700" />
+              <BookOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
               <span className="truncate">{showTooltipTranslation ? 'Gizle' : 'Meali Gör'}</span>
             </button>
 
@@ -3645,9 +3645,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
             <button
               onClick={() => setShareModalVerses([selectedMushafAyah])}
-              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
+              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-50 dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-stone-700 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
             >
-              <Share2 className="w-3.5 h-3.5 text-amber-700" />
+              <Share2 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
               <span className="truncate">Paylaş</span>
             </button>
 
@@ -3660,21 +3660,21 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 setActiveNoteModalAyah(selectedMushafAyah);
                 setNoteTextInput('');
               }}
-              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
+              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-50 dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-stone-700 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
             >
-              <Edit3 className="w-3.5 h-3.5 text-amber-700" />
+              <Edit3 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
               <span className="truncate">Not Al</span>
             </button>
 
             <button
               onClick={() => toggleBookmark(selectedMushafAyah.number)}
-              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
+              className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
                 bookmarkedVerses.includes(selectedMushafAyah.number)
-                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                  : 'bg-stone-100 text-stone-800 hover:bg-amber-100 hover:text-amber-900 border border-stone-200'
+                  ? 'bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-stone-700'
+                  : 'bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 hover:bg-amber-100 dark:hover:bg-amber-950/50 hover:text-amber-900 dark:hover:text-amber-200 border border-stone-200 dark:border-stone-700'
               }`}
             >
-              <Bookmark className={`w-3.5 h-3.5 ${bookmarkedVerses.includes(selectedMushafAyah.number) ? 'fill-current text-amber-600' : 'text-amber-700'}`} />
+              <Bookmark className={`w-3.5 h-3.5 ${bookmarkedVerses.includes(selectedMushafAyah.number) ? 'fill-current text-amber-600 dark:text-amber-400' : 'text-amber-700 dark:text-amber-400'}`} />
               <span className="truncate">{bookmarkedVerses.includes(selectedMushafAyah.number) ? 'Kaydedildi' : 'Kaydet'}</span>
             </button>
 
@@ -3691,31 +3691,31 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
       {/* Floating Traditional Save Note Dialog/Modal */}
       {activeNoteModalAyah && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in">
-          <div className="bg-white border border-stone-200 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 text-slate-900 relative">
-            <div className="flex items-center justify-between border-b pb-3 border-stone-100">
-              <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
-                <Edit3 className="w-5 h-5 text-amber-700" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-md animate-fade-in">
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 text-slate-900 dark:text-stone-100 relative">
+            <div className="flex items-center justify-between border-b pb-3 border-stone-100 dark:border-stone-800">
+              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                <Edit3 className="w-5 h-5 text-amber-700 dark:text-amber-400" />
                 <span>Not Ekle — {selectedSurah.nameTurkish} Sûresi, {activeNoteModalAyah.number}. Ayet</span>
               </h3>
             </div>
 
             {/* Ayah Snippet Context */}
-            <div className="p-3.5 bg-[#FCFBF7] rounded-2xl border border-amber-200/70 space-y-1 text-xs">
-              <p className="font-serif text-right text-stone-950 text-base font-bold dir-rtl leading-relaxed">
+            <div className="p-3.5 bg-[#FCFBF7] dark:bg-stone-800 rounded-2xl border border-amber-200/70 dark:border-stone-700 space-y-1 text-xs">
+              <p className="font-serif text-right text-stone-950 dark:text-amber-100 text-base font-bold dir-rtl leading-relaxed">
                 {activeNoteModalAyah.arabic}
               </p>
-              <p className="text-stone-700 italic text-[11px] line-clamp-2">
+              <p className="text-stone-700 dark:text-stone-300 italic text-[11px] line-clamp-2">
                 "{activeNoteModalAyah.translation}"
               </p>
             </div>
 
             <div>
-              <label className="text-xs font-bold text-stone-700 block mb-1.5">Not Etiketi / Kategorisi</label>
+              <label className="text-xs font-bold text-stone-700 dark:text-stone-300 block mb-1.5">Not Etiketi / Kategorisi</label>
               <select
                 value={noteTagInput}
                 onChange={(e) => setNoteTagInput(e.target.value as VerseNote['tag'])}
-                className="w-full bg-stone-50 text-stone-800 text-xs rounded-xl p-3 border border-stone-200 font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                className="w-full bg-stone-50 dark:bg-stone-800 text-stone-800 dark:text-stone-100 text-xs rounded-xl p-3 border border-stone-200 dark:border-stone-700 font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none cursor-pointer"
               >
                 <option value="Tefsir Notu">Tefsir Notu</option>
                 <option value="Tecvit">Tecvit Notu</option>
@@ -3725,31 +3725,31 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             </div>
 
             <div>
-              <label className="text-xs font-bold text-stone-700 block mb-1.5">Ders Notunuz</label>
+              <label className="text-xs font-bold text-stone-700 dark:text-stone-300 block mb-1.5">Ders Notunuz</label>
               <textarea
                 rows={4}
                 placeholder="Ayet ile ilgili tefsir nüktelerinizi veya ders notlarınızı yazın..."
                 value={noteTextInput}
                 onChange={(e) => setNoteTextInput(e.target.value)}
-                className="w-full bg-stone-50 text-stone-800 text-xs rounded-xl p-3 border border-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500 leading-relaxed font-sans"
+                className="w-full bg-stone-50 dark:bg-stone-800 text-stone-800 dark:text-stone-100 text-xs rounded-xl p-3 border border-stone-200 dark:border-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500 leading-relaxed font-sans placeholder:text-stone-400 dark:placeholder:text-stone-500"
                 autoFocus
               />
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-stone-100">
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-stone-100 dark:border-stone-800">
               <button
                 onClick={() => {
                   setActiveNoteModalAyah(null);
                   setNoteTextInput('');
                 }}
-                className="px-4 py-2.5 rounded-xl text-xs text-stone-600 hover:bg-stone-100 font-semibold transition-colors"
+                className="px-4 py-2.5 rounded-xl text-xs text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 font-semibold transition-colors cursor-pointer"
               >
                 Vazgeç
               </button>
               <button
                 onClick={() => handleSaveNoteSubmit(activeNoteModalAyah)}
                 disabled={!noteTextInput.trim()}
-                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all active:scale-95 disabled:opacity-50 flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all active:scale-95 disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
               >
                 <Check className="w-4 h-4 text-white" />
                 <span>Notu Kaydet</span>
@@ -3969,15 +3969,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
       {/* Ayet Paylaş Seçenekleri Modalı */}
       {shareModalVerses && shareModalVerses.length > 0 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in">
-          <div className="bg-white border border-stone-200 rounded-3xl p-5 sm:p-6 w-full max-w-lg shadow-2xl space-y-4 text-slate-900 relative">
-            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-md animate-fade-in">
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-5 sm:p-6 w-full max-w-lg shadow-2xl space-y-4 text-slate-900 dark:text-stone-100 relative">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
               <div>
-                <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
-                  <Share2 className="w-5 h-5 text-amber-700" />
+                <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                  <Share2 className="w-5 h-5 text-amber-700 dark:text-amber-400" />
                   <span>Ayet Paylaş</span>
                 </h3>
-                <p className="text-xs text-stone-500 font-medium">
+                <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">
                   {shareModalVerses.length === 1
                     ? `${selectedSurah.nameTurkish} Sûresi, ${shareModalVerses[0].number}. Ayet`
                     : `${selectedSurah.nameTurkish} Sûresi (${shareModalVerses.length} Ayet Seçildi)`}
@@ -3985,7 +3985,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               </div>
               <button
                 onClick={() => setShareModalVerses(null)}
-                className="p-1.5 rounded-full hover:bg-stone-100 text-stone-500 cursor-pointer"
+                className="p-1.5 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -3993,19 +3993,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
             {/* Paylaşım İçerik Seçenekleri */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-stone-700 block">Dahil Edilecek İçerikler:</label>
+              <label className="text-xs font-bold text-stone-700 dark:text-stone-300 block">Dahil Edilecek İçerikler:</label>
               <div className="grid grid-cols-2 gap-2 text-xs font-medium">
                 <button
                   type="button"
                   onClick={() => setShareOptions(prev => ({ ...prev, includeArabic: !prev.includeArabic }))}
                   className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
                     shareOptions.includeArabic
-                      ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
-                      : 'bg-stone-50 border-stone-200 text-stone-600'
+                      ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-bold'
+                      : 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400'
                   }`}
                 >
                   <div className={`w-4 h-4 rounded border flex items-center justify-center ${
-                    shareOptions.includeArabic ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 bg-white'
+                    shareOptions.includeArabic ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 dark:border-stone-500 bg-white dark:bg-stone-800'
                   }`}>
                     {shareOptions.includeArabic && <Check className="w-3 h-3 stroke-[3]" />}
                   </div>
@@ -4017,12 +4017,12 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   onClick={() => setShareOptions(prev => ({ ...prev, includeTranslation: !prev.includeTranslation }))}
                   className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
                     shareOptions.includeTranslation
-                      ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
-                      : 'bg-stone-50 border-stone-200 text-stone-600'
+                      ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-bold'
+                      : 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400'
                   }`}
                 >
                   <div className={`w-4 h-4 rounded border flex items-center justify-center ${
-                    shareOptions.includeTranslation ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 bg-white'
+                    shareOptions.includeTranslation ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 dark:border-stone-500 bg-white dark:bg-stone-800'
                   }`}>
                     {shareOptions.includeTranslation && <Check className="w-3 h-3 stroke-[3]" />}
                   </div>
@@ -4034,12 +4034,12 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   onClick={() => setShareOptions(prev => ({ ...prev, includeTransliteration: !prev.includeTransliteration }))}
                   className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
                     shareOptions.includeTransliteration
-                      ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
-                      : 'bg-stone-50 border-stone-200 text-stone-600'
+                      ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-bold'
+                      : 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400'
                   }`}
                 >
                   <div className={`w-4 h-4 rounded border flex items-center justify-center ${
-                    shareOptions.includeTransliteration ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 bg-white'
+                    shareOptions.includeTransliteration ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 dark:border-stone-500 bg-white dark:bg-stone-800'
                   }`}>
                     {shareOptions.includeTransliteration && <Check className="w-3 h-3 stroke-[3]" />}
                   </div>
@@ -4051,12 +4051,12 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   onClick={() => setShareOptions(prev => ({ ...prev, includeMetadata: !prev.includeMetadata }))}
                   className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
                     shareOptions.includeMetadata
-                      ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold'
-                      : 'bg-stone-50 border-stone-200 text-stone-600'
+                      ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-bold'
+                      : 'bg-stone-50 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400'
                   }`}
                 >
                   <div className={`w-4 h-4 rounded border flex items-center justify-center ${
-                    shareOptions.includeMetadata ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 bg-white'
+                    shareOptions.includeMetadata ? 'bg-amber-600 border-amber-600 text-white' : 'border-stone-400 dark:border-stone-500 bg-white dark:bg-stone-800'
                   }`}>
                     {shareOptions.includeMetadata && <Check className="w-3 h-3 stroke-[3]" />}
                   </div>
@@ -4066,14 +4066,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             </div>
 
             {/* Format Selection Tab */}
-            <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-2xl border border-stone-200">
+            <div className="flex items-center gap-1.5 p-1 bg-stone-100 dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700">
               <button
                 type="button"
                 onClick={() => setShareFormatMode('whatsapp')}
                 className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   shareFormatMode === 'whatsapp'
                     ? 'bg-emerald-700 text-white shadow-2xs'
-                    : 'text-stone-600 hover:text-stone-900'
+                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
                 }`}
               >
                 <MessageCircle className="w-3.5 h-3.5 text-emerald-200" />
@@ -4086,7 +4086,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
                   shareFormatMode === 'standard'
                     ? 'bg-amber-700 text-white shadow-2xs'
-                    : 'text-stone-600 hover:text-stone-900'
+                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
                 }`}
               >
                 <FileText className="w-3.5 h-3.5 text-amber-200" />
@@ -4097,22 +4097,22 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             {/* Önizleme Alanı */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-[11px] font-bold text-stone-500 block">Paylaşım Metni Önizlemesi:</label>
+                <label className="text-[11px] font-bold text-stone-500 dark:text-stone-400 block">Paylaşım Metni Önizlemesi:</label>
                 {shareFormatMode === 'whatsapp' && (
-                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                  <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
                     *Yıldızlar* WhatsApp'ta Kalın Görünür
                   </span>
                 )}
               </div>
-              <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl text-xs text-stone-800 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed select-all dir-auto">
+              <div className="p-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl text-xs text-stone-800 dark:text-stone-200 font-mono whitespace-pre-wrap max-h-40 overflow-y-auto leading-relaxed select-all dir-auto">
                 {(shareFormatMode === 'whatsapp' ? getWhatsAppFormattedText(shareModalVerses) : getFormattedShareText(shareModalVerses)) || (
-                  <span className="text-stone-400 italic font-sans">En az bir içerik seçiniz...</span>
+                  <span className="text-stone-400 dark:text-stone-500 italic font-sans">En az bir içerik seçiniz...</span>
                 )}
               </div>
             </div>
 
             {/* Butonlar */}
-            <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-stone-100">
+            <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-stone-100 dark:border-stone-800">
               <button
                 onClick={() => handleCopyWhatsAppText(shareModalVerses)}
                 className="w-full sm:flex-1 py-2.5 px-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer"
@@ -4123,9 +4123,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
               <button
                 onClick={() => handleCopyText(shareModalVerses)}
-                className="w-full sm:flex-1 py-2.5 px-3 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs flex items-center justify-center gap-2 transition-all border border-stone-200 active:scale-95 cursor-pointer"
+                className="w-full sm:flex-1 py-2.5 px-3 rounded-2xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs flex items-center justify-center gap-2 transition-all border border-stone-200 dark:border-stone-700 active:scale-95 cursor-pointer"
               >
-                <Copy className="w-4 h-4 text-amber-700" />
+                <Copy className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                 <span>Düz Metin Kopyala</span>
               </button>
 
@@ -4143,19 +4143,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
       {/* Tefsir Bak Detay Modalı */}
       {activeTafsirAyah && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/75 backdrop-blur-md animate-fade-in">
-          <div className="bg-white border border-stone-200 rounded-3xl p-5 sm:p-6 w-full max-w-2xl shadow-2xl space-y-4 text-stone-900 relative max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-stone-950/75 backdrop-blur-md animate-fade-in">
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl p-5 sm:p-6 w-full max-w-2xl shadow-2xl space-y-4 text-stone-900 dark:text-stone-100 relative max-h-[90vh] flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-stone-200 shrink-0">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200 dark:border-stone-800 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 border border-amber-300 flex items-center justify-center font-bold shrink-0">
-                  <FileText className="w-5 h-5 text-amber-800" />
+                <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-stone-700 flex items-center justify-center font-bold shrink-0">
+                  <FileText className="w-5 h-5 text-amber-800 dark:text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-stone-900 leading-tight flex items-center gap-2">
+                  <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 leading-tight flex items-center gap-2">
                     <span>{selectedSurah.nameTurkish} Sûresi, {activeTafsirAyah.number}. Ayet Tefsiri</span>
                   </h3>
-                  <p className="text-xs text-stone-500 font-medium">
+                  <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">
                     Sayfa {activeTafsirAyah.page} — Kapsamlı Ayet Tahlili & Şerhi
                   </p>
                 </div>
@@ -4163,7 +4163,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
               <button
                 onClick={() => setActiveTafsirAyah(null)}
-                className="p-2 rounded-full hover:bg-stone-100 text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+                className="p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors cursor-pointer"
                 title="Kapat"
               >
                 <X className="w-5 h-5" />
@@ -4171,9 +4171,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             </div>
 
             {/* Tefsir Source Selector Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-amber-50/80 border border-amber-200/90 rounded-2xl shrink-0">
-              <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5 shrink-0">
-                <Sparkles className="w-4 h-4 text-amber-700" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-amber-50/80 dark:bg-stone-800/90 border border-amber-200/90 dark:border-stone-700 rounded-2xl shrink-0">
+              <span className="text-xs font-bold text-amber-950 dark:text-amber-200 flex items-center gap-1.5 shrink-0">
+                <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                 <span>Tefsir Kaynağı:</span>
               </span>
               <select
@@ -4182,7 +4182,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   setSelectedTafsirSource(e.target.value);
                   localStorage.setItem('kuran_app_tafsir_source', e.target.value);
                 }}
-                className="px-3 py-1.5 rounded-xl bg-white border border-amber-300 text-amber-950 font-bold text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-2xs"
+                className="px-3 py-1.5 rounded-xl bg-white dark:bg-stone-800 border border-amber-300 dark:border-stone-700 text-amber-950 dark:text-amber-100 font-bold text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-2xs"
               >
                 {TAFSIR_SOURCES.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -4195,16 +4195,16 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             {/* Scrollable Content */}
             <div className="overflow-y-auto flex-1 space-y-4 pr-1.5 scrollbar-thin">
               {/* Arabic snippet */}
-              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-right dir-rtl font-serif text-xl text-stone-900 leading-relaxed">
+              <div className="p-3.5 bg-stone-50 dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700 text-right dir-rtl font-serif text-xl text-stone-900 dark:text-amber-100 leading-relaxed">
                 {activeTafsirAyah.arabic}
               </div>
 
               {/* Meal snippet */}
-              <div className="p-3.5 bg-amber-50/40 rounded-2xl border border-amber-200/60 space-y-1">
-                <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center justify-between">
+              <div className="p-3.5 bg-amber-50/40 dark:bg-stone-800/60 rounded-2xl border border-amber-200/60 dark:border-stone-700 space-y-1">
+                <div className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider flex items-center justify-between">
                   <span>Türkçe Meali ({MEAL_SOURCES.find(m => m.id === selectedMealSource)?.name})</span>
                 </div>
-                <p className="text-xs font-medium text-stone-800 italic leading-relaxed">
+                <p className="text-xs font-medium text-stone-800 dark:text-stone-200 italic leading-relaxed">
                   "{getAuthorMealText(activeTafsirAyah.arabic, activeTafsirAyah.translation, selectedMealSource)}"
                 </p>
               </div>
@@ -4222,14 +4222,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 return (
                   <div className="space-y-3.5">
                     {/* Ayet Özeti / Esbab-ı Nüzul */}
-                    <div className="p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-1.5 text-xs text-emerald-950">
-                      <div className="font-bold flex items-center gap-1.5 text-emerald-900">
-                        <Info className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <div className="p-3.5 bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 rounded-2xl space-y-1.5 text-xs text-emerald-950 dark:text-emerald-100">
+                      <div className="font-bold flex items-center gap-1.5 text-emerald-900 dark:text-emerald-200">
+                        <Info className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                         <span>Ayetin Özeti & Nüzul Sebebi</span>
                       </div>
-                      <p className="font-semibold text-emerald-900 leading-relaxed">{tafsirData.summary}</p>
+                      <p className="font-semibold text-emerald-900 dark:text-emerald-100 leading-relaxed">{tafsirData.summary}</p>
                       {tafsirData.revelationContext && (
-                        <p className="text-[11px] text-emerald-800 pt-1 border-t border-emerald-200/80 leading-normal">
+                        <p className="text-[11px] text-emerald-800 dark:text-emerald-300 pt-1 border-t border-emerald-200/80 dark:border-emerald-800/80 leading-normal">
                           <strong>Nüzul Arka Planı:</strong> {tafsirData.revelationContext}
                         </p>
                       )}
@@ -4237,12 +4237,12 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
                     {/* Tefsir Paragrafları */}
                     <div className="space-y-2.5">
-                      <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
-                        <FileText className="w-4 h-4 text-amber-700" />
+                      <h4 className="text-xs font-bold text-stone-800 dark:text-stone-200 uppercase tracking-wider flex items-center gap-1.5">
+                        <FileText className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                         <span>{tafsirData.sourceName} Detaylı İzahı</span>
                       </h4>
                       {tafsirData.commentary.map((paragraph, idx) => (
-                        <p key={idx} className="text-xs text-stone-700 font-normal leading-relaxed bg-stone-50 p-3 rounded-2xl border border-stone-100">
+                        <p key={idx} className="text-xs text-stone-700 dark:text-stone-300 font-normal leading-relaxed bg-stone-50 dark:bg-stone-800/80 p-3 rounded-2xl border border-stone-100 dark:border-stone-800">
                           {paragraph}
                         </p>
                       ))}
@@ -4250,15 +4250,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
                     {/* Hikmetler ve Dersler */}
                     {tafsirData.spiritualLessons && tafsirData.spiritualLessons.length > 0 && (
-                      <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2 text-xs">
-                        <h4 className="font-bold text-amber-950 flex items-center gap-1.5">
-                          <Sparkles className="w-4 h-4 text-amber-700" />
+                      <div className="p-3.5 bg-amber-50/70 dark:bg-stone-800/80 border border-amber-200 dark:border-stone-700 rounded-2xl space-y-2 text-xs">
+                        <h4 className="font-bold text-amber-950 dark:text-amber-200 flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                           <span>Ayetten Çıkarılan Hikmet ve Dersler</span>
                         </h4>
                         <ul className="space-y-1.5 pl-1">
                           {tafsirData.spiritualLessons.map((lesson, lIdx) => (
-                            <li key={lIdx} className="flex items-start gap-2 text-stone-800 font-medium">
-                              <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                            <li key={lIdx} className="flex items-start gap-2 text-stone-800 dark:text-stone-200 font-medium">
+                              <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                               <span>{lesson}</span>
                             </li>
                           ))}
@@ -4271,7 +4271,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             </div>
 
             {/* Footer Actions */}
-            <div className="flex items-center justify-between gap-2 pt-3 border-t border-stone-200 shrink-0">
+            <div className="flex items-center justify-between gap-2 pt-3 border-t border-stone-200 dark:border-stone-800 shrink-0">
               <button
                 onClick={() => {
                   if (!user && onRequireAuth) {
@@ -4291,7 +4291,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
               <button
                 onClick={() => setActiveTafsirAyah(null)}
-                className="px-5 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition-all active:scale-95 cursor-pointer"
+                className="px-5 py-2.5 rounded-2xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 font-bold text-xs transition-all active:scale-95 cursor-pointer"
               >
                 Kapat
               </button>
