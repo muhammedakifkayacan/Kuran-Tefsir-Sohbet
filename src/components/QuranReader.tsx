@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight, Share2, Copy, CheckSquare, Square, MessageCircle } from 'lucide-react';
 import { Surah, Ayah, VerseNote, RibbonBookmark } from '../types';
@@ -1938,19 +1939,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               </button>
 
               {/* Popover Dropdown for Fast Page Selection */}
-              {isPageMenuOpen && (
-                <>
+              {isPageMenuOpen && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-stone-950/60 backdrop-blur-md animate-fade-in">
                   <div
-                    className="fixed inset-0 z-[200] bg-stone-950/30"
+                    className="absolute inset-0"
                     onClick={() => setIsPageMenuOpen(false)}
                   />
-                  <div className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 mt-2 z-[201] p-3 rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-72 sm:w-80 max-w-[calc(100vw-24px)] animate-fade-in">
+                  <div className="relative z-10 p-5 rounded-3xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-full max-w-xs sm:max-w-sm max-h-[85vh] overflow-y-auto overscroll-contain">
                     <div className="flex items-center justify-between pb-2 mb-2 border-b border-stone-200 dark:border-stone-800 text-xs font-bold">
                       <span>Sayfaya Git</span>
                       <span className="text-[10px] opacity-60">{selectedSurah.nameTurkish} ({pagesInSurah.length} Sayfa)</span>
                     </div>
 
-                    <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5 max-h-48 overflow-y-auto p-1 scrollbar-thin">
+                    <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5 max-h-56 overflow-y-auto p-1 scrollbar-thin">
                       {pagesInSurah.map((p) => (
                         <button
                           key={p}
@@ -1970,7 +1971,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       ))}
                     </div>
                   </div>
-                </>
+                </div>,
+                document.body
               )}
             </div>
 
@@ -2084,11 +2086,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 <span className="text-xs font-semibold">Ayarlar</span>
               </button>
 
-              {/* Filter / Settings Popover */}
-              {isFilterMenuOpen && (
-                <>
-                  <div className="fixed inset-0 z-[200] bg-stone-950/30" onClick={() => setIsFilterMenuOpen(false)} />
-                  <div className="fixed top-16 sm:top-20 left-1/2 sm:left-auto right-auto sm:right-6 -translate-x-1/2 sm:translate-x-0 mt-2 z-[201] p-4 sm:p-5 rounded-3xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-[92vw] sm:w-80 max-w-sm animate-fade-in space-y-4 max-h-[85vh] overflow-y-auto">
+              {/* Filter / Settings Modal */}
+              {isFilterMenuOpen && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-stone-950/60 backdrop-blur-md animate-fade-in">
+                  <div
+                    className="absolute inset-0"
+                    onClick={() => setIsFilterMenuOpen(false)}
+                  />
+                  <div className="relative z-10 p-5 rounded-3xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-full max-w-sm max-h-[85vh] overflow-y-auto space-y-4 overscroll-contain">
                     <div className="flex items-center justify-between pb-2 border-b border-stone-100 dark:border-stone-800">
                       <span className="text-xs font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
                         <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -2274,7 +2279,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       )}
                     </div>
                   </div>
-                </>
+                </div>,
+                document.body
               )}
             </div>
           </div>
@@ -2298,18 +2304,18 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       )}
 
       {/* TAM EKRAN / MODAL ARAMA & SESLE AYET BULMA EKRANI */}
-      {isSearchModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/45 backdrop-blur-md animate-fade-in">
-          <div className="bg-white text-stone-900 border border-stone-200 shadow-2xl rounded-3xl max-w-xl w-full p-5 sm:p-6 space-y-4 relative overflow-hidden backdrop-blur-2xl max-h-[85vh] flex flex-col">
+      {isSearchModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-stone-950/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-800 shadow-2xl rounded-3xl max-w-xl w-full p-5 sm:p-6 space-y-4 relative overflow-hidden backdrop-blur-2xl max-h-[85vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-stone-200/80 pb-3 shrink-0">
+            <div className="flex items-center justify-between border-b border-stone-200/80 dark:border-stone-800 pb-3 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-2xl bg-emerald-100 text-emerald-900 border border-emerald-200 flex items-center justify-center font-bold">
-                  <Search className="w-5 h-5 text-emerald-800" />
+                <div className="w-9 h-9 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center font-bold">
+                  <Search className="w-5 h-5 text-emerald-800 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-stone-900">Arama Yap</h3>
-                  <p className="text-xs text-stone-500">Sure ismi, ayet numarası (Örn: Bakara 255) veya kelime arayın</p>
+                  <h3 className="font-bold text-base text-stone-900 dark:text-stone-100">Arama Yap</h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">Sure ismi, ayet numarası (Örn: Bakara 255) veya kelime arayın</p>
                 </div>
               </div>
 
@@ -2569,13 +2575,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* AI SESLİ AYET ARAMA MODALI */}
-      {isVoiceSearching && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md animate-fade-in">
-          <div className="bg-white text-stone-900 border border-emerald-200/90 shadow-2xl rounded-3xl max-w-lg w-full p-6 space-y-5 text-center backdrop-blur-2xl relative overflow-hidden">
+      {isVoiceSearching && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border border-emerald-200/90 dark:border-emerald-800 shadow-2xl rounded-3xl max-w-lg w-full p-6 space-y-5 text-center backdrop-blur-2xl relative overflow-hidden">
             {/* Ambient Emerald Glow */}
             <div className="absolute -top-12 -left-12 w-32 h-32 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none" />
 
@@ -2771,22 +2778,23 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               </div>
             ) : null}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* SÛRE SEÇİM MODALI (114 Sûre Arama ve Hızlı Seçim) */}
-      {isSurahModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/40 backdrop-blur-md animate-fade-in">
-          <div className="bg-white/95 text-stone-900 border border-white/60 shadow-2xl rounded-[32px] max-w-xl w-full p-5 sm:p-6 space-y-4 relative overflow-hidden backdrop-blur-2xl max-h-[85vh] flex flex-col">
+      {isSurahModalOpen && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-stone-950/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-800 shadow-2xl rounded-[32px] max-w-xl w-full p-5 sm:p-6 space-y-4 relative overflow-hidden backdrop-blur-2xl max-h-[85vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-stone-200/80 pb-3 shrink-0">
+            <div className="flex items-center justify-between border-b border-stone-200/80 dark:border-stone-800 pb-3 shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-2xl bg-amber-100 text-amber-900 border border-amber-200 flex items-center justify-center font-bold">
-                  <BookOpen className="w-5 h-5 text-amber-800" />
+                <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-stone-700 flex items-center justify-center font-bold">
+                  <BookOpen className="w-5 h-5 text-amber-800 dark:text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-base text-stone-900">Sûre Seçin</h3>
-                  <p className="text-xs text-stone-500">114 Kur'an Sûresi Arasından Hızlıca Arayın</p>
+                  <h3 className="font-bold text-base text-stone-900 dark:text-stone-100">Sûre Seçin</h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">114 Kur'an Sûresi Arasından Hızlıca Arayın</p>
                 </div>
               </div>
 
@@ -2795,7 +2803,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   setIsSurahModalOpen(false);
                   setSurahSearchQuery('');
                 }}
-                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-500 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-500 dark:text-stone-300 flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2809,7 +2817,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 value={surahSearchQuery}
                 onChange={(e) => setSurahSearchQuery(e.target.value)}
                 placeholder="Sure adı veya numarası ara (Mülk, Yasin, 67)..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-2xl bg-stone-100 border border-stone-200 text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
+                className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-2xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
                 autoFocus
               />
             </div>
@@ -2831,12 +2839,12 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   className={`p-3 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-98 cursor-pointer ${
                     selectedSurah.id === s.id
                       ? 'bg-emerald-700 text-white border-emerald-800 shadow-md font-bold'
-                      : 'bg-stone-50 hover:bg-emerald-50 border-stone-200/80 text-stone-800'
+                      : 'bg-stone-50 dark:bg-stone-800/80 hover:bg-emerald-50 dark:hover:bg-stone-700 border-stone-200/80 dark:border-stone-700 text-stone-800 dark:text-stone-200'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black ${
-                      selectedSurah.id === s.id ? 'bg-emerald-900 text-white' : 'bg-stone-200/80 text-stone-700'
+                      selectedSurah.id === s.id ? 'bg-emerald-900 text-white' : 'bg-stone-200/80 dark:bg-stone-700 text-stone-700 dark:text-stone-200'
                     }`}>
                       {s.id}
                     </span>
@@ -2844,20 +2852,21 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       <div className="text-xs font-bold leading-tight">
                         {s.nameTurkish.replace(' Sûresi', '')} Sûresi
                       </div>
-                      <div className={`text-[10px] ${selectedSurah.id === s.id ? 'text-emerald-100' : 'text-stone-500'}`}>
+                      <div className={`text-[10px] ${selectedSurah.id === s.id ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>
                         {s.versesCount} Ayet • {s.revelationType}
                       </div>
                     </div>
                   </div>
 
-                  <span className={`font-serif text-sm ${selectedSurah.id === s.id ? 'text-white' : 'text-stone-600'}`}>
+                  <span className={`font-serif text-sm ${selectedSurah.id === s.id ? 'text-white' : 'text-stone-600 dark:text-stone-300'}`}>
                     {s.nameArabic}
                   </span>
                 </button>
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {isLoadingSurah && (

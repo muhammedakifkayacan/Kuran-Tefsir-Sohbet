@@ -259,27 +259,27 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white border border-stone-200 rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md animate-fade-in">
+      <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 rounded-3xl p-5 w-full max-w-sm shadow-2xl space-y-4">
         {/* Header */}
         <div className="text-center">
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-900 flex items-center justify-center mx-auto mb-2 border border-amber-200">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-stone-800 text-amber-900 dark:text-amber-300 flex items-center justify-center mx-auto mb-2 border border-amber-200 dark:border-stone-700">
             <Mic className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-slate-900">{title}</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>
+          <h3 className="text-base font-bold text-slate-900 dark:text-stone-100">{title}</h3>
+          <p className="text-xs text-slate-500 dark:text-stone-400 mt-0.5">{subtitle}</p>
         </div>
 
         {errorMsg && (
-          <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+          <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {/* Timer / Waveform visualizer */}
-        <div className="bg-stone-50 rounded-2xl p-4 text-center border border-stone-200">
-          <span className="text-3xl font-mono font-bold text-slate-900">
+        <div className="bg-stone-50 dark:bg-stone-800/80 rounded-2xl p-4 text-center border border-stone-200 dark:border-stone-700">
+          <span className="text-3xl font-mono font-bold text-slate-900 dark:text-stone-100">
             {formatTime(recordingTime)}
           </span>
 
@@ -304,15 +304,15 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
           {/* Live Transcript / Speech-to-Text Box */}
           {(isRecording || audioUrl || liveTranscript) && (
             <div className="w-full text-left space-y-1">
-              <label className="text-[11px] font-bold text-stone-700 flex items-center justify-between">
+              <label className="text-[11px] font-bold text-stone-700 dark:text-stone-300 flex items-center justify-between">
                 <span>🎙️ Ses Kaydı Transkripti (Konuşulan Metin):</span>
-                {isRecording && <span className="text-amber-600 animate-pulse text-[10px]">● Canlı Çözümleniyor</span>}
+                {isRecording && <span className="text-amber-600 dark:text-amber-400 animate-pulse text-[10px]">● Canlı Çözümleniyor</span>}
               </label>
               <textarea
                 value={liveTranscript}
                 onChange={(e) => setLiveTranscript(e.target.value)}
                 placeholder="Konuşulanlar buraya canlı aktarılır. Dilerseniz el ile de düzenleyebilirsiniz..."
-                className="w-full h-20 p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-800 resize-none focus:ring-1 focus:ring-amber-500 outline-none"
+                className="w-full h-20 p-2.5 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-xs text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 resize-none focus:ring-1 focus:ring-amber-500 outline-none"
               />
             </div>
           )}
@@ -330,7 +330,7 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
             {isRecording && (
               <button
                 onClick={stopRecording}
-                className="w-14 h-14 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all animate-pulse"
+                className="w-14 h-14 rounded-full bg-slate-900 dark:bg-amber-600 text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all animate-pulse"
               >
                 <Square className="w-5 h-5 fill-current" />
               </button>
@@ -348,7 +348,7 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
 
                   <button
                     onClick={handleReset}
-                    className="w-10 h-10 rounded-full bg-stone-100 text-slate-600 flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                    className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-800 text-slate-600 dark:text-stone-300 flex items-center justify-center hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 transition-colors"
                     title="Yeniden Çek"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -356,9 +356,9 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
 
                   <button
                     onClick={handleSave}
-                    className="px-4 py-2.5 rounded-2xl bg-[#1C1A17] text-[#F3EFE0] font-semibold text-xs flex items-center gap-1.5 shadow-md hover:bg-stone-800 active:scale-95 transition-all"
+                    className="px-4 py-2.5 rounded-2xl bg-amber-800 hover:bg-amber-900 text-white font-semibold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
                   >
-                    <Check className="w-4 h-4 text-[#D4AF37]" />
+                    <Check className="w-4 h-4 text-amber-300" />
                     Kaydet
                   </button>
                 </div>
@@ -366,9 +366,9 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
                 <button
                   type="button"
                   onClick={handleDownloadAudio}
-                  className="w-full py-2.5 px-3 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-emerald-100 transition-colors shadow-sm"
+                  className="w-full py-2.5 px-3 rounded-2xl bg-emerald-50 dark:bg-stone-800 border border-emerald-200/80 dark:border-stone-700 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-emerald-100 dark:hover:bg-stone-700 transition-colors shadow-sm"
                 >
-                  <Download className="w-4 h-4 text-emerald-600" />
+                  <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Ses Dosyasını Cihaza İndir (.webm)</span>
                 </button>
               </div>
@@ -377,12 +377,12 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
         </div>
 
         {/* 0 Kredi & Gizlilik Bilgilendirme Kutusu */}
-        <div className="p-3 bg-stone-50 border border-stone-200/80 rounded-2xl text-[11px] text-stone-600 space-y-1">
-          <div className="flex items-center gap-1.5 font-bold text-slate-800">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+        <div className="p-3 bg-stone-50 dark:bg-stone-800/80 border border-stone-200/80 dark:border-stone-700 rounded-2xl text-[11px] text-stone-600 dark:text-stone-300 space-y-1">
+          <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-stone-200">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
             <span>%100 Yerel Kayıt — 0 Kredi Harcar</span>
           </div>
-          <p className="leading-relaxed text-slate-600">
+          <p className="leading-relaxed text-slate-600 dark:text-stone-300">
             Kayıt tamamen tarayıcınızın geçici belleğinde gerçekleşir. 1 saatlik sohbet veya ders kaydı da alsanız sunucuya yüklenmez ve <strong>kredi harcamaz</strong>. Nota dönüştükten sonra sesi cihazınıza indirip sunucuda yer tutmadan saklayabilirsiniz.
           </p>
         </div>
@@ -391,7 +391,7 @@ export const VoiceRecorderModal: React.FC<VoiceRecorderModalProps> = ({
         <div className="text-center pt-2">
           <button
             onClick={onClose}
-            className="text-xs text-slate-500 hover:text-slate-800 font-medium"
+            className="text-xs text-slate-500 dark:text-stone-400 hover:text-slate-800 dark:hover:text-stone-200 font-medium cursor-pointer"
           >
             Vazgeç
           </button>

@@ -364,16 +364,16 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                     {/* Key Nüktes */}
                     {session.keyNukteList && session.keyNukteList.length > 0 && (
                       <div className="space-y-1.5 pt-1">
-                        <span className="text-[11px] font-bold text-amber-900 flex items-center gap-1">
+                        <span className="text-[11px] font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1">
                           💡 Hikmetli Nükteler & Cümleler:
                         </span>
                         <ul className="space-y-1 pl-2">
                           {session.keyNukteList.map((nukte, idx) => (
                             <li
                               key={idx}
-                              className="text-xs text-stone-800 flex items-start gap-1.5"
+                              className="text-xs text-stone-800 dark:text-stone-200 flex items-start gap-1.5"
                             >
-                              <span className="text-amber-700 font-bold">•</span>
+                              <span className="text-amber-700 dark:text-amber-400 font-bold">•</span>
                               <span>{nukte}</span>
                             </li>
                           ))}
@@ -382,10 +382,10 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                     )}
 
                     {/* Audio URL indicator & Voice Record Action */}
-                    <div className="p-3 rounded-2xl bg-amber-50/80 text-amber-900 text-xs font-semibold border border-amber-200/80 space-y-2">
+                    <div className="p-3 rounded-2xl bg-amber-50/80 dark:bg-stone-800/80 text-amber-900 dark:text-amber-200 text-xs font-semibold border border-amber-200/80 dark:border-stone-700 space-y-2">
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950">
-                          <Mic className="w-4 h-4 text-amber-800 shrink-0" />
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950 dark:text-amber-300">
+                          <Mic className="w-4 h-4 text-amber-800 dark:text-amber-400 shrink-0" />
                           <span>Ders Ses Kaydı</span>
                         </div>
                         <button
@@ -402,26 +402,26 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                       </div>
 
                       {session.audioRecordingUrl ? (
-                        <div className="flex items-center gap-2 pt-1 border-t border-amber-200/60">
-                          <Volume2 className="w-4 h-4 text-amber-800 shrink-0" />
-                          <span className="text-[11px] font-medium text-amber-900">Kayıtlı Ses:</span>
+                        <div className="flex items-center gap-2 pt-1 border-t border-amber-200/60 dark:border-stone-700">
+                          <Volume2 className="w-4 h-4 text-amber-800 dark:text-amber-400 shrink-0" />
+                          <span className="text-[11px] font-medium text-amber-900 dark:text-amber-300">Kayıtlı Ses:</span>
                           <audio src={session.audioRecordingUrl} controls className="h-7 w-full max-w-[220px] ml-auto" />
                         </div>
                       ) : (
-                        <p className="text-[11px] text-amber-800/90 font-normal italic">
+                        <p className="text-[11px] text-amber-800/90 dark:text-stone-300 font-normal italic">
                           Bu sohbet dersini önceden oluşturdunuz. Vakti geldiğinde yukarıdaki "Kaydı Başlat" butonuna basarak canlı ses kaydı alabilirsiniz.
                         </p>
                       )}
                     </div>
 
                     {/* Calendar Integration & Notification Box */}
-                    <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
+                    <div className="p-3 rounded-2xl bg-amber-50/70 dark:bg-stone-800/80 border border-amber-200/80 dark:border-stone-700 space-y-2">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950">
-                          <Bell className="w-4 h-4 text-amber-700" />
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950 dark:text-amber-300">
+                          <Bell className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                           <span>Takvime Ekle & Bildirim Hatırlatıcı</span>
                         </div>
-                        <span className="text-[10px] text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full font-medium">30 Dk Önce Hatırlatma</span>
+                        <span className="text-[10px] text-amber-800 dark:text-amber-300 bg-amber-100/80 dark:bg-stone-700/80 px-2 py-0.5 rounded-full font-medium">30 Dk Önce Hatırlatma</span>
                       </div>
                       
                       <div className="flex flex-wrap gap-2 pt-1">
@@ -429,9 +429,9 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                           href={getGoogleCalendarUrl(session)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 min-w-[140px] px-3 py-2 rounded-xl bg-white hover:bg-stone-50 text-stone-800 border border-amber-300 text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all"
+                          className="flex-1 min-w-[140px] px-3 py-2 rounded-xl bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-100 border border-amber-300 dark:border-stone-700 text-[11px] font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-all"
                         >
-                          <ExternalLink className="w-3.5 h-3.5 text-amber-700" />
+                          <ExternalLink className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                           <span>Google Takvim'e Ekle</span>
                         </a>
 
@@ -447,7 +447,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                     </div>
 
                     {/* AI Generated Summary & WhatsApp Actions */}
-                    <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100">
+                    <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100 dark:border-stone-800">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => {
@@ -460,12 +460,12 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                             }
                           }}
                           disabled={isGeneratingAi}
-                          className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold flex items-center gap-1.5 transition-all border border-amber-200/80 disabled:opacity-50"
+                          className="px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 text-amber-900 dark:text-amber-300 text-xs font-bold flex items-center gap-1.5 transition-all border border-amber-200/80 dark:border-stone-700 disabled:opacity-50"
                         >
                           {isGeneratingAi ? (
-                            <RefreshCw className="w-3.5 h-3.5 text-amber-700 animate-spin" />
+                            <RefreshCw className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 animate-spin" />
                           ) : (
-                            <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                            <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                           )}
                           <span>
                             {isGeneratingAi
@@ -483,7 +483,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                             onClick={() => handleGenerateSummaryForExisting(session)}
                             disabled={isGeneratingAi}
                             title="Ses kaydına göre yeniden analiz et"
-                            className="p-1.5 rounded-xl bg-stone-100 hover:bg-amber-100 text-stone-600 hover:text-amber-900 transition-colors"
+                            className="p-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 hover:text-amber-900 dark:hover:text-amber-300 transition-colors"
                           >
                             <RefreshCw className={`w-3.5 h-3.5 ${isGeneratingAi ? 'animate-spin' : ''}`} />
                           </button>
@@ -510,11 +510,11 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
 
                     {/* Display Audio Speech Transcript if available */}
                     {session.audioTranscript && (
-                      <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 text-xs text-stone-700 space-y-1">
-                        <span className="font-bold text-stone-900 flex items-center gap-1 text-[11px]">
-                          <Mic className="w-3.5 h-3.5 text-rose-600" /> 🎙️ Ses Kaydı Konuşma Transkripti (Metin)
+                      <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs text-stone-700 dark:text-stone-200 space-y-1">
+                        <span className="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1 text-[11px]">
+                          <Mic className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" /> 🎙️ Ses Kaydı Konuşma Transkripti (Metin)
                         </span>
-                        <p className="italic text-stone-600 line-clamp-3 hover:line-clamp-none transition-all">
+                        <p className="italic text-stone-600 dark:text-stone-300 line-clamp-3 hover:line-clamp-none transition-all">
                           "{session.audioTranscript}"
                         </p>
                       </div>
@@ -522,11 +522,11 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
 
                     {/* Display AI Summary accordion */}
                     {activeAiSummarySessionId === session.id && session.aiSummary && (
-                      <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200 text-xs text-stone-800 whitespace-pre-wrap leading-relaxed animate-fade-in space-y-2">
-                        <div className="flex items-center justify-between border-b border-amber-200/70 pb-2">
+                      <div className="p-3.5 rounded-2xl bg-amber-50/90 dark:bg-stone-800/90 border border-amber-200 dark:border-stone-700 text-xs text-stone-800 dark:text-stone-200 whitespace-pre-wrap leading-relaxed animate-fade-in space-y-2">
+                        <div className="flex items-center justify-between border-b border-amber-200/70 dark:border-stone-700 pb-2">
                           <div className="flex items-center gap-1.5">
-                            <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-                            <span className="font-bold text-amber-950">
+                            <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                            <span className="font-bold text-amber-950 dark:text-amber-300">
                               {session.audioTranscript || session.audioRecordingUrl
                                 ? '🎙️ Gerçek Ses Kaydı Transkriptine Göre Derlenmiş AI Raporu'
                                 : '📝 Ders Notlarına Göre Derlenmiş AI Raporu'}
@@ -534,7 +534,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                           </div>
                           <button
                             onClick={() => handleCopyBroadcast(session)}
-                            className="text-[11px] font-bold text-amber-900 hover:underline"
+                            className="text-[11px] font-bold text-amber-900 dark:text-amber-300 hover:underline"
                           >
                             Kopyala
                           </button>
@@ -552,7 +552,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
 
       {/* Add Sohbet Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-fade-in">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-md animate-fade-in">
           <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-3xl p-6 w-full max-w-md shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
               <Radio className="w-5 h-5 text-amber-700 dark:text-amber-400" />
