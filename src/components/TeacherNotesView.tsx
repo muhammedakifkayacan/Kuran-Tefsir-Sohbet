@@ -164,29 +164,29 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
   return (
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 pb-28 animate-fade-in w-full">
       {/* Navigation Subtabs */}
-      <div className="bg-white rounded-3xl p-4 border border-stone-200 shadow-sm space-y-3">
+      <div className="bg-white dark:bg-stone-900 rounded-3xl p-4 border border-stone-200 dark:border-stone-700 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <StickyNote className="w-5 h-5 text-amber-800" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-stone-100 flex items-center gap-2">
+            <StickyNote className="w-5 h-5 text-amber-800 dark:text-amber-400" />
             Ders Not Defteri & AI Asistan
           </h2>
         </div>
 
-        <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 rounded-2xl relative text-xs">
+        <div className="grid grid-cols-3 gap-1.5 p-1 bg-stone-100 dark:bg-stone-800 rounded-2xl relative text-xs">
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => setActiveSubTab('notes')}
             className={`relative py-2 px-1 rounded-xl font-bold transition-colors cursor-pointer text-center ${
               activeSubTab === 'notes'
-                ? 'text-amber-900 font-bold'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'text-amber-900 dark:text-amber-300 font-bold'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
             }`}
           >
             {activeSubTab === 'notes' && (
               <motion.span
                 layoutId="activeSubTabPill"
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className="absolute inset-0 bg-white rounded-xl shadow-xs border border-stone-200/60 -z-0"
+                className="absolute inset-0 bg-white dark:bg-stone-900 rounded-xl shadow-xs border border-stone-200/60 dark:border-stone-700 -z-0"
               />
             )}
             <span className="relative z-10 truncate">Ayet Notlarım ({verseNotes.length})</span>
@@ -197,18 +197,18 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
             onClick={() => setActiveSubTab('bookmarks')}
             className={`relative py-2 px-1 rounded-xl font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer text-center ${
               activeSubTab === 'bookmarks'
-                ? 'text-amber-900 font-bold'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'text-amber-900 dark:text-amber-300 font-bold'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
             }`}
           >
             {activeSubTab === 'bookmarks' && (
               <motion.span
                 layoutId="activeSubTabPill"
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className="absolute inset-0 bg-white rounded-xl shadow-xs border border-stone-200/60 -z-0"
+                className="absolute inset-0 bg-white dark:bg-stone-900 rounded-xl shadow-xs border border-stone-200/60 dark:border-stone-700 -z-0"
               />
             )}
-            <Bookmark className="w-3.5 h-3.5 relative z-10 text-amber-600 shrink-0" />
+            <Bookmark className="w-3.5 h-3.5 relative z-10 text-amber-600 dark:text-amber-400 shrink-0" />
             <span className="relative z-10 truncate">Kaydedilenler ({allBookmarks.length})</span>
           </motion.button>
 
@@ -218,7 +218,7 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
             className={`relative py-2 px-1 rounded-xl font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer text-center ${
               activeSubTab === 'ai'
                 ? 'text-white font-bold'
-                : 'text-stone-600 hover:text-stone-900'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
             }`}
           >
             {activeSubTab === 'ai' && (
@@ -250,10 +250,10 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
                 <button
                   key={tagItem.id}
                   onClick={() => setSelectedTag(tagItem.id)}
-                  className={`px-3.5 py-1.5 rounded-xl whitespace-nowrap transition-all ${
+                  className={`px-3.5 py-1.5 rounded-xl whitespace-nowrap transition-all cursor-pointer ${
                     selectedTag === tagItem.id
                       ? 'bg-amber-700 text-white font-semibold shadow-2xs'
-                      : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
+                      : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800'
                   }`}
                 >
                   {tagItem.label}
@@ -265,7 +265,7 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
             {onOpenExportImportModal && (
               <button
                 onClick={onOpenExportImportModal}
-                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all shrink-0"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all shrink-0 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Dışa / İçe Aktar</span>
@@ -275,19 +275,19 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
 
           {/* Search Box for Notes */}
           <div className="relative">
-            <Search className="w-4 h-4 text-amber-700 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-amber-700 dark:text-amber-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchNoteQuery}
               onChange={(e) => setSearchNoteQuery(e.target.value)}
               placeholder="Ders notlarında ara (Sûre adı, ayet no, not metni veya konu)..."
-              className="w-full pl-10 pr-9 py-2.5 bg-white text-stone-900 text-xs font-medium rounded-2xl border border-amber-200/90 shadow-2xs focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all placeholder:text-stone-400"
+              className="w-full pl-10 pr-9 py-2.5 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 text-xs font-medium rounded-2xl border border-amber-200/90 dark:border-stone-700 shadow-2xs focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all placeholder:text-stone-400"
             />
             {searchNoteQuery && (
               <button
                 type="button"
                 onClick={() => setSearchNoteQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1 rounded-full transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1 rounded-full transition-colors cursor-pointer"
                 title="Aramayı Temizle"
               >
                 <X className="w-3.5 h-3.5" />
@@ -297,10 +297,10 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
 
           {/* Notes List */}
           {filteredNotes.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-3xl border border-stone-200 p-6 space-y-2">
-              <StickyNote className="w-10 h-10 text-slate-300 mx-auto" />
-              <p className="text-sm font-bold text-slate-800">Henüz kaydedilmiş not yok</p>
-              <p className="text-xs text-slate-500">
+            <div className="text-center py-12 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-700 p-6 space-y-2">
+              <StickyNote className="w-10 h-10 text-slate-300 dark:text-stone-600 mx-auto" />
+              <p className="text-sm font-bold text-slate-800 dark:text-stone-100">Henüz kaydedilmiş not yok</p>
+              <p className="text-xs text-slate-500 dark:text-stone-400">
                 Kur'an Okuma ekranından herhangi bir ayet üzerine dokunarak hoca veya tefsir notu kaydedebilirsiniz.
               </p>
             </div>
@@ -309,32 +309,32 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
               {filteredNotes.map((note) => (
                 <div
                   key={note.id}
-                  className="bg-white rounded-3xl p-4 sm:p-5 border border-stone-200 shadow-sm space-y-3 relative flex flex-col justify-between"
+                  className="bg-white dark:bg-stone-900 rounded-3xl p-4 sm:p-5 border border-stone-200 dark:border-stone-700 shadow-sm space-y-3 relative flex flex-col justify-between"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-900 font-bold border border-amber-200 text-[10px]">
+                      <span className="px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-stone-800 text-amber-900 dark:text-amber-300 font-bold border border-amber-200 dark:border-stone-700 text-[10px]">
                         {note.tag}
                       </span>
 
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => handleCopyNote(note)}
-                          className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95 ${
+                          className={`px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
                             copiedNoteId === note.id
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                              : 'bg-stone-100 hover:bg-amber-100 text-stone-700 hover:text-amber-900 border border-stone-200'
+                              ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+                              : 'bg-stone-100 dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 hover:text-amber-900 dark:hover:text-amber-300 border border-stone-200 dark:border-stone-700'
                           }`}
                           title="Not Metnini Kopyala"
                         >
                           {copiedNoteId === note.id ? (
                             <>
-                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                               <span>Kopyalandı</span>
                             </>
                           ) : (
                             <>
-                              <Copy className="w-3.5 h-3.5 text-stone-500" />
+                              <Copy className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
                               <span>Kopyala</span>
                             </>
                           )}
@@ -342,7 +342,7 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
 
                         <button
                           onClick={() => onDeleteNote(note.id)}
-                          className="text-slate-400 hover:text-rose-500 p-1.5 rounded-xl hover:bg-rose-50 transition-colors"
+                          className="text-slate-400 hover:text-rose-500 p-1.5 rounded-xl hover:bg-rose-50 dark:hover:bg-stone-800 transition-colors cursor-pointer"
                           title="Notu Sil"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -350,25 +350,25 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
                       </div>
                     </div>
 
-                    <p className="text-xs font-bold text-slate-900 flex items-center justify-between">
+                    <p className="text-xs font-bold text-slate-900 dark:text-stone-100 flex items-center justify-between">
                       <span>{note.surahName} — {note.verseNumber}. Ayet</span>
                       {onNavigateToVerse && (
                         <button
                           onClick={() => onNavigateToVerse(note.surahId, note.verseNumber)}
-                          className="text-[11px] font-bold text-amber-800 hover:text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-all cursor-pointer"
+                          className="text-[11px] font-bold text-amber-800 dark:text-amber-300 hover:text-amber-950 bg-amber-50 dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 border border-amber-200 dark:border-stone-700 px-2 py-0.5 rounded-lg flex items-center gap-1 transition-all cursor-pointer"
                         >
-                          <BookOpen className="w-3 h-3 text-amber-700" />
+                          <BookOpen className="w-3 h-3 text-amber-700 dark:text-amber-400" />
                           <span>Ayete Git</span>
                         </button>
                       )}
                     </p>
 
-                    <p className="text-xs text-slate-700 bg-stone-50 p-3 rounded-2xl border border-stone-200/80 leading-relaxed italic">
+                    <p className="text-xs text-slate-700 dark:text-stone-200 bg-stone-50 dark:bg-stone-800/60 p-3 rounded-2xl border border-stone-200/80 dark:border-stone-700 leading-relaxed italic">
                       "{note.noteText}"
                     </p>
                   </div>
 
-                  <p className="text-[10px] text-slate-400 text-right font-mono mt-2">{note.createdAt}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-stone-500 text-right font-mono mt-2">{note.createdAt}</p>
                 </div>
               ))}
             </div>
@@ -377,19 +377,19 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
       ) : activeSubTab === 'bookmarks' ? (
         /* Kaydedilen Ayetler (Yer İşaretleri) View */
         <div className="space-y-4">
-          <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 text-amber-900 text-xs flex items-start justify-between gap-3 shadow-2xs">
+          <div className="bg-amber-50/80 dark:bg-stone-800/80 border border-amber-200/80 dark:border-stone-700 rounded-2xl p-4 text-amber-900 dark:text-amber-300 text-xs flex items-start justify-between gap-3 shadow-2xs">
             <div className="flex items-start gap-2.5">
-              <Bookmark className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+              <Bookmark className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-bold text-sm text-amber-950">Kaydedilen Ayetler (Yer İşaretleri)</h3>
-                <p className="text-amber-800 text-[11px] mt-0.5 leading-relaxed">
+                <h3 className="font-bold text-sm text-amber-950 dark:text-amber-200">Kaydedilen Ayetler (Yer İşaretleri)</h3>
+                <p className="text-amber-800 dark:text-amber-400 text-[11px] mt-0.5 leading-relaxed">
                   Kur'an okurken veya çoklu ayet seçerken "Kaydet" seçeneği ile işaretlediğiniz tüm ayetler burada listelenir.
                 </p>
               </div>
             </div>
             <button
               onClick={loadBookmarks}
-              className="p-2 rounded-xl bg-white border border-amber-200 text-amber-900 hover:bg-amber-100 transition-all shrink-0 cursor-pointer text-xs font-bold flex items-center gap-1"
+              className="p-2 rounded-xl bg-white dark:bg-stone-900 border border-amber-200 dark:border-stone-700 text-amber-900 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-stone-800 transition-all shrink-0 cursor-pointer text-xs font-bold flex items-center gap-1"
               title="Listeyi Yenile"
             >
               <RefreshCw className="w-3.5 h-3.5" />
@@ -398,12 +398,12 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
           </div>
 
           {allBookmarks.length === 0 ? (
-            <div className="bg-white rounded-3xl p-8 border border-dashed border-stone-300 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto text-xl font-bold">
+            <div className="bg-white dark:bg-stone-900 rounded-3xl p-8 border border-dashed border-stone-300 dark:border-stone-700 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-stone-800 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto text-xl font-bold">
                 🔖
               </div>
-              <p className="text-sm font-bold text-stone-800">Henüz kaydedilmiş yer işareti bulunmuyor</p>
-              <p className="text-xs text-stone-500 max-w-md mx-auto">
+              <p className="text-sm font-bold text-stone-800 dark:text-stone-100">Henüz kaydedilmiş yer işareti bulunmuyor</p>
+              <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto">
                 Kur'an sayfasında okurken ayet kartındaki 🔖 ikonuna dokunarak veya "Çoklu Seç" menüsünden "Kaydet"e basarak ayetleri buraya kaydedebilirsiniz.
               </p>
             </div>
@@ -417,16 +417,16 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
                       onNavigateToVerse(bm.surahId, bm.verseNumber);
                     }
                   }}
-                  className="bg-white hover:bg-amber-50/50 rounded-2xl p-4 border border-stone-200/90 hover:border-amber-400 shadow-2xs hover:shadow-md transition-all space-y-2 flex flex-col justify-between cursor-pointer group"
+                  className="bg-white dark:bg-stone-900 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl p-4 border border-stone-200/90 dark:border-stone-700 hover:border-amber-400 shadow-2xs hover:shadow-md transition-all space-y-2 flex flex-col justify-between cursor-pointer group"
                 >
-                  <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+                  <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-xl bg-amber-100 group-hover:bg-amber-700 group-hover:text-white text-amber-900 font-bold text-xs flex items-center justify-center border border-amber-200 transition-colors">
+                      <div className="w-7 h-7 rounded-xl bg-amber-100 dark:bg-stone-800 group-hover:bg-amber-700 group-hover:text-white text-amber-900 dark:text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-200 dark:border-stone-700 transition-colors">
                         {bm.verseNumber}
                       </div>
                       <div>
-                        <h4 className="font-bold text-xs text-stone-900 group-hover:text-amber-950 transition-colors">{bm.surahName}</h4>
-                        <span className="text-[10px] text-stone-500 font-medium">{bm.verseNumber}. Ayet</span>
+                        <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100 group-hover:text-amber-950 dark:group-hover:text-amber-300 transition-colors">{bm.surahName}</h4>
+                        <span className="text-[10px] text-stone-500 dark:text-stone-400 font-medium">{bm.verseNumber}. Ayet</span>
                       </div>
                     </div>
 
@@ -435,19 +435,19 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
                         e.stopPropagation();
                         handleDeleteBookmark(bm.surahId, bm.verseNumber);
                       }}
-                      className="p-1.5 rounded-xl hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-colors cursor-pointer"
+                      className="p-1.5 rounded-xl hover:bg-rose-50 dark:hover:bg-stone-800 text-stone-400 hover:text-rose-600 transition-colors cursor-pointer"
                       title="Yer İşaretini Kaldır"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="pt-1 flex items-center justify-between text-xs font-semibold text-stone-600">
-                    <span className="text-[11px] text-amber-800 font-medium flex items-center gap-1">
+                  <div className="pt-1 flex items-center justify-between text-xs font-semibold text-stone-600 dark:text-stone-300">
+                    <span className="text-[11px] text-amber-800 dark:text-amber-400 font-medium flex items-center gap-1">
                       📌 Kaydedildi
                     </span>
-                    <span className="text-[11px] font-bold text-amber-900 group-hover:underline flex items-center gap-1">
-                      <BookOpen className="w-3.5 h-3.5 text-amber-700" />
+                    <span className="text-[11px] font-bold text-amber-900 dark:text-amber-300 group-hover:underline flex items-center gap-1">
+                      <BookOpen className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                       Ayete Git →
                     </span>
                   </div>
@@ -458,10 +458,10 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
         </div>
       ) : (
         /* AI Assistant Chat View */
-        <div className="bg-white rounded-3xl border border-stone-200 shadow-sm p-4 sm:p-5 space-y-4">
+        <div className="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-700 shadow-sm p-4 sm:p-5 space-y-4">
           {/* Quick Prompts Bar */}
           <div>
-            <span className="text-[11px] text-slate-500 block mb-1 font-medium">Hızlı Konu Önerileri:</span>
+            <span className="text-[11px] text-slate-500 dark:text-stone-400 block mb-1 font-medium">Hızlı Konu Önerileri:</span>
             <div className="flex flex-wrap gap-1.5">
               {[
                 'Mülk Sûresi 1-5 ayet tefsir özetini ver',
@@ -472,7 +472,7 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
                 <button
                   key={i}
                   onClick={() => handleSendAiMessage(qp)}
-                  className="text-[11px] px-3 py-1.5 rounded-full bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200 font-medium transition-colors"
+                  className="text-[11px] px-3 py-1.5 rounded-full bg-amber-50 dark:bg-stone-800 text-amber-900 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-stone-700 border border-amber-200 dark:border-stone-700 font-medium transition-colors cursor-pointer"
                 >
                   ✨ {qp}
                 </button>
@@ -497,13 +497,13 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
                   className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed ${
                     msg.sender === 'user'
                       ? 'bg-amber-800 text-amber-50 rounded-br-none'
-                      : 'bg-stone-100 text-stone-900 rounded-bl-none border border-stone-200'
+                      : 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 rounded-bl-none border border-stone-200 dark:border-stone-700'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
                   <span
                     className={`text-[9px] block text-right mt-1 font-mono ${
-                      msg.sender === 'user' ? 'text-amber-200' : 'text-slate-400'
+                      msg.sender === 'user' ? 'text-amber-200' : 'text-slate-400 dark:text-stone-400'
                     }`}
                   >
                     {msg.timestamp}
@@ -519,7 +519,7 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
             ))}
 
             {isAiLoading && (
-              <div className="flex gap-2.5 items-center text-xs text-amber-700 font-medium">
+              <div className="flex gap-2.5 items-center text-xs text-amber-700 dark:text-amber-400 font-medium">
                 <RefreshCw className="w-4 h-4 animate-spin" />
                 <span>AI Asistanı yanıt hazırlıyor...</span>
               </div>
@@ -527,20 +527,20 @@ export const TeacherNotesView: React.FC<TeacherNotesViewProps> = ({
           </div>
 
           {/* Chat Input */}
-          <div className="flex items-center gap-2 pt-2 border-t border-stone-200">
+          <div className="flex items-center gap-2 pt-2 border-t border-stone-200 dark:border-stone-800">
             <input
               type="text"
               value={aiInput}
               onChange={(e) => setAiInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendAiMessage()}
               placeholder="Sorunuzu yazın veya tefsir / tecvit konusu isteyin..."
-              className="flex-1 bg-stone-50 text-slate-900 text-xs rounded-2xl px-3.5 py-2.5 border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="flex-1 bg-stone-50 dark:bg-stone-800 text-slate-900 dark:text-stone-100 placeholder-stone-400 text-xs rounded-2xl px-3.5 py-2.5 border border-stone-200 dark:border-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-500"
             />
 
             <button
               onClick={() => handleSendAiMessage()}
               disabled={!aiInput.trim() || isAiLoading}
-              className="p-2.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white disabled:opacity-50 transition-all shadow-2xs active:scale-95"
+              className="p-2.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white disabled:opacity-50 transition-all shadow-2xs active:scale-95 cursor-pointer"
             >
               <Send className="w-4 h-4" />
             </button>

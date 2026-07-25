@@ -115,6 +115,12 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
           </button>
         </div>
 
+        {/* Authenticity Guarantee Banner */}
+        <div className="px-4 py-2 bg-emerald-950/90 text-emerald-100 border-b border-emerald-800 text-[11px] font-semibold flex items-center gap-2 shrink-0">
+          <span className="text-emerald-400 font-extrabold text-xs">✅ %100 Sahih Külliyat:</span>
+          <span>Bu bölümde sunulan tüm metinler İmam Nevevî'nin orijinal Riyâzü's-Sâlihîn eserinden ve Buhârî, Müslim, Tirmizî, Ebû Dâvûd sahih kaynaklarındandır. Yapay zeka veya üretilmiş hadis metni kullanılmamaktadır.</span>
+        </div>
+
         {/* View Switcher Tabs & Controls */}
         <div className="p-4 bg-white dark:bg-stone-900 border-b border-stone-200/80 dark:border-stone-800 space-y-3 shrink-0">
           <div className="flex items-center justify-between gap-2 flex-wrap">

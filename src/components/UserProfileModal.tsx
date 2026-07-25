@@ -206,35 +206,35 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 text-center space-y-3">
-                <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-700 mx-auto flex items-center justify-center">
+              <div className="bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 rounded-2xl p-4 text-center space-y-3">
+                <div className="w-10 h-10 rounded-full bg-amber-50 dark:bg-stone-800 text-amber-700 dark:text-amber-400 mx-auto flex items-center justify-center">
                   <User className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-stone-900">Misafir Kullanıcı</p>
-                  <p className="text-[11px] text-stone-500">
+                  <p className="text-xs font-bold text-stone-900 dark:text-stone-100">Misafir Kullanıcı</p>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400">
                     Notlarınızı ve okuma geçmişinizi tüm cihazlarınızda eşitlemek için giriş yapın.
                   </p>
                 </div>
 
                 {/* Error Message */}
                 {errorMessage && (
-                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-[11px] font-medium text-left">
+                  <div className="p-3 bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 rounded-xl text-[11px] font-medium text-left">
                     {errorMessage}
                   </div>
                 )}
 
                 {/* Domain Error Guidance */}
                 {domainError && (
-                  <div className="p-3 bg-amber-50 border border-amber-300 text-amber-950 rounded-xl text-[11px] text-left space-y-2">
-                    <p className="font-bold text-amber-900">
+                  <div className="p-3 bg-amber-50 dark:bg-stone-800 border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 rounded-xl text-[11px] text-left space-y-2">
+                    <p className="font-bold text-amber-900 dark:text-amber-300">
                       ⚠️ Firebase Domain Yetkilendirmesi Gerekli
                     </p>
                     <p className="opacity-90">
                       <b>{domainError}</b> adresi Firebase Authorized Domains listesinde yok.
                     </p>
-                    <div className="bg-white p-2 rounded-lg border border-amber-200 flex items-center justify-between gap-1">
-                      <code className="font-mono text-[10px] text-amber-900 truncate">
+                    <div className="bg-white dark:bg-stone-900 p-2 rounded-lg border border-amber-200 dark:border-stone-700 flex items-center justify-between gap-1">
+                      <code className="font-mono text-[10px] text-amber-900 dark:text-amber-300 truncate">
                         {domainError}
                       </code>
                       <button
@@ -251,7 +251,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 <button
                   disabled={isLoading}
                   onClick={handleSimulatedGoogleLogin}
-                  className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50"
+                  className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
                   {isLoading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -284,26 +284,26 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
             {/* User Stats Summary */}
             <div className="space-y-2">
-              <p className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">
+              <p className="text-[10px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
                 Okuma & Ders İstatistikleri
               </p>
 
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 flex items-center gap-2.5">
-                  <Bookmark className="w-4 h-4 text-amber-600 shrink-0" />
+                <div className="bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 rounded-xl p-3 flex items-center gap-2.5">
+                  <Bookmark className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[10px] text-stone-500 font-medium">Son Konum</p>
-                    <p className="text-xs font-bold text-stone-900 truncate">
+                    <p className="text-[10px] text-stone-500 dark:text-stone-400 font-medium">Son Konum</p>
+                    <p className="text-xs font-bold text-stone-900 dark:text-stone-100 truncate">
                       {lastReadPosition ? lastReadPosition.surahName : 'Mülk Sûresi'}
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 flex items-center gap-2.5">
-                  <StickyNote className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div className="bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 rounded-xl p-3 flex items-center gap-2.5">
+                  <StickyNote className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <div>
-                    <p className="text-[10px] text-stone-500 font-medium">Alınan Notlar</p>
-                    <p className="text-xs font-bold text-stone-900">{notesCount} Adet</p>
+                    <p className="text-[10px] text-stone-500 dark:text-stone-400 font-medium">Alınan Notlar</p>
+                    <p className="text-xs font-bold text-stone-900 dark:text-stone-100">{notesCount} Adet</p>
                   </div>
                 </div>
               </div>
@@ -316,7 +316,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   onClose();
                   onStartTour();
                 }}
-                className="w-full py-3 px-4 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200/90 text-xs font-bold flex items-center justify-between shadow-2xs active:scale-95 transition-all cursor-pointer"
+                className="w-full py-3 px-4 rounded-2xl bg-amber-50 dark:bg-stone-800/90 hover:bg-amber-100 dark:hover:bg-stone-700 text-amber-950 dark:text-amber-200 border border-amber-200/90 dark:border-stone-700 text-xs font-bold flex items-center justify-between shadow-2xs active:scale-95 transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-2">
                   <span className="w-6 h-6 rounded-lg bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-xs">
@@ -324,7 +324,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   </span>
                   <span>Interaktif Uygulama Turu (Rehber)</span>
                 </div>
-                <span className="text-[10px] bg-amber-200/80 px-2 py-0.5 rounded-full font-extrabold text-amber-900">
+                <span className="text-[10px] bg-amber-200/80 dark:bg-amber-900/80 px-2 py-0.5 rounded-full font-extrabold text-amber-900 dark:text-amber-200">
                   Başlat ➔
                 </span>
               </button>

@@ -194,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Center Navigation Links */}
               <div className="max-w-4xl mx-auto w-full my-8 space-y-6">
-                <p className="text-xs font-bold uppercase tracking-widest text-emerald-800 border-b border-stone-200 pb-2">
+                <p className="text-xs font-bold uppercase tracking-widest text-emerald-800 dark:text-emerald-400 border-b border-stone-200 dark:border-stone-800 pb-2">
                   Ana Bölümler
                 </p>
 
@@ -209,16 +209,16 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
                       activeTab === 'quran'
                         ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
-                        : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
+                        : 'bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-100 border-stone-200/90 dark:border-stone-800 shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`p-3 rounded-2xl ${activeTab === 'quran' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
+                      <div className={`p-3 rounded-2xl ${activeTab === 'quran' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800'}`}>
                         <BookOpen className="w-6 h-6" />
                       </div>
                       <div>
                         <h3 className="font-bold text-base sm:text-lg">Kur'an Okuma</h3>
-                        <p className={`text-xs ${activeTab === 'quran' ? 'text-emerald-100' : 'text-stone-500'}`}>Mushaf, Mealli ve Sadece Meal Sayfaları</p>
+                        <p className={`text-xs ${activeTab === 'quran' ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>Mushaf, Mealli ve Sadece Meal Sayfaları</p>
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'quran' ? 'text-white' : 'text-stone-400'}`} />
@@ -234,16 +234,16 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
                       activeTab === 'sohbet'
                         ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
-                        : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
+                        : 'bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-100 border-stone-200/90 dark:border-stone-800 shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`p-3 rounded-2xl ${activeTab === 'sohbet' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
+                      <div className={`p-3 rounded-2xl ${activeTab === 'sohbet' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800'}`}>
                         <Radio className="w-6 h-6" />
                       </div>
                       <div>
                         <h3 className="font-bold text-base sm:text-lg">Sohbet & Ders</h3>
-                        <p className={`text-xs ${activeTab === 'sohbet' ? 'text-emerald-100' : 'text-stone-500'}`}>Ders Ses Kayıtları ve Sohbet Dinleme</p>
+                        <p className={`text-xs ${activeTab === 'sohbet' ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>Ders Ses Kayıtları ve Sohbet Dinleme</p>
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'sohbet' ? 'text-white' : 'text-stone-400'}`} />
@@ -259,16 +259,16 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
                       activeTab === 'notes'
                         ? 'bg-emerald-700 text-white border-emerald-700 shadow-md'
-                        : 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200/90 shadow-2xs'
+                        : 'bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-100 border-stone-200/90 dark:border-stone-800 shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`p-3 rounded-2xl ${activeTab === 'notes' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'}`}>
+                      <div className={`p-3 rounded-2xl ${activeTab === 'notes' ? 'bg-emerald-800 text-white' : 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800'}`}>
                         <StickyNote className="w-6 h-6" />
                       </div>
                       <div>
                         <h3 className="font-bold text-base sm:text-lg">Hoca Notlarım</h3>
-                        <p className={`text-xs ${activeTab === 'notes' ? 'text-emerald-100' : 'text-stone-500'}`}>Ayetlere Alınan Tüm Ders Notları</p>
+                        <p className={`text-xs ${activeTab === 'notes' ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>Ayetlere Alınan Tüm Ders Notları</p>
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'notes' ? 'text-white' : 'text-stone-400'}`} />
@@ -276,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 {/* Quick Action Cards in Overlay */}
-                <div className="pt-4 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="pt-4 border-t border-stone-200 dark:border-stone-800 grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {onOpenQiblaFinder && (
                     <motion.button
                       whileTap={{ scale: 0.96 }}
@@ -284,9 +284,9 @@ export const Header: React.FC<HeaderProps> = ({
                         onOpenQiblaFinder();
                         setIsMenuOpen(false);
                       }}
-                      className="p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                      className="p-3.5 rounded-2xl bg-amber-50 dark:bg-stone-900 hover:bg-amber-100 dark:hover:bg-stone-800 border border-amber-200 dark:border-stone-700 text-amber-950 dark:text-amber-300 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
                     >
-                      <Compass className="w-4 h-4 text-amber-700 shrink-0" />
+                      <Compass className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
                       <span>🕋 Kıble Pusulası (Kâbe Yönü)</span>
                     </motion.button>
                   )}
@@ -298,9 +298,9 @@ export const Header: React.FC<HeaderProps> = ({
                         onOpenRiyazusModal();
                         setIsMenuOpen(false);
                       }}
-                      className="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                      className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-stone-900 hover:bg-emerald-100 dark:hover:bg-stone-800 border border-emerald-200 dark:border-stone-700 text-emerald-950 dark:text-emerald-300 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
                     >
-                      <BookOpen className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <BookOpen className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                       <span>📖 Riyazü’s-Sâlihîn Hadisler</span>
                     </motion.button>
                   )}
@@ -312,9 +312,9 @@ export const Header: React.FC<HeaderProps> = ({
                         onOpenUserProfileModal();
                         setIsMenuOpen(false);
                       }}
-                      className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                      className="p-3.5 rounded-2xl bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
                     >
-                      <Sliders className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <Sliders className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                       <span>Kullanıcı Profili & Ayarlar</span>
                     </motion.button>
                   )}
@@ -326,9 +326,9 @@ export const Header: React.FC<HeaderProps> = ({
                         onOpenExportImportModal();
                         setIsMenuOpen(false);
                       }}
-                      className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                      className="p-3.5 rounded-2xl bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
                     >
-                      <Download className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <Download className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                       <span>Notları Aktar (Word / Drive)</span>
                     </motion.button>
                   )}
@@ -340,9 +340,9 @@ export const Header: React.FC<HeaderProps> = ({
                         onOpenWelcomeModal();
                         setIsMenuOpen(false);
                       }}
-                      className="p-3.5 rounded-2xl bg-white hover:bg-stone-100 border border-stone-200 text-stone-800 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                      className="p-3.5 rounded-2xl bg-white dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 font-semibold text-xs flex items-center gap-3 transition-all cursor-pointer"
                     >
-                      <Home className="w-4 h-4 text-emerald-700 shrink-0" />
+                      <Home className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                       <span>Karşılama Ekranı</span>
                     </motion.button>
                   )}
@@ -354,7 +354,7 @@ export const Header: React.FC<HeaderProps> = ({
                         setIsMenuOpen(false);
                         onStartTour();
                       }}
-                      className="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-950 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
+                      className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-stone-900 hover:bg-emerald-100 dark:hover:bg-stone-800 border border-emerald-200 dark:border-stone-700 text-emerald-950 dark:text-emerald-300 font-bold text-xs flex items-center gap-3 transition-all cursor-pointer"
                     >
                       <span className="text-sm">🧭</span>
                       <span>Uygulama Rehberi (Tur)</span>
@@ -364,7 +364,7 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               {/* Footer Info of Fullscreen Overlay */}
-              <div className="max-w-4xl mx-auto w-full pt-4 border-t border-stone-200 text-center text-xs text-stone-500 flex items-center justify-between">
+              <div className="max-w-4xl mx-auto w-full pt-4 border-t border-stone-200 dark:border-stone-800 text-center text-xs text-stone-500 dark:text-stone-400 flex items-center justify-between">
                 <span>Kur'an & Tefsir Rehberi • Sade ve Yalın Tasarım</span>
                 <span>Kapatmak için ESC'ye basın</span>
               </div>

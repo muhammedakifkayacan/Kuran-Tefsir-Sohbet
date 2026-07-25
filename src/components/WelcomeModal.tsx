@@ -40,46 +40,46 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
   else greeting = 'Hayırlı Geceler';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-fade-in">
-      <div className="bg-white/90 text-stone-900 border border-white/60 shadow-2xl rounded-[32px] max-w-md w-full p-6 space-y-6 relative overflow-hidden backdrop-blur-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md animate-fade-in">
+      <div className="bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-stone-100 border border-white/60 dark:border-stone-800 shadow-2xl rounded-[32px] max-w-md w-full p-6 space-y-6 relative overflow-hidden backdrop-blur-2xl">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-500 hover:text-stone-800 flex items-center justify-center transition-all"
+          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-500 dark:text-stone-300 hover:text-stone-800 dark:hover:text-stone-100 flex items-center justify-center transition-all cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Minimal Greeting */}
         <div className="text-center pt-2 space-y-1">
-          <p className="text-xs font-semibold text-emerald-700 tracking-wider uppercase">
+          <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 tracking-wider uppercase">
             Kur'an & Ders Asistanı
           </p>
-          <h2 className="text-2xl font-extrabold tracking-tight text-stone-900">
+          <h2 className="text-2xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100">
             {greeting}
           </h2>
         </div>
 
         {/* Hero Card: Kaldığın Yerden Devam Et */}
         {lastReadPosition ? (
-          <div className="bg-emerald-50/90 border border-emerald-200/90 text-stone-900 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between text-xs text-emerald-800 font-medium">
+          <div className="bg-emerald-50/90 dark:bg-stone-800/90 border border-emerald-200/90 dark:border-stone-700 text-stone-900 dark:text-stone-100 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300 font-medium">
               <span className="flex items-center gap-1.5 font-bold">
-                <Bookmark className="w-4 h-4 text-emerald-600 fill-emerald-600" />
+                <Bookmark className="w-4 h-4 text-emerald-600 dark:text-emerald-400 fill-emerald-600 dark:fill-emerald-400" />
                 <span>Kaldığın Yer</span>
               </span>
-              <span className="text-[11px] text-emerald-700/80 font-mono">
+              <span className="text-[11px] text-emerald-700/80 dark:text-emerald-400/80 font-mono">
                 {lastReadPosition.updatedAt}
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-extrabold text-stone-900">
+                <h3 className="text-lg font-extrabold text-stone-900 dark:text-stone-100">
                   {lastReadPosition.surahName}
                 </h3>
-                <p className="text-xs text-stone-600 font-medium pt-0.5">
+                <p className="text-xs text-stone-600 dark:text-stone-300 font-medium pt-0.5">
                   {lastReadPosition.verseNumber}. Ayet • Sayfa {lastReadPosition.pageNumber}
                 </p>
               </div>
@@ -97,17 +97,17 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
             </div>
           </div>
         ) : (
-          <div className="bg-stone-50 border border-stone-200 rounded-2xl p-4 flex items-center justify-between">
+          <div className="bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-stone-900">Okumaya Başla</p>
-              <p className="text-[11px] text-stone-500">Mülk Sûresi 562. Sayfa</p>
+              <p className="text-xs font-bold text-stone-900 dark:text-stone-100">Okumaya Başla</p>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400">Mülk Sûresi 562. Sayfa</p>
             </div>
             <button
               onClick={() => {
                 onResumeReading(67, 562);
                 onClose();
               }}
-              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all"
+              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
             >
               Başla
             </button>
@@ -135,29 +135,29 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
 
         {/* Minimal Daily Reflection */}
         <div className="text-center px-2 py-1">
-          <p className="font-serif text-stone-800 text-sm dir-rtl font-semibold">
+          <p className="font-serif text-stone-800 dark:text-stone-100 text-sm dir-rtl font-semibold">
             أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ
           </p>
-          <p className="text-xs text-stone-500 italic mt-1">
+          <p className="text-xs text-stone-500 dark:text-stone-400 italic mt-1">
             "Bilesiniz ki, kalpler ancak Allah'ı anmakla huzur bulur."
           </p>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-stone-200 text-xs">
-          <label className="flex items-center gap-2 cursor-pointer select-none text-stone-500 hover:text-stone-800">
+        <div className="flex items-center justify-between pt-2 border-t border-stone-200 dark:border-stone-800 text-xs">
+          <label className="flex items-center gap-2 cursor-pointer select-none text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200">
             <input
               type="checkbox"
               checked={dontShowAgain}
               onChange={(e) => setDontShowAgain(e.target.checked)}
-              className="rounded text-amber-600 focus:ring-amber-500"
+              className="rounded text-amber-600 focus:ring-amber-500 cursor-pointer"
             />
             <span className="text-[11px]">Tekrar gösterme</span>
           </label>
 
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs transition-colors"
+            className="px-4 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs transition-colors cursor-pointer"
           >
             Kapat
           </button>

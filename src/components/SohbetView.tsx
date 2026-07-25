@@ -213,14 +213,14 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-5 pb-28 animate-fade-in w-full">
       {/* Light Clean Header & New Sohbet Button */}
-      <div className="bg-stone-100/90 rounded-3xl p-5 border border-stone-200/90 shadow-2xs space-y-4">
+      <div className="bg-stone-100/90 dark:bg-stone-800/90 rounded-3xl p-5 border border-stone-200/90 dark:border-stone-700 shadow-2xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <Radio className="w-5 h-5 text-amber-800" />
-              <h2 className="text-lg font-bold text-stone-900 leading-tight">Sohbet & Tefsir Meclisleri</h2>
+              <Radio className="w-5 h-5 text-amber-800 dark:text-amber-400" />
+              <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100 leading-tight">Sohbet & Tefsir Meclisleri</h2>
             </div>
-            <p className="text-xs text-stone-600 mt-0.5">
+            <p className="text-xs text-stone-600 dark:text-stone-300 mt-0.5">
               Sohbet ve ders kayıtları, tefsir notları ve duyurular
             </p>
           </div>
@@ -242,13 +242,13 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
         </div>
 
         {/* Quick Search & Category Filter */}
-        <div className="pt-3 border-t border-stone-200/80 space-y-2.5">
+        <div className="pt-3 border-t border-stone-200/80 dark:border-stone-700 space-y-2.5">
           <input
             type="text"
             placeholder="Mekan veya sohbet başlığı ara..."
             value={searchVenue}
             onChange={(e) => setSearchVenue(e.target.value)}
-            className="w-full bg-white text-stone-900 placeholder-stone-400 text-xs rounded-xl px-3.5 py-2 border border-stone-200 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+            className="w-full bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder-stone-400 text-xs rounded-xl px-3.5 py-2 border border-stone-200 dark:border-stone-700 focus:outline-none focus:ring-1 focus:ring-emerald-600"
           />
 
           <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs scrollbar-none">
@@ -266,7 +266,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                 className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all text-[11px] font-semibold cursor-pointer ${
                   selectedCategory === cat.id
                     ? 'bg-emerald-700 text-white font-bold shadow-2xs'
-                    : 'bg-white text-stone-700 border border-stone-200 hover:bg-stone-50'
+                    : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-200 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800'
                 }`}
               >
                 {cat.label}
@@ -278,12 +278,12 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
 
       {/* Sohbet Sessions List */}
       {filteredSessions.length === 0 ? (
-        <div className="text-center py-10 bg-white rounded-3xl border border-stone-200/90 p-6 space-y-2">
-          <Radio className="w-10 h-10 text-stone-300 mx-auto" />
-          <p className="text-sm font-bold text-stone-800">
+        <div className="text-center py-10 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/90 dark:border-stone-700 p-6 space-y-2">
+          <Radio className="w-10 h-10 text-stone-300 dark:text-stone-600 mx-auto" />
+          <p className="text-sm font-bold text-stone-800 dark:text-stone-100">
             Kayıtlı sohbet veya tefsir dersi bulunamadı
           </p>
-          <p className="text-xs text-stone-500">
+          <p className="text-xs text-stone-500 dark:text-stone-400">
             Yukarıdaki "Sohbet Ekle" butonuna basarak yeni bir sohbet dersi kaydedebilirsiniz.
           </p>
         </div>
@@ -295,28 +295,28 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
             return (
               <div
                 key={session.id}
-                className="bg-white rounded-3xl p-4 sm:p-5 border border-stone-200/90 shadow-2xs space-y-3 transition-all"
+                className="bg-white dark:bg-stone-900 rounded-3xl p-4 sm:p-5 border border-stone-200/90 dark:border-stone-700 shadow-2xs space-y-3 transition-all"
               >
                 {/* Category & Date Header */}
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-900 font-bold border border-amber-200 text-[10px]">
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-stone-800 text-amber-900 dark:text-amber-300 font-bold border border-amber-200 dark:border-stone-700 text-[10px]">
                       {session.category}
                     </span>
-                    <span className="flex items-center gap-1 text-stone-600 font-medium text-[11px]">
-                      <MapPin className="w-3.5 h-3.5 text-amber-700" />
+                    <span className="flex items-center gap-1 text-stone-600 dark:text-stone-300 font-medium text-[11px]">
+                      <MapPin className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                       {session.venue}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-stone-500 font-mono text-[11px] flex items-center gap-1">
-                      <CalendarIcon className="w-3 h-3 text-stone-400" />
+                    <span className="text-stone-500 dark:text-stone-400 font-mono text-[11px] flex items-center gap-1">
+                      <CalendarIcon className="w-3 h-3 text-stone-400 dark:text-stone-500" />
                       {session.date}
                     </span>
                     <button
                       onClick={() => onDeleteSohbetSession(session.id)}
-                      className="text-stone-400 hover:text-rose-600 p-1 transition-colors"
+                      className="text-stone-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
                       title="Sil"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -326,12 +326,12 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
 
                 {/* Title & Duration */}
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-stone-900 leading-snug">
+                  <h3 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100 leading-snug">
                     {session.title}
                   </h3>
                   {session.durationMinutes && (
-                    <p className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-amber-700" />
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5 flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-amber-700 dark:text-amber-400" />
                       Ders Süresi: {session.durationMinutes} Dakika
                     </p>
                   )}
@@ -340,22 +340,22 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                 {/* Collapsible Toggle Control */}
                 <button
                   onClick={() => toggleExpand(session.id)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 rounded-2xl bg-stone-100/80 hover:bg-stone-200/60 text-stone-800 text-xs font-bold transition-all border border-stone-200/80"
+                  className="w-full flex items-center justify-between px-4 py-2.5 rounded-2xl bg-stone-100/80 dark:bg-stone-800 hover:bg-stone-200/60 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 text-xs font-bold transition-all border border-stone-200/80 dark:border-stone-700 cursor-pointer"
                 >
                   <span>{isExpanded ? 'Detayları Gizle' : 'Detayları Göster'}</span>
                   {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-amber-800" />
+                    <ChevronUp className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-stone-500" />
+                    <ChevronDown className="w-4 h-4 text-stone-500 dark:text-stone-400" />
                   )}
                 </button>
 
                 {/* Expanded Details Section */}
                 {isExpanded && (
-                  <div className="space-y-3 pt-2 border-t border-stone-100 animate-fade-in">
+                  <div className="space-y-3 pt-2 border-t border-stone-100 dark:border-stone-800 animate-fade-in">
                     {/* Teacher Notes */}
-                    <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/70 text-xs text-stone-800 space-y-1">
-                      <span className="font-bold text-amber-950 block">
+                    <div className="p-3.5 rounded-2xl bg-amber-50/60 dark:bg-stone-800/80 border border-amber-200/70 dark:border-stone-700 text-xs text-stone-800 dark:text-stone-200 space-y-1">
+                      <span className="font-bold text-amber-950 dark:text-amber-300 block">
                         Ders & Tefsir Notu:
                       </span>
                       <p className="leading-relaxed">{session.teacherNotes}</p>
@@ -552,15 +552,15 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
 
       {/* Add Sohbet Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white border border-stone-200 rounded-3xl p-6 w-full max-w-md shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
-              <Radio className="w-5 h-5 text-amber-700" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-3xl p-6 w-full max-w-md shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <Radio className="w-5 h-5 text-amber-700 dark:text-amber-400" />
               Yeni Sohbet / Tefsir Dersi Kaydet
             </h3>
 
             <div>
-              <label className="text-xs font-semibold text-stone-700 block mb-1">
+              <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
                 Sohbet / Dersi Konusu & Başlığı
               </label>
               <input
@@ -569,13 +569,13 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                 value={titleInput}
                 onChange={(e) => setTitleInput(e.target.value)}
                 placeholder="Örn: Mülk Sûresi Tefsiri veya İhlas ve Niyet Dersi"
-                className="w-full bg-stone-50 text-stone-900 text-xs rounded-xl p-2.5 border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder-stone-400 text-xs rounded-xl p-2.5 border border-stone-200 dark:border-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-500"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs font-semibold text-stone-700 block mb-1">
+                <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
                   Mekan / Cami / Cemaat
                 </label>
                 <input
@@ -583,18 +583,18 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                   value={venueInput}
                   onChange={(e) => setVenueInput(e.target.value)}
                   placeholder="Örn: Fatih Camii, Gençlik Vakfı"
-                  className="w-full bg-stone-50 text-stone-900 text-xs rounded-xl p-2.5 border border-stone-200 focus:outline-none"
+                  className="w-full bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder-stone-400 text-xs rounded-xl p-2.5 border border-stone-200 dark:border-stone-700 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-stone-700 block mb-1">
+                <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
                   Ders Kategorisi
                 </label>
                 <select
                   value={categoryInput}
                   onChange={(e) => setCategoryInput(e.target.value as SohbetSession['category'])}
-                  className="w-full bg-stone-50 text-stone-900 text-xs rounded-xl p-2.5 border border-stone-200 focus:outline-none"
+                  className="w-full bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-xs rounded-xl p-2.5 border border-stone-200 dark:border-stone-700 focus:outline-none"
                 >
                   <option value="Tefsir">Tefsir</option>
                   <option value="Hadis">Hadis</option>
@@ -606,7 +606,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-stone-700 block mb-1">
+              <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1">
                 Hoca Ders Notları & Açıklamaları
               </label>
               <textarea
@@ -614,7 +614,7 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
                 value={teacherNotesInput}
                 onChange={(e) => setTeacherNotesInput(e.target.value)}
                 placeholder="Ders boyunca işlenen ana konular, ayet numaraları, tefsir açıklamaları..."
-                className="w-full bg-stone-50 text-stone-900 text-xs rounded-xl p-2.5 border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full bg-stone-50 dark:bg-stone-800 text-stone-900 dark:text-stone-100 placeholder-stone-400 text-xs rounded-xl p-2.5 border border-stone-200 dark:border-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-500"
               />
             </div>
 

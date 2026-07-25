@@ -229,7 +229,7 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md animate-fade-in">
-      <div className="bg-white/95 text-slate-900 border border-white/60 shadow-2xl rounded-[32px] max-w-xl w-full p-6 sm:p-7 space-y-5 relative overflow-hidden backdrop-blur-2xl">
+      <div className="bg-white/95 dark:bg-stone-900/95 text-slate-900 dark:text-stone-100 border border-white/60 dark:border-stone-800 shadow-2xl rounded-[32px] max-w-xl w-full p-6 sm:p-7 space-y-5 relative overflow-hidden backdrop-blur-2xl">
         
         {/* Apple Style Top Glow */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-500 via-emerald-500 to-amber-600" />
@@ -237,14 +237,14 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between pr-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-amber-100 text-amber-900 border border-amber-200/80 flex items-center justify-center font-bold">
-              <Download className="w-5 h-5 text-amber-800" />
+            <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-300 border border-amber-200/80 dark:border-stone-700 flex items-center justify-center font-bold">
+              <Download className="w-5 h-5 text-amber-800 dark:text-amber-400" />
             </div>
             <div>
-              <h2 className="text-lg font-bold tracking-tight text-slate-900">
+              <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-stone-100">
                 Not Yönetimi & Dışa/İçe Aktar
               </h2>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-stone-400">
                 Word (.docx), Google Drive, JSON yedekleme ve filtreli aktarım
               </p>
             </div>
@@ -252,35 +252,35 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-stone-100 transition-colors"
+            className="p-2 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Switcher */}
-        <div className="grid grid-cols-2 gap-1.5 p-1 bg-stone-100 rounded-2xl">
+        <div className="grid grid-cols-2 gap-1.5 p-1 bg-stone-100 dark:bg-stone-800 rounded-2xl">
           <button
             onClick={() => setActiveTab('export')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'export'
-                ? 'bg-white text-amber-900 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-stone-900 text-amber-900 dark:text-amber-300 shadow-sm'
+                : 'text-slate-600 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100'
             }`}
           >
-            <Download className="w-4 h-4 text-amber-600" />
+            <Download className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             <span>Dışa Aktar ({filteredNotes.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('import')}
-            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+            className={`py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'import'
-                ? 'bg-white text-emerald-900 shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-stone-900 text-emerald-900 dark:text-emerald-300 shadow-sm'
+                : 'text-slate-600 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100'
             }`}
           >
-            <Upload className="w-4 h-4 text-emerald-600" />
+            <Upload className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Toplu İçe Aktar</span>
           </button>
         </div>
@@ -288,10 +288,10 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
         {activeTab === 'export' ? (
           <div className="space-y-4">
             {/* Filter Section */}
-            <div className="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-3">
+            <div className="bg-stone-50 dark:bg-stone-800/60 rounded-2xl p-4 border border-stone-200 dark:border-stone-700 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <Filter className="w-3.5 h-3.5 text-amber-700" />
+                <span className="text-xs font-bold text-slate-800 dark:text-stone-200 flex items-center gap-1.5">
+                  <Filter className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                   Dışa Aktarma Filtreleri
                 </span>
 
@@ -302,7 +302,7 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
                     setSelectedDateRange('all');
                     setSearchKeyword('');
                   }}
-                  className="text-[11px] text-amber-800 hover:underline font-semibold"
+                  className="text-[11px] text-amber-800 dark:text-amber-400 hover:underline font-semibold cursor-pointer"
                 >
                   Filtreleri Sıfırla
                 </button>
@@ -310,13 +310,13 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-stone-400 uppercase block mb-1">
                     Sûre Seçimi
                   </label>
                   <select
                     value={selectedSurahId}
                     onChange={(e) => setSelectedSurahId(e.target.value)}
-                    className="w-full text-xs font-semibold bg-white border border-stone-200 rounded-xl px-2.5 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className="w-full text-xs font-semibold bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-2.5 py-2 text-slate-800 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
                   >
                     <option value="all">Tüm Sûreler ({verseNotes.length} not)</option>
                     {availableSurahIds.map((sid) => {
@@ -332,13 +332,13 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-stone-400 uppercase block mb-1">
                     Not Kategori / Etiketi
                   </label>
                   <select
                     value={selectedTag}
                     onChange={(e) => setSelectedTag(e.target.value)}
-                    className="w-full text-xs font-semibold bg-white border border-stone-200 rounded-xl px-2.5 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className="w-full text-xs font-semibold bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-2.5 py-2 text-slate-800 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
                   >
                     <option value="all">Tüm Kategoriler</option>
                     <option value="Tecvit">Tecvit Notu</option>
@@ -349,13 +349,13 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-stone-400 uppercase block mb-1">
                     Tarih Aralığı
                   </label>
                   <select
                     value={selectedDateRange}
                     onChange={(e) => setSelectedDateRange(e.target.value as any)}
-                    className="w-full text-xs font-semibold bg-white border border-stone-200 rounded-xl px-2.5 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className="w-full text-xs font-semibold bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-2.5 py-2 text-slate-800 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
                   >
                     <option value="all">Tüm Zamanlar</option>
                     <option value="7days">Son 7 Gün</option>
@@ -364,7 +364,7 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-stone-400 uppercase block mb-1">
                     Metin Arama
                   </label>
                   <input
@@ -372,7 +372,7 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
                     value={searchKeyword}
                     onChange={(e) => setSearchKeyword(e.target.value)}
                     placeholder="Arama kelimesi..."
-                    className="w-full text-xs bg-white border border-stone-200 rounded-xl px-2.5 py-2 text-slate-800 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className="w-full text-xs bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl px-2.5 py-2 text-slate-800 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
                   />
                 </div>
               </div>
@@ -380,12 +380,12 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
 
             {/* Live Filter Count Indicator & Toasts */}
             <div className="flex items-center justify-between text-xs font-semibold px-1">
-              <span className="text-slate-600">
-                Seçilen Kriterlere Uyan: <b className="text-amber-900">{filteredNotes.length} Not</b>
+              <span className="text-slate-600 dark:text-stone-300">
+                Seçilen Kriterlere Uyan: <b className="text-amber-900 dark:text-amber-300">{filteredNotes.length} Not</b>
               </span>
 
               {copySuccess && (
-                <span className="text-emerald-700 font-bold flex items-center gap-1 animate-fade-in">
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1 animate-fade-in">
                   <Check className="w-3.5 h-3.5" />
                   Panoya kopyalandı!
                 </span>
@@ -393,8 +393,8 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
             </div>
 
             {driveMsg && (
-              <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs flex items-center gap-2 font-semibold animate-fade-in">
-                <Cloud className="w-4 h-4 text-blue-600 shrink-0" />
+              <div className="p-3 rounded-xl bg-blue-50 dark:bg-stone-800 border border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-300 text-xs flex items-center gap-2 font-semibold animate-fade-in">
+                <Cloud className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <span>{driveMsg}</span>
               </div>
             )}
@@ -405,7 +405,7 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
               <button
                 disabled={filteredNotes.length === 0}
                 onClick={handleDownloadDocx}
-                className="p-3 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-xs flex flex-col items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+                className="p-3 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-xs flex flex-col items-center justify-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer"
               >
                 <FileText className="w-5 h-5 text-blue-100" />
                 <span>Word (.docx)</span>
@@ -415,7 +415,7 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
               <button
                 disabled={filteredNotes.length === 0}
                 onClick={handleSaveToGoogleDrive}
-                className="p-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white font-bold text-xs flex flex-col items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+                className="p-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white font-bold text-xs flex flex-col items-center justify-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer"
               >
                 <Cloud className="w-5 h-5 text-emerald-100" />
                 <span>Google Drive</span>
@@ -425,7 +425,7 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
               <button
                 disabled={filteredNotes.length === 0}
                 onClick={handleDownloadJson}
-                className="p-3 rounded-2xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white font-bold text-xs flex flex-col items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+                className="p-3 rounded-2xl bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white font-bold text-xs flex flex-col items-center justify-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer"
               >
                 <FileCode className="w-5 h-5 text-amber-100" />
                 <span>JSON Yedek</span>
@@ -435,9 +435,9 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
               <button
                 disabled={filteredNotes.length === 0}
                 onClick={handleCopyToClipboard}
-                className="p-3 rounded-2xl bg-white border border-stone-200 hover:bg-stone-50 disabled:opacity-40 text-slate-800 font-bold text-xs flex flex-col items-center justify-center gap-1 shadow-sm active:scale-95 transition-all"
+                className="p-3 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-40 text-slate-800 dark:text-stone-100 font-bold text-xs flex flex-col items-center justify-center gap-1 shadow-sm active:scale-95 transition-all cursor-pointer"
               >
-                <Copy className="w-5 h-5 text-stone-700" />
+                <Copy className="w-5 h-5 text-stone-700 dark:text-stone-300" />
                 <span>Panoya Al</span>
               </button>
             </div>
@@ -445,14 +445,14 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
         ) : (
           /* Import Tab */
           <div className="space-y-4">
-            <div className="border-2 border-dashed border-stone-200 hover:border-emerald-500/60 rounded-2xl p-6 text-center space-y-3 bg-stone-50 transition-colors">
-              <Upload className="w-8 h-8 text-emerald-600 mx-auto" />
+            <div className="border-2 border-dashed border-stone-200 dark:border-stone-700 hover:border-emerald-500/60 rounded-2xl p-6 text-center space-y-3 bg-stone-50 dark:bg-stone-800/60 transition-colors">
+              <Upload className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mx-auto" />
               <div>
-                <p className="text-xs font-bold text-slate-800">
+                <p className="text-xs font-bold text-slate-800 dark:text-stone-100">
                   JSON Yedek Dosyasını Yükleyin
                 </p>
-                <p className="text-[11px] text-slate-500">
-                  Daha önce indirdiğiniz <code className="bg-stone-200 px-1 rounded">.json</code> formatındaki not yedek dosyanızı seçin.
+                <p className="text-[11px] text-slate-500 dark:text-stone-400">
+                  Daha önce indirdiğiniz <code className="bg-stone-200 dark:bg-stone-700 px-1 rounded">.json</code> formatındaki not yedek dosyanızı seçin.
                 </p>
               </div>
 
@@ -471,60 +471,60 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
               </label>
 
               {importFileName && (
-                <p className="text-xs font-mono text-emerald-800 pt-1 font-semibold">
+                <p className="text-xs font-mono text-emerald-800 dark:text-emerald-300 pt-1 font-semibold">
                   📄 {importFileName}
                 </p>
               )}
             </div>
 
             {importError && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 font-medium">
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs flex items-center gap-2 font-medium">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{importError}</span>
               </div>
             )}
 
             {importSuccessMsg && (
-              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2 font-bold animate-fade-in">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs flex items-center gap-2 font-bold animate-fade-in">
+                <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>{importSuccessMsg}</span>
               </div>
             )}
 
             {importFileContent && !importSuccessMsg && (
-              <div className="bg-emerald-50/50 border border-emerald-200 rounded-2xl p-4 space-y-3">
+              <div className="bg-emerald-50/50 dark:bg-stone-800/80 border border-emerald-200 dark:border-stone-700 rounded-2xl p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-emerald-950">
+                  <span className="font-bold text-emerald-950 dark:text-emerald-300">
                     Tespit Edilen Notlar: <b>{importFileContent.length} Adet</b>
                   </span>
-                  <span className="text-[10px] bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-md font-bold">
+                  <span className="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-300 px-2 py-0.5 rounded-md font-bold">
                     Hazır
                   </span>
                 </div>
 
                 <div className="space-y-1.5 text-xs">
-                  <label className="text-[11px] font-bold text-slate-700 block">
+                  <label className="text-[11px] font-bold text-slate-700 dark:text-stone-200 block">
                     Aktarım Yöntemi:
                   </label>
                   <div className="flex gap-2">
-                    <label className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-white border border-stone-200 cursor-pointer text-[11px] font-semibold">
+                    <label className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 cursor-pointer text-[11px] font-semibold text-slate-800 dark:text-stone-200">
                       <input
                         type="radio"
                         name="importMode"
                         checked={importMode === 'merge'}
                         onChange={() => setImportMode('merge')}
-                        className="text-emerald-600 focus:ring-emerald-500"
+                        className="text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                       />
                       <span>Mevcut notların üzerine ekle</span>
                     </label>
 
-                    <label className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-white border border-stone-200 cursor-pointer text-[11px] font-semibold">
+                    <label className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 cursor-pointer text-[11px] font-semibold text-slate-800 dark:text-stone-200">
                       <input
                         type="radio"
                         name="importMode"
                         checked={importMode === 'replace'}
                         onChange={() => setImportMode('replace')}
-                        className="text-emerald-600 focus:ring-emerald-500"
+                        className="text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                       />
                       <span>Mevcutları sil ve değiştir</span>
                     </label>
@@ -533,7 +533,7 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
 
                 <button
                   onClick={handleConfirmImport}
-                  className="w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Check className="w-4 h-4" />
                   <span>İçe Aktarmayı Tamamla ({importFileContent.length} Not)</span>

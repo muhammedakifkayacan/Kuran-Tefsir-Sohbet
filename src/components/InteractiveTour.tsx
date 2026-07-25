@@ -327,23 +327,23 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
           exit={{ opacity: 0, y: -10, scale: 0.96 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           style={popoverStyle}
-          className="fixed z-[99995] w-[calc(100vw-32px)] sm:w-[340px] bg-white text-stone-900 rounded-3xl p-5 shadow-2xl border border-stone-200/90 backdrop-blur-2xl"
+          className="fixed z-[99995] w-[calc(100vw-32px)] sm:w-[340px] bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-3xl p-5 shadow-2xl border border-stone-200/90 dark:border-stone-800 backdrop-blur-2xl"
         >
           {/* Header & Step Counter */}
           <div className="flex items-center justify-between gap-2 mb-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-amber-900 text-[11px] font-bold">
-              <Compass className="w-3.5 h-3.5 text-amber-600" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-stone-800 border border-amber-200/80 dark:border-stone-700 text-amber-900 dark:text-amber-300 text-[11px] font-bold">
+              <Compass className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
               <span>{currentStep.badge || 'Rehber'}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold text-stone-500 bg-stone-100 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] font-bold text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-stone-800 px-2.5 py-0.5 rounded-full">
                 {currentStepIndex + 1} / {TOUR_STEPS.length}
               </span>
               
               <button
                 onClick={onClose}
-                className="p-1 rounded-full text-stone-400 hover:text-stone-800 hover:bg-stone-100 transition-colors cursor-pointer"
+                className="p-1 rounded-full text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
                 title="Turu Kapat"
               >
                 <X className="w-4 h-4" />
@@ -353,10 +353,10 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
 
           {/* Title & Description */}
           <div className="space-y-1.5 mb-5">
-            <h3 className="text-base font-bold text-stone-900 tracking-tight font-serif flex items-center gap-2">
+            <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 tracking-tight font-serif flex items-center gap-2">
               <span>{currentStep.title}</span>
             </h3>
-            <p className="text-xs text-stone-600 leading-relaxed font-normal">
+            <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed font-normal">
               {currentStep.description}
             </p>
           </div>
@@ -367,12 +367,12 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
               <button
                 key={step.id}
                 onClick={() => setCurrentStepIndex(idx)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   idx === currentStepIndex
-                    ? 'w-6 bg-emerald-700'
+                    ? 'w-6 bg-emerald-700 dark:bg-emerald-500'
                     : idx < currentStepIndex
-                    ? 'w-1.5 bg-emerald-300'
-                    : 'w-1.5 bg-stone-200'
+                    ? 'w-1.5 bg-emerald-300 dark:bg-emerald-700'
+                    : 'w-1.5 bg-stone-200 dark:bg-stone-700'
                 }`}
                 title={`${idx + 1}. Adıma Git`}
               />
@@ -380,22 +380,22 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
           </div>
 
           {/* Don't show again option */}
-          <div className="flex items-center justify-between gap-2 mb-3 pt-2 border-t border-stone-100">
+          <div className="flex items-center justify-between gap-2 mb-3 pt-2 border-t border-stone-100 dark:border-stone-800">
             <label className="flex items-center gap-2 cursor-pointer select-none group">
               <input
                 type="checkbox"
                 checked={!!dontShowAgain}
                 onChange={(e) => onToggleDontShowAgain?.(e.target.checked)}
-                className="w-3.5 h-3.5 rounded border-stone-300 text-emerald-700 focus:ring-emerald-600 accent-emerald-700 cursor-pointer"
+                className="w-3.5 h-3.5 rounded border-stone-300 dark:border-stone-700 text-emerald-700 focus:ring-emerald-600 accent-emerald-700 cursor-pointer"
               />
-              <span className="text-[11px] font-medium text-stone-600 group-hover:text-stone-900 transition-colors">
+              <span className="text-[11px] font-medium text-stone-600 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">
                 Bir daha otomatik gösterme
               </span>
             </label>
           </div>
 
           {/* Navigation Action Buttons */}
-          <div className="flex items-center justify-between gap-2 pt-2 border-t border-stone-100">
+          <div className="flex items-center justify-between gap-2 pt-2 border-t border-stone-100 dark:border-stone-800">
             <button
               onClick={() => {
                 if (!isFirstStep) setCurrentStepIndex((prev) => prev - 1);
@@ -403,8 +403,8 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
               disabled={isFirstStep}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all ${
                 isFirstStep
-                  ? 'opacity-40 text-stone-400 cursor-not-allowed'
-                  : 'text-stone-700 hover:bg-stone-100 active:scale-95 cursor-pointer'
+                  ? 'opacity-40 text-stone-400 dark:text-stone-600 cursor-not-allowed'
+                  : 'text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 active:scale-95 cursor-pointer'
               }`}
             >
               <ChevronLeft className="w-4 h-4" />
@@ -413,7 +413,7 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
 
             <button
               onClick={onClose}
-              className="text-xs font-medium text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+              className="text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors cursor-pointer"
             >
               Atla
             </button>
