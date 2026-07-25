@@ -1538,8 +1538,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   // Dynamic pages inside the selected Surah
   const pagesInSurah = Array.from(new Set(selectedSurah.verses.map((v) => v.page))).sort((a: number, b: number) => a - b);
 
-  const hasPrevPage = pagesInSurah.indexOf(selectedPage) > 0 || selectedSurah.id > 1;
-  const hasNextPage = pagesInSurah.indexOf(selectedPage) < pagesInSurah.length - 1 || selectedSurah.id < 114;
+  const hasPrevPage = selectedPage > 1 || selectedSurah.id > 1;
+  const hasNextPage = selectedPage < 604 || selectedSurah.id < 114;
 
   const handlePrevPage = () => {
     triggerPagePeel('prev');
@@ -1548,9 +1548,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     if (curIdx > 0) {
       setSelectedPage(pagesInSurah[curIdx - 1]);
       setSelectedMushafAyah(null);
-    } else if (selectedSurah.id > 1) {
-      loadSurah(selectedSurah.id - 1);
-      showToast('👈 Önceki Sûreye Geçildi');
+    } else {
+      const targetPage = Math.max(1, selectedPage - 1);
+      setSelectedPage(targetPage);
+      setSelectedMushafAyah(null);
+      if (selectedSurah.id > 1) {
+        loadSurah(selectedSurah.id - 1);
+        showToast('👈 Önceki Sûreye Geçildi');
+      }
     }
   };
 
@@ -1558,12 +1563,17 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     triggerPagePeel('next');
     scrollToBoardTop();
     const curIdx = pagesInSurah.indexOf(selectedPage);
-    if (curIdx < pagesInSurah.length - 1) {
+    if (curIdx >= 0 && curIdx < pagesInSurah.length - 1) {
       setSelectedPage(pagesInSurah[curIdx + 1]);
       setSelectedMushafAyah(null);
-    } else if (selectedSurah.id < 114) {
-      loadSurah(selectedSurah.id + 1);
-      showToast('👉 Sonraki Sûreye Geçildi');
+    } else {
+      const targetPage = Math.min(604, selectedPage + 1);
+      setSelectedPage(targetPage);
+      setSelectedMushafAyah(null);
+      if (selectedSurah.id < 114) {
+        loadSurah(selectedSurah.id + 1);
+        showToast('👉 Sonraki Sûreye Geçildi');
+      }
     }
   };
 
@@ -1619,20 +1629,24 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   useEffect(() => {
     if (prevSurahIdRef.current !== selectedSurah.id) {
       prevSurahIdRef.current = selectedSurah.id;
-      // Check if last_read has a page for this new surah, otherwise use startPage
-      try {
-        const saved = localStorage.getItem('kuran_last_read');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.surahId === selectedSurah.id && parsed.pageNumber) {
-            setSelectedPage(parsed.pageNumber);
-            setSelectedMushafAyah(null);
-            return;
-          }
+      if (selectedSurah && selectedSurah.verses && selectedSurah.verses.length > 0) {
+        const validPages = Array.from(new Set(selectedSurah.verses.map((v) => v.page))).sort((a: number, b: number) => a - b);
+        if (validPages.length > 0 && !validPages.includes(selectedPage)) {
+          try {
+            const saved = localStorage.getItem('kuran_last_read');
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              if (parsed.surahId === selectedSurah.id && parsed.pageNumber && validPages.includes(parsed.pageNumber)) {
+                setSelectedPage(parsed.pageNumber);
+                setSelectedMushafAyah(null);
+                return;
+              }
+            }
+          } catch (e) {}
+          setSelectedPage(selectedSurah.startPage || validPages[0] || 1);
+          setSelectedMushafAyah(null);
         }
-      } catch (e) {}
-      setSelectedPage(selectedSurah.startPage || 1);
-      setSelectedMushafAyah(null);
+      }
     }
   }, [selectedSurah]);
 
@@ -3081,7 +3095,12 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 </div>
 
                 {/* Arabic Flowing Text or Stacked Arabic + Translation Cards */}
-                {showTranslation ? (
+                {pageVerses.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-center space-y-3">
+                    <div className="w-10 h-10 rounded-full border-4 border-amber-200 border-t-amber-600 animate-spin" />
+                    <p className="text-xs font-bold text-stone-600 dark:text-stone-300">Sayfa {selectedPage} Yükleniyor...</p>
+                  </div>
+                ) : showTranslation ? (
                   <div className="space-y-3.5 text-right dir-rtl">
                     {pageVerses.map((verse) => {
                       const isSelected = selectedMushafAyah?.number === verse.number;

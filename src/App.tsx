@@ -467,8 +467,12 @@ export default function App() {
       setIsRefreshing(true);
       setPullDistance(75);
       setTimeout(() => {
-        window.location.reload();
-      }, 350);
+        if (activeTab === 'quran' && selectedSurah) {
+          loadSurah(selectedSurah.id);
+        }
+        setIsRefreshing(false);
+        setPullDistance(0);
+      }, 500);
     } else {
       setPullDistance(0);
     }
