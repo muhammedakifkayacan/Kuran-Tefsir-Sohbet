@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BookOpen, Search, Copy, Check, Share2, Sparkles, X, Heart, Bookmark, Filter, Quote, Library, ChevronRight, Layers, Bot, Loader2 } from 'lucide-react';
 import { RIYAZUS_SALIHIN_BOOKS, RIYAZUS_SALIHIN_HADITHS, RiyazusHadith, RiyazusBook } from '../data/riyazusSalihinData';
+import { TitleWithHelp } from './TitleWithHelp';
 
 interface RiyazusSalihinModalProps {
   isOpen: boolean;
@@ -103,8 +104,11 @@ export const RiyazusSalihinModal: React.FC<RiyazusSalihinModalProps> = ({ isOpen
               <BookOpen className="w-5 h-5 text-emerald-100" />
             </div>
             <div>
-              <h2 className="text-base sm:text-xl font-bold tracking-tight">Riyazü’s-Sâlihîn Tam Külliyat</h2>
-              <p className="text-xs text-emerald-200 font-medium">İmam Nevevî — 18 Kitap, 300+ Bâb ve Sahih Hadisler</p>
+              <TitleWithHelp
+                title="Riyazü’s-Sâlihîn Tam Külliyat"
+                description="İmam Nevevî — 18 Kitap, 300+ Bâb ve Sahih Hadisler"
+                titleClassName="text-base sm:text-xl font-bold tracking-tight text-white"
+              />
             </div>
           </div>
           <button

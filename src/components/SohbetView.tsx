@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Radio, Mic, Plus, MapPin, Sparkles, Share2, Trash2, Calendar as CalendarIcon, Clock, Check, RefreshCw, Volume2, ChevronDown, ChevronUp, Bell, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SohbetSession } from '../types';
+import { TitleWithHelp } from './TitleWithHelp';
 import { getGoogleCalendarUrl, downloadIcsFile } from '../utils/calendarUtils';
 
 interface SohbetViewProps {
@@ -218,11 +219,12 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <Radio className="w-5 h-5 text-amber-800 dark:text-amber-400" />
-              <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100 leading-tight">Sohbet & Tefsir Meclisleri</h2>
+              <TitleWithHelp
+                title="Sohbet & Tefsir Meclisleri"
+                description="Sohbet ve ders kayıtları, tefsir notları ve duyurular"
+                titleClassName="text-lg font-bold text-stone-900 dark:text-stone-100 leading-tight"
+              />
             </div>
-            <p className="text-xs text-stone-600 dark:text-stone-300 mt-0.5">
-              Sohbet ve ders kayıtları, tefsir notları ve duyurular
-            </p>
           </div>
 
           <button

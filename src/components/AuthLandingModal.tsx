@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, BookOpen, Mic, StickyNote, ShieldCheck, Eye, X, CheckCircle2, ChevronRight, AlertCircle } from 'lucide-react';
 import { loginWithGoogle } from '../lib/firebase';
+import { TitleWithHelp } from './TitleWithHelp';
 
 interface AuthLandingModalProps {
   isOpen: boolean;
@@ -159,22 +160,11 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
 
           {/* Headline & Subtitle */}
           <div className="space-y-3.5">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.18] text-stone-900 font-serif"
-            >
-              Ders, Tefsir ve Sohbet Meclisi
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="text-sm sm:text-base text-stone-600 leading-relaxed font-normal"
-            >
-              Sohbet ve vaaz ses kayıtlarını yazıya dökün, yapay zekâ ile anında sohbet raporu çıkartın ve ayet tefekkür notlarınızı düzenleyin.
-            </motion.p>
+            <TitleWithHelp
+              title="Ders, Tefsir ve Sohbet Meclisi"
+              description="Sohbet ve vaaz ses kayıtlarını yazıya dökün, yapay zekâ ile anında sohbet raporu çıkartın ve ayet tefekkür notlarınızı düzenleyin."
+              titleClassName="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.18] text-stone-900 font-serif"
+            />
           </div>
 
           {/* Staggered Feature Cards Grid */}

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Smartphone, Monitor, Sparkles, Download, Home, User, Menu, X, BookOpen, Radio, BookCheck, StickyNote, Sliders, ChevronRight, Compass } from 'lucide-react';
 import { NavTab } from '../types';
+import { TitleWithHelp } from './TitleWithHelp';
 
 interface HeaderProps {
   isMobileFrame: boolean;
@@ -63,12 +64,11 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-lg sm:text-xl font-serif">ق</span>
           </div>
           <div>
-            <h1 className="text-xs sm:text-base font-bold tracking-tight flex items-center gap-1 leading-none text-stone-900 dark:text-stone-100">
-              Kur'an & Tefsir
-            </h1>
-            <p className="text-[10px] sm:text-[11px] text-stone-500 dark:text-stone-400 font-medium leading-tight mt-0.5">
-              Ders ve Okuma Rehberi
-            </p>
+            <TitleWithHelp
+              title="Kur'an & Tefsir"
+              description="Ders ve Okuma Rehberi"
+              titleClassName="text-xs sm:text-base font-bold tracking-tight text-stone-900 dark:text-stone-100"
+            />
           </div>
         </div>
 
@@ -174,10 +174,11 @@ export const Header: React.FC<HeaderProps> = ({
                     <span className="text-xl font-serif">ق</span>
                   </div>
                   <div>
-                    <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100 tracking-tight">
-                      Kur'an & Tefsir Rehberi
-                    </h2>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">Sade & Kolay Kullanım</p>
+                    <TitleWithHelp
+                      title="Kur'an & Tefsir Rehberi"
+                      description="Sade & Kolay Kullanım"
+                      titleClassName="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100 tracking-tight"
+                    />
                   </div>
                 </div>
 
@@ -217,8 +218,11 @@ export const Header: React.FC<HeaderProps> = ({
                         <BookOpen className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-base sm:text-lg">Kur'an Okuma</h3>
-                        <p className={`text-xs ${activeTab === 'quran' ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>Mushaf, Mealli ve Sadece Meal Sayfaları</p>
+                        <TitleWithHelp
+                          title="Kur'an Okuma"
+                          description="Mushaf, Mealli ve Sadece Meal Sayfaları"
+                          titleClassName={`font-bold text-base sm:text-lg ${activeTab === 'quran' ? 'text-white' : ''}`}
+                        />
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'quran' ? 'text-white' : 'text-stone-400'}`} />
@@ -242,8 +246,11 @@ export const Header: React.FC<HeaderProps> = ({
                         <Radio className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-base sm:text-lg">Sohbet & Ders</h3>
-                        <p className={`text-xs ${activeTab === 'sohbet' ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>Ders Ses Kayıtları ve Sohbet Dinleme</p>
+                        <TitleWithHelp
+                          title="Sohbet & Ders"
+                          description="Ders Ses Kayıtları ve Sohbet Dinleme"
+                          titleClassName={`font-bold text-base sm:text-lg ${activeTab === 'sohbet' ? 'text-white' : ''}`}
+                        />
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'sohbet' ? 'text-white' : 'text-stone-400'}`} />
@@ -267,8 +274,11 @@ export const Header: React.FC<HeaderProps> = ({
                         <StickyNote className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-base sm:text-lg">Hoca Notlarım</h3>
-                        <p className={`text-xs ${activeTab === 'notes' ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>Ayetlere Alınan Tüm Ders Notları</p>
+                        <TitleWithHelp
+                          title="Hoca Notlarım"
+                          description="Ayetlere Alınan Tüm Ders Notları"
+                          titleClassName={`font-bold text-base sm:text-lg ${activeTab === 'notes' ? 'text-white' : ''}`}
+                        />
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'notes' ? 'text-white' : 'text-stone-400'}`} />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BookOpen, Radio, StickyNote, Compass, Sparkles, MapPin, RefreshCw, Clock, ArrowRight, Settings, Sliders, ChevronDown, Volume2, Quote, Sun, Moon, Eye, EyeOff, LocateFixed } from 'lucide-react';
 import { NavTab, SohbetSession, VerseNote } from '../types';
+import { TitleWithHelp } from './TitleWithHelp';
 import { RIYAZUS_SALIHIN_HADITHS } from '../data/riyazusSalihinData';
 import { TURKEY_AND_WORLD_CITIES, CityLocation } from '../data/citiesData';
 
@@ -172,10 +173,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
             <span>Masaüstü & Mobil Bütünleşik Panel</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Hoş Geldiniz, Hayırlı Dersler</h2>
-          <p className="text-xs sm:text-sm text-emerald-200 font-medium mt-1">
-            Kur'an okumalarınızı, ders notlarınızı ve sohbet meclislerinizi tek ekrandan yönetin.
-          </p>
+          <TitleWithHelp
+            title="Hoş Geldiniz, Hayırlı Dersler"
+            description="Kur'an okumalarınızı, ders notlarınızı ve sohbet meclislerinizi tek ekrandan yönetin."
+            titleClassName="text-xl sm:text-2xl font-bold tracking-tight text-white"
+          />
         </div>
 
         <button
@@ -197,11 +199,14 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             className="bg-white dark:bg-stone-900 rounded-3xl p-5 border-2 border-emerald-500 shadow-md space-y-4 overflow-hidden"
           >
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-3">
-              <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                <Settings className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
-                <span>Ana Ekran Kart Düzeni & Görünürlük Ayarları</span>
-              </h3>
-              <span className="text-xs text-stone-500 dark:text-stone-400">Okları kullanarak sıralamayı değiştirebilirsiniz</span>
+              <div className="flex items-center gap-2">
+                <Settings className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                <TitleWithHelp
+                  title="Ana Ekran Kart Düzeni & Görünürlük Ayarları"
+                  description="Okları kullanarak sıralamayı değiştirebilirsiniz"
+                  titleClassName="font-bold text-sm text-stone-900 dark:text-stone-100"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -338,8 +343,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   >
                     <BookOpen className="w-6 h-6 text-emerald-300 group-hover:scale-110 transition-transform" />
                     <div>
-                      <h4 className="font-bold text-sm">Kur'an Oku</h4>
-                      <p className="text-[11px] text-emerald-200">Mushaf & Tefsir</p>
+                      <TitleWithHelp
+                        title="Kur'an Oku"
+                        description="Mushaf & Tefsir"
+                        titleClassName="font-bold text-sm text-white"
+                      />
                     </div>
                   </button>
 
@@ -349,8 +357,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   >
                     <Radio className="w-6 h-6 text-amber-200 group-hover:scale-110 transition-transform" />
                     <div>
-                      <h4 className="font-bold text-sm">Sohbet Kaydet</h4>
-                      <p className="text-[11px] text-amber-100">Ses & AI Özet</p>
+                      <TitleWithHelp
+                        title="Sohbet Kaydet"
+                        description="Ses & AI Özet"
+                        titleClassName="font-bold text-sm text-white"
+                      />
                     </div>
                   </button>
 
@@ -360,8 +371,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   >
                     <Quote className="w-6 h-6 text-amber-400 group-hover:scale-110 transition-transform" />
                     <div>
-                      <h4 className="font-bold text-sm">Riyazü’s-Sâlihîn</h4>
-                      <p className="text-[11px] text-stone-300">Hadîs-i Şerîfler</p>
+                      <TitleWithHelp
+                        title="Riyazü’s-Sâlihîn"
+                        description="Hadîs-i Şerîfler"
+                        titleClassName="font-bold text-sm text-white"
+                      />
                     </div>
                   </button>
 
@@ -371,8 +385,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   >
                     <Compass className="w-6 h-6 text-amber-100 group-hover:scale-110 transition-transform" />
                     <div>
-                      <h4 className="font-bold text-sm">Kıble Pusulası</h4>
-                      <p className="text-[11px] text-amber-100">Kâbe Yönü</p>
+                      <TitleWithHelp
+                        title="Kıble Pusulası"
+                        description="Kâbe Yönü"
+                        titleClassName="font-bold text-sm text-white"
+                      />
                     </div>
                   </button>
                 </div>

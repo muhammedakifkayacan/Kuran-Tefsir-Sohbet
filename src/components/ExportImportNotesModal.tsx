@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Download, Upload, Filter, Copy, Check, FileText, FileCode, AlertCircle, X, Sparkles, FileSpreadsheet, Cloud } from 'lucide-react';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { VerseNote } from '../types';
+import { TitleWithHelp } from './TitleWithHelp';
 import { QURAN_SURAHS } from '../data/quranData';
 
 interface ExportImportNotesModalProps {
@@ -241,12 +242,11 @@ export const ExportImportNotesModal: React.FC<ExportImportNotesModalProps> = ({
               <Download className="w-5 h-5 text-amber-800 dark:text-amber-400" />
             </div>
             <div>
-              <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-stone-100">
-                Not Yönetimi & Dışa/İçe Aktar
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-stone-400">
-                Word (.docx), Google Drive, JSON yedekleme ve filtreli aktarım
-              </p>
+              <TitleWithHelp
+                title="Not Yönetimi & Dışa/İçe Aktar"
+                description="Word (.docx), Google Drive, JSON yedekleme ve filtreli aktarım"
+                titleClassName="text-lg font-bold tracking-tight text-slate-900 dark:text-stone-100"
+              />
             </div>
           </div>
 

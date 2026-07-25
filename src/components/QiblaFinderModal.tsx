@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Compass, Navigation, MapPin, CheckCircle, RefreshCw, X, Info, Smartphone, LocateFixed } from 'lucide-react';
 import { TURKEY_AND_WORLD_CITIES } from '../data/citiesData';
+import { TitleWithHelp } from './TitleWithHelp';
 
 interface QiblaFinderModalProps {
   isOpen: boolean;
@@ -170,8 +171,11 @@ export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onCl
               <Compass className="w-5 h-5 text-emerald-100" />
             </div>
             <div>
-              <h2 className="text-base font-bold tracking-tight">Kıble Pusulası</h2>
-              <p className="text-xs text-emerald-200 font-medium">Hassas Kâbe-i Muazzama Yön Hesabı</p>
+              <TitleWithHelp
+                title="Kıble Pusulası"
+                description="Hassas Kâbe-i Muazzama Yön Hesabı"
+                titleClassName="text-base font-bold tracking-tight text-white"
+              />
             </div>
           </div>
           <button
