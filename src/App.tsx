@@ -165,7 +165,14 @@ export default function App() {
   const [pageTheme, setPageTheme] = useState<'ivory' | 'mint' | 'white' | 'dark'>('ivory');
   const [fontSize, setFontSize] = useState<'md' | 'lg' | 'xl' | '2xl'>('xl');
   const [showTajweed, setShowTajweed] = useState<boolean>(true);
-  const [showTranslation, setShowTranslation] = useState<boolean>(true);
+  const [showTranslation, setShowTranslation] = useState<boolean>(() => {
+    const saved = localStorage.getItem('kuran_app_show_translation');
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('kuran_app_show_translation', String(showTranslation));
+  }, [showTranslation]);
 
   // Theme Mode Effect (Light / Dark / System)
   useEffect(() => {

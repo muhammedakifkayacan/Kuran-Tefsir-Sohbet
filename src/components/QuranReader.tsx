@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight, Share2, Copy, CheckSquare, Square, MessageCircle } from 'lucide-react';
@@ -366,8 +366,23 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   onRequireAuth,
   targetVerseNumber,
 }) => {
-  // Reading Mode state
-  const [viewMode, setViewMode] = useState<'mushaf' | 'meal' | 'detailed'>('mushaf');
+  // Reading Mode state - Persist viewMode in localStorage
+  const [viewMode, setViewMode] = useState<'mushaf' | 'meal' | 'detailed'>(() => {
+    try {
+      const saved = localStorage.getItem('kuran_app_view_mode');
+      if (saved === 'mushaf' || saved === 'meal' || saved === 'detailed') {
+        return saved;
+      }
+    } catch (e) {}
+    return 'mushaf';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kuran_app_view_mode', viewMode);
+    } catch (e) {}
+  }, [viewMode]);
+
   const [selectedMushafAyah, setSelectedMushafAyah] = useState<Ayah | null>(null);
 
   // Auto highlight verse when targetVerseNumber prop changes
@@ -3512,16 +3527,6 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       </button>
 
                       <button
-                        onClick={() =>
-                          onOpenAiTajweedExplain(selectedSurah.nameTurkish, verse.number, verse.arabic)
-                        }
-                        className="p-2 rounded-xl bg-emerald-50 dark:bg-stone-800 text-emerald-900 dark:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-stone-700 border border-emerald-200/80 dark:border-stone-700 transition-colors cursor-pointer"
-                        title="AI Tecvit Tahlili"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
-                      </button>
-
-                      <button
                         onClick={onOpenVoiceRecorder}
                         className="p-2 rounded-xl bg-rose-50 dark:bg-stone-800 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-stone-700 border border-rose-100 dark:border-stone-700 transition-colors cursor-pointer"
                         title="Ses Kaydı Al"
@@ -3625,7 +3630,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           )}
 
           {/* Quick Actions Row inside Tooltip */}
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 pt-1">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 pt-1">
             <button
               onClick={() => onPlayAyah(selectedMushafAyah)}
               className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
@@ -3691,14 +3696,6 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             >
               <Bookmark className={`w-3.5 h-3.5 ${bookmarkedVerses.includes(selectedMushafAyah.number) ? 'fill-current text-amber-600 dark:text-amber-400' : 'text-amber-700 dark:text-amber-400'}`} />
               <span className="truncate">{bookmarkedVerses.includes(selectedMushafAyah.number) ? 'Kaydedildi' : 'Kaydet'}</span>
-            </button>
-
-            <button
-              onClick={() => onOpenAiTajweedExplain(selectedSurah.nameTurkish, selectedMushafAyah.number, selectedMushafAyah.arabic)}
-              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-emerald-700 text-white hover:bg-emerald-800 border border-emerald-700 flex flex-col items-center justify-center gap-1 transition-all shadow-2xs cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-200" />
-              <span className="truncate">AI Sor</span>
             </button>
           </div>
         </div>
