@@ -431,6 +431,43 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     return selectedSurah.startPage || 1;
   });
 
+  // Save last read position whenever surah, page or selected verse changes
+  useEffect(() => {
+    if (selectedSurah) {
+      try {
+        const lastReadData = {
+          surahId: selectedSurah.id,
+          surahName: selectedSurah.nameTurkish,
+          verseNumber: selectedMushafAyah?.number || 1,
+          pageNumber: selectedPage,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem('kuran_last_read', JSON.stringify(lastReadData));
+        localStorage.setItem('kuran_selected_surah_id', String(selectedSurah.id));
+      } catch (e) {}
+    }
+  }, [selectedSurah?.id, selectedPage, selectedMushafAyah?.number]);
+
+  // Keep selectedPage valid when selectedSurah changes
+  useEffect(() => {
+    if (selectedSurah && selectedSurah.verses && selectedSurah.verses.length > 0) {
+      const validPages = Array.from(new Set(selectedSurah.verses.map((v) => v.page))).sort((a: number, b: number) => a - b);
+      if (validPages.length > 0 && !validPages.includes(selectedPage)) {
+        try {
+          const saved = localStorage.getItem('kuran_last_read');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.surahId === selectedSurah.id && parsed.pageNumber && validPages.includes(parsed.pageNumber)) {
+              setSelectedPage(parsed.pageNumber);
+              return;
+            }
+          }
+        } catch (e) {}
+        setSelectedPage(selectedSurah.startPage || validPages[0]);
+      }
+    }
+  }, [selectedSurah?.id, selectedSurah?.verses]);
+
   // Ribbon Bookmarks ("İp Ayraç / Sayfa Kurdeleleri") State
   const [ribbons, setRibbons] = useState<RibbonBookmark[]>(() => {
     try {

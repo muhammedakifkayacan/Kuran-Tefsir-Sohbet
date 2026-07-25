@@ -237,8 +237,22 @@ export default function App() {
     }
   }, [isFullScreen]);
 
-  // Active Tab
-  const [activeTab, setActiveTab] = useState<NavTab>('home');
+  // Active Tab - Persisted in localStorage
+  const [activeTab, setActiveTab] = useState<NavTab>(() => {
+    try {
+      const saved = localStorage.getItem('kuran_active_tab');
+      if (saved && ['home', 'quran', 'sohbet', 'hatim', 'ezan', 'dualar', 'meal-karsilastir', 'notes', 'tarteel', 'saved'].includes(saved)) {
+        return saved as NavTab;
+      }
+    } catch (e) {}
+    return 'home';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kuran_active_tab', activeTab);
+    } catch (e) {}
+  }, [activeTab]);
 
   // Qibla & Riyazus Modals
   const [isQiblaModalOpen, setIsQiblaModalOpen] = useState<boolean>(false);
@@ -251,8 +265,32 @@ export default function App() {
     }
   }, [activeTab]);
 
-  // Quran Reader State
-  const [selectedSurah, setSelectedSurah] = useState<Surah>(QURAN_SURAHS[0]); // Fatiha
+  // Quran Reader State - Restores last selected surah from localStorage
+  const [selectedSurah, setSelectedSurah] = useState<Surah>(() => {
+    try {
+      const savedLastRead = localStorage.getItem('kuran_last_read');
+      if (savedLastRead) {
+        const parsed = JSON.parse(savedLastRead);
+        if (parsed.surahId) {
+          const found = QURAN_SURAHS.find((s) => s.id === parsed.surahId);
+          if (found) return found;
+        }
+      }
+      const savedSurahId = localStorage.getItem('kuran_selected_surah_id');
+      if (savedSurahId) {
+        const found = QURAN_SURAHS.find((s) => s.id === Number(savedSurahId));
+        if (found) return found;
+      }
+    } catch (e) {}
+    return QURAN_SURAHS[0];
+  });
+
+  // Restore full surah data on initial load if selected surah is not pre-loaded Fatiha
+  useEffect(() => {
+    if (selectedSurah && selectedSurah.id > 1) {
+      loadSurah(selectedSurah.id);
+    }
+  }, []);
   const [isLoadingSurah, setIsLoadingSurah] = useState<boolean>(false);
   const [surahError, setSurahError] = useState<string | null>(null);
   const [activeAyah, setActiveAyah] = useState<Ayah | null>(null);
