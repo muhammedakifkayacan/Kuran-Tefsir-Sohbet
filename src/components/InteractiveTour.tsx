@@ -223,14 +223,29 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, currentStepIndex, onClose]);
 
+  // Ref & height state to measure actual popover dimensions for viewport clamping
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [popoverMeasuredHeight, setPopoverMeasuredHeight] = useState<number>(300);
+
+  useEffect(() => {
+    if (popoverRef.current) {
+      const h = popoverRef.current.offsetHeight;
+      if (h > 0 && Math.abs(h - popoverMeasuredHeight) > 8) {
+        setPopoverMeasuredHeight(h);
+      }
+    }
+  });
+
   if (!isOpen || !currentStep) return null;
 
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === TOUR_STEPS.length - 1;
 
-  // Calculate Popover Position relative to targetRect
+  // Calculate Popover Position relative to targetRect with strict mobile viewport bounds
   let popoverStyle: React.CSSProperties = {};
-  const popoverWidth = 340;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const actualCardWidth = isMobile ? Math.min(340, window.innerWidth - 32) : 340;
+  const cardHeight = popoverMeasuredHeight || 300;
 
   if (targetRect) {
     const spaceBelow = window.innerHeight - (targetRect.top + targetRect.height);
@@ -238,33 +253,42 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
     const preferredPos = currentStep.preferredPosition || 'bottom';
 
     let placeOnTop = preferredPos === 'top';
-    if (preferredPos === 'bottom' && spaceBelow < 220 && spaceAbove > 220) {
+    if (preferredPos === 'bottom' && spaceBelow < cardHeight + 16 && spaceAbove > spaceBelow) {
       placeOnTop = true;
-    } else if (preferredPos === 'top' && spaceAbove < 220 && spaceBelow > 220) {
+    } else if (preferredPos === 'top' && spaceAbove < cardHeight + 16 && spaceBelow > spaceAbove) {
       placeOnTop = false;
     }
 
-    // Horizontal centering relative to spotlight target box, bounded inside viewport
-    let leftPos = targetRect.left + targetRect.width / 2 - popoverWidth / 2;
-    leftPos = Math.max(16, Math.min(leftPos, window.innerWidth - popoverWidth - 16));
-
+    let calculatedTop: number;
     if (placeOnTop) {
-      popoverStyle = {
-        bottom: `${window.innerHeight - targetRect.top + 12}px`,
-        left: `${leftPos}px`,
-      };
+      calculatedTop = targetRect.top - cardHeight - 12;
     } else {
-      popoverStyle = {
-        top: `${targetRect.top + targetRect.height + 12}px`,
-        left: `${leftPos}px`,
-      };
+      calculatedTop = targetRect.top + targetRect.height + 12;
     }
+
+    // Clamp top position so card is ALWAYS at least 16px from top and bottom edges of viewport
+    const maxTop = Math.max(16, window.innerHeight - cardHeight - 16);
+    calculatedTop = Math.max(16, Math.min(calculatedTop, maxTop));
+
+    // Horizontal positioning: centered on targetRect, clamped within viewport padding (16px)
+    let leftPos = targetRect.left + targetRect.width / 2 - actualCardWidth / 2;
+    const maxLeft = Math.max(16, window.innerWidth - actualCardWidth - 16);
+    leftPos = Math.max(16, Math.min(leftPos, maxLeft));
+
+    popoverStyle = {
+      top: `${calculatedTop}px`,
+      left: `${leftPos}px`,
+      width: isMobile ? `calc(100vw - 32px)` : `${actualCardWidth}px`,
+      maxHeight: `calc(100vh - 32px)`,
+    };
   } else {
     // Fallback centered
     popoverStyle = {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
+      width: isMobile ? `calc(100vw - 32px)` : `${actualCardWidth}px`,
+      maxHeight: `calc(100vh - 32px)`,
     };
   }
 
@@ -321,13 +345,14 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
       {/* FLOATING TOUR POPOVER CARD */}
       <AnimatePresence mode="wait">
         <motion.div
+          ref={popoverRef}
           key={currentStep.id}
           initial={{ opacity: 0, y: 12, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.96 }}
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           style={popoverStyle}
-          className="fixed z-[99995] w-[calc(100vw-32px)] sm:w-[340px] bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-3xl p-5 shadow-2xl border border-stone-200/90 dark:border-stone-800 backdrop-blur-2xl"
+          className="fixed z-[99995] w-[calc(100vw-32px)] sm:w-[340px] max-h-[calc(100vh-32px)] overflow-y-auto bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-3xl p-5 shadow-2xl border border-stone-200/90 dark:border-stone-800 backdrop-blur-2xl"
         >
           {/* Header & Step Counter */}
           <div className="flex items-center justify-between gap-2 mb-3">

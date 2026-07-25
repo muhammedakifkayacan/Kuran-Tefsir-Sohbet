@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Compass, Navigation, MapPin, CheckCircle, RefreshCw, X, Info, Smartphone, LocateFixed } from 'lucide-react';
-import { TURKEY_AND_WORLD_CITIES } from '../data/citiesData';
+import { Compass, Navigation, MapPin, CheckCircle, RefreshCw, X, Info, Smartphone, LocateFixed, Sparkles } from 'lucide-react';
 import { TitleWithHelp } from './TitleWithHelp';
 
 interface QiblaFinderModalProps {
@@ -12,8 +11,6 @@ interface QiblaFinderModalProps {
 // Kaaba Coordinates (Mecca)
 const KAABA_LAT = 21.4225;
 const KAABA_LNG = 39.8262;
-
-const CITIES_LIST = TURKEY_AND_WORLD_CITIES;
 
 // Calculate Qibla angle from user latitude/longitude
 function calculateQiblaAngle(lat: number, lng: number): number {
@@ -60,49 +57,54 @@ function getDirectionCardinal(degree: number): string {
 }
 
 export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onClose }) => {
-  const [selectedCityName, setSelectedCityName] = useState<string>('İstanbul');
+  // Direct GPS Coords - Defaults to Istanbul coordinates until auto GPS resolves
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number }>({ lat: 41.0082, lng: 28.9784 });
+  const [isGpsActive, setIsGpsActive] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [gpsError, setGpsError] = useState<string | null>(null);
   const [deviceHeading, setDeviceHeading] = useState<number | null>(null);
-  const [sensorPermissionRequested, setSensorPermissionRequested] = useState(false);
 
-  // Request GPS Location
-  const handleGetLocation = () => {
+  // Auto GPS Location request on modal open
+  const fetchGpsLocation = () => {
     if (!navigator.geolocation) {
-      alert('Cihazınızın konum servisi aktif değil veya tarayıcı tarafından desteklenmiyor.');
+      setGpsError('Cihazınızda GPS servisi bulunamadı.');
       return;
     }
     setIsLocating(true);
+    setGpsError(null);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
         setUserCoords({ lat: latitude, lng: longitude });
-        setSelectedCityName(`GPS Konumu (${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°)`);
+        setIsGpsActive(true);
         setIsLocating(false);
       },
       (err) => {
-        console.error(err);
+        console.error('GPS Error:', err);
         setIsLocating(false);
-        alert('Konum bilgisi alınamadı. Lütfen şehir listesinden seçiniz.');
+        setIsGpsActive(false);
+        setGpsError('GPS alınamadı (Varsayılan konum kullanılıyor).');
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
     );
   };
 
-  // Handle City Change
-  const handleCitySelect = (cityName: string) => {
-    const found = CITIES_LIST.find((c) => c.name === cityName);
-    if (found) {
-      setSelectedCityName(found.name);
-      setUserCoords({ lat: found.lat, lng: found.lng });
+  // Orientation Event Handler
+  const handleOrientation = (e: DeviceOrientationEvent) => {
+    let headingVal: number | null = null;
+    if ((e as any).webkitCompassHeading !== undefined) {
+      headingVal = (e as any).webkitCompassHeading;
+    } else if (e.alpha !== null && e.alpha !== undefined) {
+      headingVal = 360 - e.alpha;
+    }
+
+    if (headingVal !== null && !isNaN(headingVal)) {
+      setDeviceHeading(Math.round(headingVal));
     }
   };
 
-  // Enable Phone Compass Orientation Sensors (iOS & Android)
+  // Enable Sensors (iOS 13+ permission support + event listener)
   const enableSensors = async () => {
-    setSensorPermissionRequested(true);
-
-    // iOS 13+ permission request
     if (
       typeof window !== 'undefined' &&
       typeof (DeviceOrientationEvent as any).requestPermission === 'function'
@@ -111,8 +113,6 @@ export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onCl
         const permission = await (DeviceOrientationEvent as any).requestPermission();
         if (permission === 'granted') {
           window.addEventListener('deviceorientation', handleOrientation, true);
-        } else {
-          alert('Pusula sensörü izni reddedildi.');
         }
       } catch (err) {
         console.error(err);
@@ -122,22 +122,10 @@ export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onCl
     }
   };
 
-  const handleOrientation = (e: DeviceOrientationEvent) => {
-    // webkitCompassHeading is available on iOS safari
-    let headingVal: number | null = null;
-    if ((e as any).webkitCompassHeading !== undefined) {
-      headingVal = (e as any).webkitCompassHeading;
-    } else if (e.alpha !== null && e.alpha !== undefined) {
-      headingVal = 360 - e.alpha; // Convert to compass heading
-    }
-
-    if (headingVal !== null && !isNaN(headingVal)) {
-      setDeviceHeading(Math.round(headingVal));
-    }
-  };
-
   useEffect(() => {
     if (isOpen) {
+      fetchGpsLocation();
+      enableSensors();
       window.addEventListener('deviceorientation', handleOrientation, true);
     }
     return () => {
@@ -151,107 +139,91 @@ export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onCl
   const distance = calculateDistanceToKaaba(userCoords.lat, userCoords.lng);
   const cardinalText = getDirectionCardinal(qiblaAngle);
 
-  // If phone sensor active, calculate rotation relative to phone's current orientation
+  // Compass Rotation
   const isSensorActive = deviceHeading !== null;
   const needleRotation = isSensorActive ? (qiblaAngle - deviceHeading! + 360) % 360 : qiblaAngle;
-  const isAligned = isSensorActive && (Math.abs(qiblaAngle - deviceHeading!) < 8 || Math.abs(qiblaAngle - deviceHeading!) > 352);
+  const isAligned = isSensorActive && (Math.abs(qiblaAngle - deviceHeading!) < 7 || Math.abs(qiblaAngle - deviceHeading!) > 353);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/80 backdrop-blur-xl animate-fade-in">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        className="bg-stone-50 rounded-3xl border border-stone-200/90 shadow-2xl w-full max-w-md overflow-hidden flex flex-col"
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+        className="bg-stone-900 text-stone-100 rounded-3xl border border-stone-800 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[95vh]"
       >
-        {/* Header Bar */}
-        <div className="p-4 bg-emerald-900 text-white flex items-center justify-between border-b border-emerald-800">
+        {/* Full-screen Header Bar */}
+        <div className="p-4 bg-emerald-950 text-white flex items-center justify-between border-b border-emerald-900/80">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-800 border border-emerald-700 flex items-center justify-center text-emerald-200 font-bold shadow-xs">
-              <Compass className="w-5 h-5 text-emerald-100" />
+            <div className="w-10 h-10 rounded-2xl bg-emerald-900 border border-emerald-700 flex items-center justify-center text-emerald-200 font-bold shadow-xs">
+              <Compass className="w-5 h-5 text-emerald-300" />
             </div>
             <div>
               <TitleWithHelp
-                title="Kıble Pusulası"
-                description="Hassas Kâbe-i Muazzama Yön Hesabı"
+                title="Otomatik GPS Kıble Pusulası"
+                description="Mobil GPS ve yön sensörü ile tam Kâbe açısı hesabı"
                 titleClassName="text-base font-bold tracking-tight text-white"
               />
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-2xl bg-emerald-800/80 hover:bg-emerald-800 text-emerald-200 hover:text-white transition-colors cursor-pointer"
+            className="p-2 rounded-2xl bg-emerald-900/80 hover:bg-emerald-900 text-emerald-200 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Location & City Selector Bar */}
-        <div className="p-3 bg-emerald-50/80 border-b border-emerald-100/90 flex flex-col gap-2 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-extrabold text-emerald-950 flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Kıble Açısı İçin Coğrafi Konum:</span>
-            </span>
-            <span className="text-[10px] bg-emerald-200/80 text-emerald-900 px-2 py-0.5 rounded-md font-bold">
-              Enlem/Boylam Hesabı
+        {/* GPS Status Indicator Banner */}
+        <div className="px-4 py-2.5 bg-stone-950 border-b border-stone-800 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <LocateFixed className={`w-4 h-4 ${isLocating ? 'text-amber-400 animate-spin' : isGpsActive ? 'text-emerald-400' : 'text-stone-400'}`} />
+            <span className="font-semibold text-stone-300">
+              {isLocating
+                ? 'Otomatik GPS Hesaplanıyor...'
+                : isGpsActive
+                ? `GPS Aktif (${userCoords.lat.toFixed(3)}°, ${userCoords.lng.toFixed(3)}°)`
+                : gpsError || 'GPS Otomatik Arama Yapılıyor'}
             </span>
           </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-            <div className="relative w-full sm:w-auto flex-1">
-              <select
-                value={CITIES_LIST.some((c) => c.name === selectedCityName) ? selectedCityName : 'İstanbul'}
-                onChange={(e) => handleCitySelect(e.target.value)}
-                className="px-2.5 py-1.5 rounded-xl bg-white border border-emerald-200 text-stone-800 font-bold focus:outline-none w-full cursor-pointer shadow-2xs"
-              >
-                {CITIES_LIST.map((c) => (
-                  <option key={c.name} value={c.name}>
-                    {c.name} (Koordinat)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              onClick={handleGetLocation}
-              disabled={isLocating}
-              className="w-full sm:w-auto px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer shrink-0 shadow-2xs"
-            >
-              <LocateFixed className={`w-3.5 h-3.5 text-emerald-200 ${isLocating ? 'animate-spin' : ''}`} />
-              <span>{isLocating ? 'GPS Alınıyor...' : 'Otomatik GPS'}</span>
-            </button>
-          </div>
+          <button
+            onClick={fetchGpsLocation}
+            disabled={isLocating}
+            className="px-2.5 py-1 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer border border-stone-700"
+          >
+            <RefreshCw className={`w-3 h-3 ${isLocating ? 'animate-spin' : ''}`} />
+            <span>Yenile</span>
+          </button>
         </div>
 
-        {/* Main Compass Visual */}
-        <div className="p-6 bg-radial from-emerald-50/60 via-stone-50 to-stone-100 flex flex-col items-center justify-center text-center space-y-5">
-          {/* Angle Status Badge */}
+        {/* Main Compass Area */}
+        <div className="p-6 bg-gradient-to-b from-stone-900 via-emerald-950/20 to-stone-950 flex flex-col items-center justify-center text-center space-y-6 overflow-y-auto">
+          {/* Target Alignment Status */}
           {isAligned ? (
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
-              className="px-4 py-2 rounded-2xl bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-2 shadow-lg animate-bounce"
+              className="px-5 py-2.5 rounded-2xl bg-emerald-600 text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-emerald-900/50 animate-bounce"
             >
-              <CheckCircle className="w-4 h-4 text-emerald-200" />
+              <CheckCircle className="w-5 h-5 text-emerald-200" />
               <span>TEBRİKLER! TAM KIBLE YÖNÜNDESİNİZ 🎯</span>
             </motion.div>
           ) : (
-            <div className="px-4 py-2 rounded-2xl bg-amber-100 text-amber-950 font-bold text-xs border border-amber-300 shadow-2xs">
-              Hesaplanan Kıble Açısı: <span className="font-extrabold text-amber-900">{qiblaAngle}°</span> ({cardinalText})
+            <div className="px-4 py-2 rounded-2xl bg-stone-800/90 text-stone-200 font-bold text-xs border border-stone-700 shadow-xs flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>
+                Kıble Açınız: <span className="font-extrabold text-amber-400 text-sm">{qiblaAngle}°</span> ({cardinalText})
+              </span>
             </div>
           )}
 
-          {/* Compass Dial */}
-          <div className="relative w-60 h-60 rounded-full bg-white border-8 border-stone-200 shadow-2xl flex items-center justify-center overflow-hidden">
-            {/* Outer Compass Degree Tick marks */}
-            <div className="absolute inset-2 rounded-full border border-stone-100 pointer-events-none" />
-
-            {/* Cardinal Marks */}
-            <div className="absolute top-2 text-[11px] font-black text-rose-600">K (0°)</div>
-            <div className="absolute right-3 text-[11px] font-black text-stone-400">D (90°)</div>
-            <div className="absolute bottom-2 text-[11px] font-black text-stone-400">G (180°)</div>
-            <div className="absolute left-3 text-[11px] font-black text-stone-400">B (270°)</div>
+          {/* Precision Digital Compass Circle */}
+          <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-stone-950 border-8 border-stone-800 shadow-2xl flex items-center justify-center overflow-hidden">
+            {/* Outer Compass Degrees */}
+            <div className="absolute top-2 text-xs font-black text-rose-500">K (0°)</div>
+            <div className="absolute right-3 text-xs font-black text-stone-500">D (90°)</div>
+            <div className="absolute bottom-2 text-xs font-black text-stone-500">G (180°)</div>
+            <div className="absolute left-3 text-xs font-black text-stone-500">B (270°)</div>
 
             {/* Qibla Direction Needle */}
             <motion.div
@@ -259,53 +231,53 @@ export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onCl
               transition={{ type: 'spring', stiffness: 180, damping: 18 }}
               className="absolute w-full h-full flex items-center justify-center"
             >
-              <div className="relative w-full h-full flex flex-col items-center justify-start pt-2">
+              <div className="relative w-full h-full flex flex-col items-center justify-start pt-3">
                 {/* Kaaba Emblem */}
-                <div className="w-10 h-10 rounded-2xl bg-stone-900 text-amber-400 border-2 border-amber-500 font-black text-xs flex flex-col items-center justify-center shadow-xl">
-                  <span className="text-base leading-none">🕋</span>
-                  <span className="text-[7px] tracking-widest font-black text-amber-300 uppercase">KÂBE</span>
+                <div className={`w-12 h-12 rounded-2xl ${isAligned ? 'bg-amber-400 text-stone-950 scale-110' : 'bg-stone-900 text-amber-400'} border-2 border-amber-400 font-black text-xs flex flex-col items-center justify-center shadow-2xl transition-all duration-300`}>
+                  <span className="text-xl leading-none">🕋</span>
+                  <span className="text-[8px] tracking-widest font-black uppercase">KÂBE</span>
                 </div>
-                {/* Pointer Line */}
-                <div className="w-1.5 h-22 bg-gradient-to-b from-amber-500 via-emerald-600 to-emerald-800 rounded-full shadow-md mt-1" />
+                {/* Pointer Arrow */}
+                <div className="w-2 h-24 sm:h-28 bg-gradient-to-b from-amber-400 via-emerald-500 to-emerald-700 rounded-full shadow-lg mt-1" />
               </div>
             </motion.div>
 
             {/* Center Pivot Point */}
-            <div className="w-7 h-7 rounded-full bg-stone-900 border-2 border-amber-400 shadow-md z-10 flex items-center justify-center text-amber-400 font-bold text-xs">
-              <Navigation className="w-3.5 h-3.5 fill-amber-400" />
+            <div className="w-8 h-8 rounded-full bg-stone-900 border-2 border-amber-400 shadow-md z-10 flex items-center justify-center text-amber-400 font-bold text-xs">
+              <Navigation className="w-4 h-4 fill-amber-400" />
             </div>
           </div>
 
-          {/* Sensor Enable Button if mobile */}
+          {/* Sensor Permission / Enable Button if not moving */}
           {!isSensorActive && (
             <button
               onClick={enableSensors}
-              className="px-4 py-2 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs border border-emerald-700 flex items-center gap-2 transition-all cursor-pointer shadow-xs active:scale-95"
+              className="px-4 py-2.5 rounded-2xl bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
             >
-              <Smartphone className="w-4 h-4 text-emerald-200" />
-              <span>📱 Canlı Telefon Pusula Sensörünü Başlat</span>
+              <Smartphone className="w-4 h-4 text-emerald-300" />
+              <span>Pusula Sensörünü Etkinleştir</span>
             </button>
           )}
 
-          {/* Stats Bar */}
-          <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
-            <div className="p-3 bg-white rounded-2xl border border-stone-200 text-center shadow-2xs">
-              <span className="text-[10px] text-stone-400 font-bold uppercase block">Kâbe Mesafesi</span>
-              <span className="text-xs font-black text-stone-900">~{distance.toLocaleString('tr-TR')} km</span>
+          {/* Distance & Info Metrics */}
+          <div className="grid grid-cols-2 gap-3 w-full max-w-sm text-xs">
+            <div className="p-3 bg-stone-950/80 rounded-2xl border border-stone-800 text-center shadow-2xs">
+              <span className="text-[10px] text-stone-500 font-bold uppercase block">Kâbe-i Muazzama</span>
+              <span className="text-xs font-black text-stone-200">~{distance.toLocaleString('tr-TR')} km</span>
             </div>
-            <div className="p-3 bg-white rounded-2xl border border-stone-200 text-center shadow-2xs">
-              <span className="text-[10px] text-stone-400 font-bold uppercase block">Pusula Yönü</span>
-              <span className="text-xs font-black text-emerald-800">{qiblaAngle}° {cardinalText}</span>
+            <div className="p-3 bg-stone-950/80 rounded-2xl border border-stone-800 text-center shadow-2xs">
+              <span className="text-[10px] text-stone-500 font-bold uppercase block">Pusula Derecesi</span>
+              <span className="text-xs font-black text-emerald-400">{qiblaAngle}° {cardinalText}</span>
             </div>
           </div>
         </div>
 
-        {/* Practical Instruction Note */}
-        <div className="p-3 bg-stone-100 text-[11px] text-stone-700 font-medium text-left border-t border-stone-200 space-y-1">
-          <div className="flex items-start gap-1.5">
-            <Info className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+        {/* Calibration & Instructions */}
+        <div className="p-3.5 bg-stone-950 text-[11px] text-stone-400 border-t border-stone-800 space-y-1">
+          <div className="flex items-start gap-2">
+            <Info className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-emerald-950">💡 Şehir/Konum Neden Var?</span> Bulunduğunuz yerin enlem ve boylamına göre Kâbe'nin derece (açısı) değişir (Örn: İstanbul 151°, Erzurum 170°). Otomatik GPS ile veya listeden seçerek yaşadığınız yere özel tam kıble açınızı hesaplayabilirsiniz.
+              <span className="font-bold text-stone-200">📱 Hassas Kalibrasyon İpucu:</span> Cihazınızın pusula sensörünü en doğru açıya getirmek için telefonunuzu havada 8 (sekiz) çizecek şekilde birkaç kez çeviriniz ve metal nesnelerden uzak tutunuz.
             </div>
           </div>
         </div>

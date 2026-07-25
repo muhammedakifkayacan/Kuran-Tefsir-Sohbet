@@ -200,12 +200,20 @@ export const Header: React.FC<HeaderProps> = ({
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <motion.button
+                  <motion.div
+                    role="button"
+                    tabIndex={0}
                     whileTap={{ scale: 0.97 }}
                     whileHover={{ scale: 1.01 }}
                     onClick={() => {
                       onNavigateTab?.('quran');
                       setIsMenuOpen(false);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onNavigateTab?.('quran');
+                        setIsMenuOpen(false);
+                      }
                     }}
                     className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
                       activeTab === 'quran'
@@ -226,14 +234,22 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'quran' ? 'text-white' : 'text-stone-400'}`} />
-                  </motion.button>
+                  </motion.div>
 
-                  <motion.button
+                  <motion.div
+                    role="button"
+                    tabIndex={0}
                     whileTap={{ scale: 0.97 }}
                     whileHover={{ scale: 1.01 }}
                     onClick={() => {
                       onNavigateTab?.('sohbet');
                       setIsMenuOpen(false);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onNavigateTab?.('sohbet');
+                        setIsMenuOpen(false);
+                      }
                     }}
                     className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
                       activeTab === 'sohbet'
@@ -254,14 +270,22 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'sohbet' ? 'text-white' : 'text-stone-400'}`} />
-                  </motion.button>
+                  </motion.div>
 
-                  <motion.button
+                  <motion.div
+                    role="button"
+                    tabIndex={0}
                     whileTap={{ scale: 0.97 }}
                     whileHover={{ scale: 1.01 }}
                     onClick={() => {
                       onNavigateTab?.('notes');
                       setIsMenuOpen(false);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onNavigateTab?.('notes');
+                        setIsMenuOpen(false);
+                      }
                     }}
                     className={`p-5 rounded-3xl border text-left transition-all duration-200 flex items-center justify-between group cursor-pointer ${
                       activeTab === 'notes'
@@ -282,7 +306,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${activeTab === 'notes' ? 'text-white' : 'text-stone-400'}`} />
-                  </motion.button>
+                  </motion.div>
                 </div>
 
                 {/* Quick Action Cards in Overlay */}

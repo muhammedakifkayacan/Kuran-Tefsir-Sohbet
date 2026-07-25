@@ -59,6 +59,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   });
   const [cityNameLabel, setCityNameLabel] = useState<string>('İstanbul');
   const [isLocating, setIsLocating] = useState(false);
+  const [isLocationMenuOpen, setIsLocationMenuOpen] = useState(false);
   const [prayerTimes, setPrayerTimes] = useState({
     Imsak: '04:12',
     Gunes: '05:50',
@@ -67,6 +68,111 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     Aksam: '20:15',
     Yatsi: '21:48',
   });
+
+  // Live Timer for Prayer Countdown
+  const [now, setNow] = useState<Date>(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Helper to calculate exact countdown & active prayer status
+  const getPrayerCountdown = () => {
+    const parseTimeToday = (timeStr: string, date: Date, addDays = 0) => {
+      const [h, m] = (timeStr || '00:00').split(':').map(Number);
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate() + addDays, h, m, 0, 0);
+    };
+
+    const imsakToday = parseTimeToday(prayerTimes.Imsak, now, 0);
+    const gunesToday = parseTimeToday(prayerTimes.Gunes, now, 0);
+    const ogleToday = parseTimeToday(prayerTimes.Ogle, now, 0);
+    const ikindiToday = parseTimeToday(prayerTimes.Ikindi, now, 0);
+    const aksamToday = parseTimeToday(prayerTimes.Aksam, now, 0);
+    const yatsiToday = parseTimeToday(prayerTimes.Yatsi, now, 0);
+    const imsakTomorrow = parseTimeToday(prayerTimes.Imsak, now, 1);
+    const yatsiYesterday = parseTimeToday(prayerTimes.Yatsi, now, -1);
+
+    let activeKey: 'Imsak' | 'Gunes' | 'Ogle' | 'Ikindi' | 'Aksam' | 'Yatsi' = 'Yatsi';
+    let currentPrayerLabel = 'Yatsı Vakti';
+    let nextPrayerLabel = 'İmsak';
+    let startTime = yatsiYesterday;
+    let targetTime = imsakToday;
+
+    if (now < imsakToday) {
+      activeKey = 'Yatsi';
+      currentPrayerLabel = 'Yatsı Vakti';
+      nextPrayerLabel = 'İmsak';
+      startTime = yatsiYesterday;
+      targetTime = imsakToday;
+    } else if (now >= imsakToday && now < gunesToday) {
+      activeKey = 'Imsak';
+      currentPrayerLabel = 'İmsak Vakti';
+      nextPrayerLabel = 'Güneş';
+      startTime = imsakToday;
+      targetTime = gunesToday;
+    } else if (now >= gunesToday && now < ogleToday) {
+      activeKey = 'Gunes';
+      currentPrayerLabel = 'Güneş Doğdu';
+      nextPrayerLabel = 'Öğle';
+      startTime = gunesToday;
+      targetTime = ogleToday;
+    } else if (now >= ogleToday && now < ikindiToday) {
+      activeKey = 'Ogle';
+      currentPrayerLabel = 'Öğle Vakti';
+      nextPrayerLabel = 'İkindi';
+      startTime = ogleToday;
+      targetTime = ikindiToday;
+    } else if (now >= ikindiToday && now < aksamToday) {
+      activeKey = 'Ikindi';
+      currentPrayerLabel = 'İkindi Vakti';
+      nextPrayerLabel = 'Akşam';
+      startTime = ikindiToday;
+      targetTime = aksamToday;
+    } else if (now >= aksamToday && now < yatsiToday) {
+      activeKey = 'Aksam';
+      currentPrayerLabel = 'Akşam Vakti';
+      nextPrayerLabel = 'Yatsı';
+      startTime = aksamToday;
+      targetTime = yatsiToday;
+    } else {
+      activeKey = 'Yatsi';
+      currentPrayerLabel = 'Yatsı Vakti';
+      nextPrayerLabel = 'İmsak';
+      startTime = yatsiToday;
+      targetTime = imsakTomorrow;
+    }
+
+    const totalDiffMs = Math.max(0, targetTime.getTime() - now.getTime());
+    const totalSecs = Math.floor(totalDiffMs / 1000);
+    const hours = Math.floor(totalSecs / 3600);
+    const minutes = Math.floor((totalSecs % 3600) / 60);
+    const seconds = totalSecs % 60;
+    const totalMinutes = Math.floor(totalSecs / 60);
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const countdownStr = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+    const windowDurationMs = targetTime.getTime() - startTime.getTime();
+    const elapsedMs = now.getTime() - startTime.getTime();
+    const progressPercent = Math.min(100, Math.max(0, Math.round((elapsedMs / windowDurationMs) * 100)));
+
+    return {
+      activeKey,
+      currentPrayerLabel,
+      nextPrayerLabel,
+      hours,
+      minutes,
+      seconds,
+      totalMinutes,
+      countdownStr,
+      progressPercent,
+    };
+  };
+
+  const countdownInfo = getPrayerCountdown();
 
   // Fetch Prayer Times for given latitude & longitude
   const fetchPrayerTimesForCoords = async (lat: number, lng: number, labelName: string) => {
@@ -264,7 +370,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   key="prayer"
                   className="bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-6 border border-stone-200/90 dark:border-stone-800 shadow-2xs space-y-4"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-stone-100 dark:border-stone-800 pb-3">
+                  <div className="flex items-center justify-between gap-3 border-b border-stone-100 dark:border-stone-800 pb-3 relative">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-300 font-bold flex items-center justify-center border border-amber-200 dark:border-stone-700 shrink-0">
                         <Clock className="w-4 h-4 text-amber-800 dark:text-amber-400" />
@@ -278,58 +384,170 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                      {/* Manuel Şehir Seçimi Dropdown */}
-                      <select
-                        value={TURKEY_AND_WORLD_CITIES.some((c) => c.name === selectedCityName) ? selectedCityName : 'İstanbul'}
-                        onChange={(e) => handleCitySelect(e.target.value)}
-                        className="px-2.5 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs focus:outline-none cursor-pointer shadow-2xs"
-                      >
-                        {TURKEY_AND_WORLD_CITIES.map((c) => (
-                          <option key={c.name} value={c.name}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </select>
-
+                    {/* Right Corner Menu Button */}
+                    <div className="relative">
                       <button
-                        onClick={handleGetLocation}
-                        disabled={isLocating}
-                        className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-stone-700 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-stone-700 font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
-                        title="Otomatik Konum (GPS) İle İl Tespiti"
+                        onClick={() => setIsLocationMenuOpen(!isLocationMenuOpen)}
+                        className="px-3 py-1.5 rounded-2xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 transition-all border border-stone-200/80 dark:border-stone-700 flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-2xs"
+                        title="Konum ve Kıble Ayarları"
                       >
-                        <LocateFixed className={`w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 ${isLocating ? 'animate-spin' : ''}`} />
-                        <span>{isLocating ? 'GPS Alınıyor...' : 'Otomatik GPS'}</span>
+                        <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <span className="hidden sm:inline">{cityNameLabel}</span>
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isLocationMenuOpen ? 'rotate-180' : ''}`} />
                       </button>
 
-                      <button
-                        onClick={onOpenQiblaFinder}
-                        className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer"
-                      >
-                        <Compass className="w-3.5 h-3.5 text-amber-200" />
-                        <span>🕋 Kıble</span>
-                      </button>
+                      {/* Dropdown Popover */}
+                      <AnimatePresence>
+                        {isLocationMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-stone-900 rounded-2xl p-3 border border-stone-200 dark:border-stone-800 shadow-xl z-30 space-y-2 text-xs"
+                          >
+                            <div className="font-bold text-stone-800 dark:text-stone-200 px-1 border-b border-stone-100 dark:border-stone-800 pb-1.5 flex items-center justify-between">
+                              <span>Konum & Kıble Ayarları</span>
+                              <button
+                                onClick={() => setIsLocationMenuOpen(false)}
+                                className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 font-bold"
+                              >
+                                ✕
+                              </button>
+                            </div>
+
+                            {/* Manuel Şehir Seçimi Dropdown */}
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">Şehir Seçin</label>
+                              <select
+                                value={TURKEY_AND_WORLD_CITIES.some((c) => c.name === selectedCityName) ? selectedCityName : 'İstanbul'}
+                                onChange={(e) => {
+                                  handleCitySelect(e.target.value);
+                                  setIsLocationMenuOpen(false);
+                                }}
+                                className="w-full px-2.5 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs focus:outline-none cursor-pointer"
+                              >
+                                {TURKEY_AND_WORLD_CITIES.map((c) => (
+                                  <option key={c.name} value={c.name}>
+                                    {c.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* GPS Auto Button */}
+                            <button
+                              onClick={() => {
+                                handleGetLocation();
+                                setIsLocationMenuOpen(false);
+                              }}
+                              disabled={isLocating}
+                              className="w-full px-3 py-2 rounded-xl bg-emerald-50 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-stone-700 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-stone-700 font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                            >
+                              <LocateFixed className={`w-4 h-4 text-emerald-700 dark:text-emerald-400 ${isLocating ? 'animate-spin' : ''}`} />
+                              <span>{isLocating ? 'GPS Konumu Alınıyor...' : 'Otomatik GPS Konumu'}</span>
+                            </button>
+
+                            {/* Qibla Finder Button */}
+                            <button
+                              onClick={() => {
+                                onOpenQiblaFinder();
+                                setIsLocationMenuOpen(false);
+                              }}
+                              className="w-full px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+                            >
+                              <Compass className="w-4 h-4 text-amber-200" />
+                              <span>🕋 Kıble Pusulasını Aç</span>
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+
+                  {/* Prominent Prayer Countdown Hero Banner */}
+                  <div className="bg-stone-900 dark:bg-stone-950 text-white rounded-2xl p-4 sm:p-5 border border-stone-800 shadow-md relative overflow-hidden">
+                    <div className="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 bg-emerald-600/10 rounded-full blur-2xl pointer-events-none" />
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+                      {/* Status Info */}
+                      <div className="space-y-1">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                          <span>Mevcut: {countdownInfo.currentPrayerLabel}</span>
+                        </div>
+                        <p className="text-xs sm:text-sm font-medium text-stone-300 pt-0.5">
+                          Sonraki Vakit: <span className="text-emerald-400 font-bold">{countdownInfo.nextPrayerLabel}</span>
+                        </p>
+                      </div>
+
+                      {/* Clean Digital Countdown Timer */}
+                      <div className="flex items-center gap-3 bg-stone-800/90 dark:bg-stone-900/90 px-4 py-2.5 rounded-2xl border border-stone-700/80 shadow-inner shrink-0 w-full sm:w-auto justify-between sm:justify-start">
+                        <div className="text-left">
+                          <span className="text-2xl sm:text-3xl font-black font-mono tracking-wider text-emerald-400 block">
+                            {countdownInfo.countdownStr}
+                          </span>
+                        </div>
+                        <div className="text-right sm:text-left pl-3 border-l border-stone-700/80">
+                          <span className="text-xs font-extrabold text-amber-300 block uppercase tracking-wider">
+                            KALAN SÜRE
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="mt-3.5 space-y-1">
+                      <div className="flex justify-between items-center text-[10px] text-stone-400 font-semibold">
+                        <span>Vakit İlerlemesi (%{countdownInfo.progressPercent})</span>
+                        <span>{countdownInfo.nextPrayerLabel} Vakti Yaklaşıyor</span>
+                      </div>
+                      <div className="w-full h-2 bg-stone-800 rounded-full overflow-hidden p-0.5 border border-stone-700/50">
+                        <div
+                          className="h-full bg-gradient-to-r from-emerald-500 to-amber-400 rounded-full transition-all duration-1000"
+                          style={{ width: `${countdownInfo.progressPercent}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
 
                   {/* Prayer Times Grid */}
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                     {[
-                      { label: 'İmsak', time: prayerTimes.Imsak, icon: Moon },
-                      { label: 'Güneş', time: prayerTimes.Gunes, icon: Sun },
-                      { label: 'Öğle', time: prayerTimes.Ogle, icon: Sun },
-                      { label: 'İkindi', time: prayerTimes.Ikindi, icon: Sun },
-                      { label: 'Akşam', time: prayerTimes.Aksam, icon: Moon },
-                      { label: 'Yatsı', time: prayerTimes.Yatsi, icon: Moon },
-                    ].map((p, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 bg-stone-50 dark:bg-stone-800/80 rounded-2xl border border-stone-200/80 dark:border-stone-700 text-center space-y-1 hover:bg-amber-50/50 dark:hover:bg-stone-800 transition-colors"
-                      >
-                        <span className="text-[11px] text-stone-500 dark:text-stone-400 font-bold block">{p.label}</span>
-                        <span className="text-sm sm:text-base font-black text-stone-900 dark:text-stone-100">{p.time}</span>
-                      </div>
-                    ))}
+                      { key: 'Imsak', label: 'İmsak', time: prayerTimes.Imsak, icon: Moon },
+                      { key: 'Gunes', label: 'Güneş', time: prayerTimes.Gunes, icon: Sun },
+                      { key: 'Ogle', label: 'Öğle', time: prayerTimes.Ogle, icon: Sun },
+                      { key: 'Ikindi', label: 'İkindi', time: prayerTimes.Ikindi, icon: Sun },
+                      { key: 'Aksam', label: 'Akşam', time: prayerTimes.Aksam, icon: Moon },
+                      { key: 'Yatsi', label: 'Yatsı', time: prayerTimes.Yatsi, icon: Moon },
+                    ].map((p) => {
+                      const isActive = countdownInfo.activeKey === p.key;
+                      return (
+                        <div
+                          key={p.key}
+                          className={`p-3 rounded-2xl border text-center space-y-1 transition-all ${
+                            isActive
+                              ? 'bg-emerald-700 text-white border-emerald-600 shadow-md ring-2 ring-emerald-500/50 scale-[1.02]'
+                              : 'bg-stone-50 dark:bg-stone-800/80 border-stone-200/80 dark:border-stone-700 hover:bg-amber-50/50 dark:hover:bg-stone-800'
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-1">
+                            <span className={`text-[11px] font-bold block ${isActive ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>
+                              {p.label}
+                            </span>
+                            {isActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping" />}
+                          </div>
+                          <span className={`text-sm sm:text-base font-black ${isActive ? 'text-white' : 'text-stone-900 dark:text-stone-100'}`}>
+                            {p.time}
+                          </span>
+                          {isActive && (
+                            <span className="block text-[9px] font-extrabold uppercase tracking-wider bg-emerald-800/80 text-amber-300 px-1 py-0.5 rounded-full mt-1 border border-emerald-600/50">
+                              Mevcut Vakit
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -337,8 +555,13 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             case 'quickActions':
               return (
                 <div key="quickActions" className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <button
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => onNavigateTab('quran')}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') onNavigateTab('quran');
+                    }}
                     className="p-4 bg-emerald-900 dark:bg-emerald-950 text-white rounded-3xl hover:bg-emerald-950 dark:hover:bg-emerald-900 border border-emerald-800 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
                   >
                     <BookOpen className="w-6 h-6 text-emerald-300 group-hover:scale-110 transition-transform" />
@@ -349,10 +572,15 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                         titleClassName="font-bold text-sm text-white"
                       />
                     </div>
-                  </button>
+                  </div>
 
-                  <button
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={() => onNavigateTab('sohbet')}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') onNavigateTab('sohbet');
+                    }}
                     className="p-4 bg-amber-800 dark:bg-amber-900 text-white rounded-3xl hover:bg-amber-900 dark:hover:bg-amber-800 border border-amber-700 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
                   >
                     <Radio className="w-6 h-6 text-amber-200 group-hover:scale-110 transition-transform" />
@@ -363,10 +591,15 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                         titleClassName="font-bold text-sm text-white"
                       />
                     </div>
-                  </button>
+                  </div>
 
-                  <button
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={onOpenRiyazusModal}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') onOpenRiyazusModal();
+                    }}
                     className="p-4 bg-stone-900 dark:bg-stone-800 text-white rounded-3xl hover:bg-stone-950 dark:hover:bg-stone-700 border border-stone-800 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
                   >
                     <Quote className="w-6 h-6 text-amber-400 group-hover:scale-110 transition-transform" />
@@ -377,10 +610,15 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                         titleClassName="font-bold text-sm text-white"
                       />
                     </div>
-                  </button>
+                  </div>
 
-                  <button
+                  <div
+                    role="button"
+                    tabIndex={0}
                     onClick={onOpenQiblaFinder}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') onOpenQiblaFinder();
+                    }}
                     className="p-4 bg-amber-600 dark:bg-amber-700 text-white rounded-3xl hover:bg-amber-700 dark:hover:bg-amber-600 border border-amber-500 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
                   >
                     <Compass className="w-6 h-6 text-amber-100 group-hover:scale-110 transition-transform" />
@@ -391,7 +629,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                         titleClassName="font-bold text-sm text-white"
                       />
                     </div>
-                  </button>
+                  </div>
                 </div>
               );
 
