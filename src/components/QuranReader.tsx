@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight, Share2, Copy, CheckSquare, Square, MessageCircle } from 'lucide-react';
-import { Surah, Ayah, VerseNote } from '../types';
+import { Surah, Ayah, VerseNote, RibbonBookmark } from '../types';
 import { ALL_SURAHS } from '../data/surahList';
 import { fetchSurahFromApi } from '../utils/quranApi';
 import { MEAL_SOURCES, TAFSIR_SOURCES, generateTafsirContent, getAuthorMealText } from '../data/tafsirData';
@@ -402,7 +402,32 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const fontSize = propFontSize !== undefined ? propFontSize : localFontSize;
   const setFontSize = propSetFontSize || setLocalFontSize;
 
-  const [selectedPage, setSelectedPage] = useState<number>(selectedSurah.startPage || 1);
+  const [selectedPage, setSelectedPage] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('kuran_last_read');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.surahId === selectedSurah.id && parsed.pageNumber) {
+          return parsed.pageNumber;
+        }
+      }
+    } catch (e) {}
+    return selectedSurah.startPage || 1;
+  });
+
+  // Ribbon Bookmarks ("İp Ayraç / Sayfa Kurdeleleri") State
+  const [ribbons, setRibbons] = useState<RibbonBookmark[]>(() => {
+    try {
+      const saved = localStorage.getItem('kuran_ribbon_bookmarks');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [isRibbonListModalOpen, setIsRibbonListModalOpen] = useState(false);
+  const [editingRibbonNoteId, setEditingRibbonNoteId] = useState<string | null>(null);
+  const [ribbonNoteText, setRibbonNoteText] = useState('');
+
   const [searchQuery, setSearchQuery] = useState('');
   const [filterJuz, setFilterJuz] = useState<number | 'all'>('all');
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -1500,11 +1525,106 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     setMouseDownX(null);
   };
 
-  // When selectedSurah changes, reset active page and active mushaf ayah
+  // Track previous surah ID to avoid resetting page when QuranReader remounts for the same Surah
+  const prevSurahIdRef = React.useRef<number>(selectedSurah.id);
+
   useEffect(() => {
-    setSelectedPage(selectedSurah.startPage);
-    setSelectedMushafAyah(null);
+    if (prevSurahIdRef.current !== selectedSurah.id) {
+      prevSurahIdRef.current = selectedSurah.id;
+      // Check if last_read has a page for this new surah, otherwise use startPage
+      try {
+        const saved = localStorage.getItem('kuran_last_read');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.surahId === selectedSurah.id && parsed.pageNumber) {
+            setSelectedPage(parsed.pageNumber);
+            setSelectedMushafAyah(null);
+            return;
+          }
+        }
+      } catch (e) {}
+      setSelectedPage(selectedSurah.startPage || 1);
+      setSelectedMushafAyah(null);
+    }
   }, [selectedSurah]);
+
+  // --- Ribbon Bookmarks ("İp Ayraç") Handlers ---
+  const isCurrentPageRibboned = ribbons.some(
+    (r) => r.surahId === selectedSurah.id && r.pageNumber === selectedPage
+  );
+
+  const toggleRibbonForCurrentPage = () => {
+    if (isCurrentPageRibboned) {
+      const updated = ribbons.filter(
+        (r) => !(r.surahId === selectedSurah.id && r.pageNumber === selectedPage)
+      );
+      setRibbons(updated);
+      localStorage.setItem('kuran_ribbon_bookmarks', JSON.stringify(updated));
+      showToast(`🎗️ İp ayraç yukarı itildi/kaldırıldı (Sayfa ${selectedPage})`);
+    } else {
+      const firstVerse = pageVerses[0];
+      const newRibbon: RibbonBookmark = {
+        id: `ribbon_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        surahId: selectedSurah.id,
+        surahName: selectedSurah.nameTurkish,
+        pageNumber: selectedPage,
+        verseNumber: firstVerse ? firstVerse.number : 1,
+        verseTextSnippet: firstVerse
+          ? firstVerse.translation
+            ? firstVerse.translation.substring(0, 65) + '...'
+            : firstVerse.arabic
+          : undefined,
+        createdAt: new Date().toLocaleString('tr-TR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        color: 'gold',
+      };
+      const updated = [newRibbon, ...ribbons];
+      setRibbons(updated);
+      localStorage.setItem('kuran_ribbon_bookmarks', JSON.stringify(updated));
+      showToast(`🎗️ İp Ayraç Sayfa ${selectedPage}'ye indirildi ve yer kaydedildi!`);
+    }
+  };
+
+  const handleRemoveRibbonById = (id: string) => {
+    const updated = ribbons.filter((r) => r.id !== id);
+    setRibbons(updated);
+    localStorage.setItem('kuran_ribbon_bookmarks', JSON.stringify(updated));
+    showToast('İp ayraç silindi.');
+  };
+
+  const handleJumpToRibbon = async (ribbon: RibbonBookmark) => {
+    if (selectedSurah.id !== ribbon.surahId) {
+      await loadSurah(ribbon.surahId);
+    }
+    setSelectedPage(ribbon.pageNumber);
+    if (ribbon.verseNumber) {
+      const targetSurah =
+        selectedSurah.id === ribbon.surahId ? selectedSurah : await fetchSurahFromApi(ribbon.surahId);
+      if (targetSurah) {
+        const vObj = targetSurah.verses.find((v) => v.number === ribbon.verseNumber);
+        if (vObj) {
+          setSelectedMushafAyah(vObj);
+          setActiveAyah(vObj);
+        }
+      }
+    }
+    setIsRibbonListModalOpen(false);
+    showToast(`🎯 Sayfa ${ribbon.pageNumber}'ye gidildi (${ribbon.surahName})`);
+  };
+
+  const handleSaveRibbonNote = (id: string, noteText: string) => {
+    const updated = ribbons.map((r) => (r.id === id ? { ...r, note: noteText.trim() } : r));
+    setRibbons(updated);
+    localStorage.setItem('kuran_ribbon_bookmarks', JSON.stringify(updated));
+    setEditingRibbonNoteId(null);
+    setRibbonNoteText('');
+    showToast('İp ayracına not eklendi.');
+  };
 
   // Sync activeAyah page without opening verse option popovers when playing audio
   useEffect(() => {
@@ -1897,6 +2017,27 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             >
               <Volume2 className={`w-3.5 h-3.5 ${isPlaying ? 'text-white animate-pulse' : 'text-emerald-700'}`} />
               <span className="text-xs font-semibold">{isPlaying ? 'Durdur' : 'Dinle'}</span>
+            </button>
+
+            {/* Kayıtlı İpler (Ribbon Bookmarks) Button */}
+            <button
+              onClick={() => setIsRibbonListModalOpen(true)}
+              className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0 ${
+                isCurrentPageRibboned
+                  ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
+                  : 'bg-stone-100/90 hover:bg-amber-50 text-stone-800 border-stone-200'
+              }`}
+              title="Kayıtlı İp Ayraçlarım (Sayfa Kurdeleleri)"
+            >
+              <span className="text-sm">🎗️</span>
+              <span className="text-xs font-semibold">İplerim</span>
+              {ribbons.length > 0 && (
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
+                  isCurrentPageRibboned ? 'bg-amber-900 text-amber-100' : 'bg-amber-600 text-white'
+                }`}>
+                  {ribbons.length}
+                </span>
+              )}
             </button>
 
             {/* Çoklu Seç Butonu */}
@@ -2797,6 +2938,62 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[#D4AF37]/30 rounded-tr-sm pointer-events-none" />
                 <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[#D4AF37]/30 rounded-bl-sm pointer-events-none" />
                 <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#D4AF37]/30 rounded-br-sm pointer-events-none" />
+
+                {/* Interactive Hanging Ribbon Bookmark ("İp Ayraç / Kurdele") */}
+                <div className="absolute top-0 right-6 sm:right-10 z-30 flex flex-col items-center select-none pointer-events-auto">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleRibbonForCurrentPage();
+                    }}
+                    className="group flex flex-col items-center focus:outline-none cursor-pointer"
+                    title={
+                      isCurrentPageRibboned
+                        ? `İp Ayraç Takılı (Sayfa ${selectedPage}) - Yukarı itmek / kaldırmak için tıklayın`
+                        : `Sayfa ${selectedPage}'ye İp Ayraç İndir / Kaldığın Yeri İşaretle`
+                    }
+                  >
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        height: isCurrentPageRibboned ? 210 : 34,
+                      }}
+                      transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+                      className={`w-3.5 sm:w-4 rounded-b-xl shadow-md flex flex-col items-center justify-end transition-colors relative ${
+                        isCurrentPageRibboned
+                          ? 'bg-gradient-to-b from-amber-600 via-amber-400 via-amber-500 to-amber-600 border-x border-amber-300/80 shadow-amber-900/30'
+                          : 'bg-amber-200/90 hover:bg-amber-400 text-amber-800 border border-amber-400/50'
+                      }`}
+                    >
+                      {/* Silk Thread Line Accent */}
+                      {isCurrentPageRibboned && (
+                        <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-amber-100/70" />
+                      )}
+
+                      {/* Hanging Medallion / Tassel at bottom */}
+                      <div
+                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center -mb-3.5 shadow-lg border transition-all group-hover:scale-115 ${
+                          isCurrentPageRibboned
+                            ? 'bg-amber-700 border-amber-200 text-amber-100 shadow-amber-950/50 ring-2 ring-amber-400/50'
+                            : 'bg-amber-100 border-amber-300 text-amber-800 group-hover:bg-amber-600 group-hover:text-white'
+                        }`}
+                      >
+                        <span className="text-xs font-black leading-none">
+                          {isCurrentPageRibboned ? '🎗️' : '↓'}
+                        </span>
+                      </div>
+                    </motion.div>
+
+                    {/* Ribbon Pull Tag Label */}
+                    <span className={`text-[10px] font-extrabold mt-4 px-2 py-0.5 rounded-lg border shadow-2xs transition-all ${
+                      isCurrentPageRibboned
+                        ? 'bg-amber-100 dark:bg-stone-800 text-amber-950 dark:text-amber-300 border-amber-300 dark:border-amber-700'
+                        : 'bg-white/90 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 group-hover:bg-amber-50 group-hover:text-amber-900'
+                    }`}>
+                      {isCurrentPageRibboned ? `İp Takılı` : `İp Çek`}
+                    </span>
+                  </button>
+                </div>
 
                 {/* Manuscript Info Header */}
                 <div className={`flex items-center justify-between border-b border-[#D4AF37]/15 pb-3 mb-5 text-[11px] font-bold uppercase tracking-wide transition-colors ${themeStyles.textMuted}`}>
@@ -4088,6 +4285,189 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* KAYITLI İP AYRAÇLARI (SAYFA KURDELELERİ) MODALI */}
+      {isRibbonListModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/60 backdrop-blur-md animate-fade-in">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="bg-white dark:bg-stone-900 rounded-[32px] border border-stone-200 dark:border-stone-800 shadow-2xl max-w-2xl w-full p-5 sm:p-6 space-y-4 relative overflow-hidden max-h-[88vh] flex flex-col text-stone-900 dark:text-stone-100"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-3.5 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg font-bold shadow-md shadow-amber-500/30">
+                  🎗️
+                </div>
+                <div>
+                  <h3 className="font-bold text-base sm:text-lg">Kayıtlı İp Ayraçlarım</h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
+                    Kur'an-ı Kerim'de kaldığınız sayfalar ve işaretlediğiniz ip ayraçları ({ribbons.length} İp)
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsRibbonListModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-500 dark:text-stone-400 flex items-center justify-center transition-colors cursor-pointer"
+                title="Kapat"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick Info Banner */}
+            <div className="p-3 bg-amber-50 dark:bg-stone-800/80 border border-amber-200/80 dark:border-stone-700 rounded-2xl text-xs text-amber-950 dark:text-amber-200 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+              <p className="leading-snug">
+                Herhangi bir sayfayı okurken sağ üstteki ipi aşağı çekerek ip ayraç takabilirsiniz. İp sınırı yoktur; dilediğiniz kadar sayfa işaretleyebilirsiniz.
+              </p>
+            </div>
+
+            {/* Ribbon Cards List */}
+            <div className="overflow-y-auto flex-1 space-y-3 pr-1 scrollbar-thin">
+              {ribbons.length === 0 ? (
+                <div className="text-center py-12 space-y-3">
+                  <div className="text-4xl">🎗️</div>
+                  <p className="text-sm font-bold text-stone-700 dark:text-stone-300">Henüz Takılmış İp Ayraç Bulunmuyor</p>
+                  <p className="text-xs text-stone-400 max-w-sm mx-auto">
+                    Kur'an okurken herhangi bir sayfanın sağ üst köşesindeki altın renkli ipi aşağı çekerek kaldığınız yeri kaydetmeye başlayabilirsiniz.
+                  </p>
+                </div>
+              ) : (
+                ribbons.map((ribbon) => (
+                  <div
+                    key={ribbon.id}
+                    className={`p-4 rounded-3xl border transition-all space-y-3 ${
+                      selectedSurah.id === ribbon.surahId && selectedPage === ribbon.pageNumber
+                        ? 'bg-amber-50/90 dark:bg-stone-800 border-amber-400 dark:border-amber-600 shadow-sm'
+                        : 'bg-stone-50 dark:bg-stone-850 border-stone-200 dark:border-stone-800 hover:border-amber-300'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <span className="px-3 py-1 rounded-xl bg-amber-500 text-white font-extrabold text-xs shadow-xs flex items-center gap-1">
+                          <span>🎗️</span>
+                          <span>Sayfa {ribbon.pageNumber}</span>
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-sm text-stone-900 dark:text-stone-100">
+                            {ribbon.surahName} ({ribbon.surahId}. Sûre)
+                          </h4>
+                          <p className="text-[11px] text-stone-400 font-medium">
+                            Eklendi: {ribbon.createdAt}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleRemoveRibbonById(ribbon.id)}
+                        className="p-1.5 rounded-xl hover:bg-rose-100 text-rose-600 dark:hover:bg-rose-950 dark:text-rose-400 text-xs font-bold transition-colors cursor-pointer"
+                        title="İpi Kaldır"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Verse Snippet */}
+                    {ribbon.verseTextSnippet && (
+                      <p className="text-xs text-stone-600 dark:text-stone-300 italic font-medium bg-white dark:bg-stone-900 p-2.5 rounded-xl border border-stone-200/80 dark:border-stone-800">
+                        "{ribbon.verseTextSnippet}"
+                      </p>
+                    )}
+
+                    {/* Custom Note or Edit Note Bar */}
+                    {editingRibbonNoteId === ribbon.id ? (
+                      <div className="flex items-center gap-2 pt-1">
+                        <input
+                          type="text"
+                          value={ribbonNoteText}
+                          onChange={(e) => setRibbonNoteText(e.target.value)}
+                          placeholder="Örn: Hatim 3. cüz sonu, ezber sayfası..."
+                          className="flex-1 px-3 py-1.5 rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-xs font-semibold focus:outline-none"
+                          autoFocus
+                        />
+                        <button
+                          onClick={() => handleSaveRibbonNote(ribbon.id, ribbonNoteText)}
+                          className="px-3 py-1.5 rounded-xl bg-emerald-700 text-white font-bold text-xs cursor-pointer"
+                        >
+                          Kaydet
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingRibbonNoteId(null);
+                            setRibbonNoteText('');
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-stone-200 text-stone-700 font-bold text-xs cursor-pointer"
+                        >
+                          İptal
+                        </button>
+                      </div>
+                    ) : ribbon.note ? (
+                      <div className="flex items-center justify-between text-xs font-bold text-amber-900 dark:text-amber-300 bg-amber-100/70 dark:bg-stone-900 px-3 py-1.5 rounded-xl">
+                        <span>📌 Not: {ribbon.note}</span>
+                        <button
+                          onClick={() => {
+                            setEditingRibbonNoteId(ribbon.id);
+                            setRibbonNoteText(ribbon.note || '');
+                          }}
+                          className="text-[10px] text-amber-700 dark:text-amber-400 hover:underline cursor-pointer"
+                        >
+                          Düzenle
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setEditingRibbonNoteId(ribbon.id);
+                          setRibbonNoteText('');
+                        }}
+                        className="text-[11px] font-bold text-stone-400 hover:text-amber-700 dark:hover:text-amber-400 transition-colors flex items-center gap-1 cursor-pointer"
+                      >
+                        <Edit3 className="w-3 h-3" /> Not Ekle
+                      </button>
+                    )}
+
+                    {/* Jump to Page Button */}
+                    <button
+                      onClick={() => handleJumpToRibbon(ribbon)}
+                      className="w-full py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-all active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span>🚀 Bu Sayfaya Git (Sayfa {ribbon.pageNumber})</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            {ribbons.length > 0 && (
+              <div className="pt-2 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                <button
+                  onClick={() => {
+                    if (window.confirm('Tüm ip ayraçları silmek istediğinizden emin misiniz?')) {
+                      setRibbons([]);
+                      localStorage.removeItem('kuran_ribbon_bookmarks');
+                      showToast('Tüm ipler temizlendi.');
+                    }
+                  }}
+                  className="text-xs font-bold text-rose-600 hover:text-rose-800 cursor-pointer"
+                >
+                  Tüm İpleri Sil
+                </button>
+                <button
+                  onClick={() => setIsRibbonListModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold text-xs cursor-pointer"
+                >
+                  Kapat
+                </button>
+              </div>
+            )}
+          </motion.div>
         </div>
       )}
     </div>

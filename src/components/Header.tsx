@@ -106,9 +106,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenWelcomeModal}
               title="Karşılama Ekranı & Kaldığın Yer"
-              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all active:scale-95 items-center gap-1 text-xs border border-stone-200 hidden sm:flex cursor-pointer"
+              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 transition-all active:scale-95 items-center gap-1 text-xs border border-stone-200 dark:border-stone-700 hidden sm:flex cursor-pointer"
             >
-              <Home className="w-4 h-4 text-emerald-700" />
+              <Home className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
             </button>
           )}
 
@@ -117,9 +117,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onOpenExportImportModal}
               title="Not Dışa / İçe Aktar (Word, Drive, JSON)"
-              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition-all active:scale-95 items-center gap-1 text-xs border border-stone-200 hidden sm:flex cursor-pointer"
+              className="p-1.5 sm:p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 transition-all active:scale-95 items-center gap-1 text-xs border border-stone-200 dark:border-stone-700 hidden sm:flex cursor-pointer"
             >
-              <Download className="w-4 h-4 text-emerald-600" />
+              <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </button>
           )}
 
@@ -128,9 +128,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onStartTour}
               title="Nasıl Kullanılır? Kolay Rehber"
-              className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs transition-all items-center gap-1 border border-emerald-200 shadow-xs active:scale-95 cursor-pointer hidden sm:flex"
+              className="px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-stone-700 text-emerald-900 dark:text-emerald-300 font-bold text-xs transition-all items-center gap-1 border border-emerald-200 dark:border-stone-700 shadow-xs active:scale-95 cursor-pointer hidden sm:flex"
             >
-              <Compass className="w-3.5 h-3.5 text-emerald-700 animate-pulse" />
+              <Compass className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 animate-pulse" />
               <span>🚀 Rehber</span>
             </button>
           )}
@@ -149,9 +149,9 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => setIsMenuOpen(true)}
             title="Tüm Menü & Seçenekler"
-            className="p-2 rounded-xl bg-stone-100 hover:bg-emerald-50 text-stone-900 hover:text-emerald-700 transition-all active:scale-95 flex items-center justify-center border border-stone-200 shadow-xs cursor-pointer"
+            className="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-emerald-50 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 transition-all active:scale-95 flex items-center justify-center border border-stone-200 dark:border-stone-700 shadow-xs cursor-pointer"
           >
-            <Menu className="w-5 h-5 text-stone-800" />
+            <Menu className="w-5 h-5 text-stone-800 dark:text-stone-200" />
           </button>
         </div>
       </div>
@@ -165,7 +165,7 @@ export const Header: React.FC<HeaderProps> = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: -10 }}
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              className="fixed inset-0 z-[99999] bg-stone-50/98 backdrop-blur-3xl text-stone-900 flex flex-col justify-between p-6 sm:p-12 overflow-y-auto"
+              className="fixed inset-0 z-[99999] bg-stone-50/98 dark:bg-stone-950/98 backdrop-blur-3xl text-stone-900 dark:text-stone-100 flex flex-col justify-between p-6 sm:p-12 overflow-y-auto"
             >
               {/* Top Bar of Fullscreen Overlay */}
               <div className="flex items-center justify-between max-w-4xl mx-auto w-full">
@@ -174,10 +174,10 @@ export const Header: React.FC<HeaderProps> = ({
                     <span className="text-xl font-serif">ق</span>
                   </div>
                   <div>
-                    <h2 className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
+                    <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-stone-100 tracking-tight">
                       Kur'an & Tefsir Rehberi
                     </h2>
-                    <p className="text-xs text-stone-500 font-medium">Sade & Kolay Kullanım</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">Sade & Kolay Kullanım</p>
                   </div>
                 </div>
 
@@ -185,10 +185,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsMenuOpen(false)}
-                  className="p-2.5 rounded-2xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 transition-all flex items-center gap-2 cursor-pointer"
+                  className="p-2.5 rounded-2xl bg-stone-200/80 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 transition-all flex items-center gap-2 cursor-pointer"
                 >
-                  <span className="text-xs font-mono font-semibold text-stone-500 hidden sm:inline">ESC</span>
-                  <X className="w-5 h-5 text-stone-800" />
+                  <span className="text-xs font-mono font-semibold text-stone-500 dark:text-stone-400 hidden sm:inline">ESC</span>
+                  <X className="w-5 h-5 text-stone-800 dark:text-stone-200" />
                 </motion.button>
               </div>
 

@@ -257,6 +257,43 @@ Hocanın vermiş olduğu sohbet dersinin verilerine ve GERÇEK SES KAYDI TRANSKR
     }
   });
 
+  // Riyazus Salihin AI Search & Tefsir Endpoint
+  app.post("/api/riyazus-ai-search", async (req, res) => {
+    try {
+      const { query } = req.body;
+      const ai = getAiClient();
+
+      if (!ai) {
+        return res.status(500).json({ error: "GEMINI_API_KEY mevcut değil." });
+      }
+
+      const prompt = `Sen İmam Nevevî'nin muazzam eseri "Riyâzü's-Sâlihîn" (1896 Hadis-i Şerif Külliyatı) konusunda uzman bir Hadis Alimi ve Müfessirsin.
+Kullanıcının sorgusu: "${query}"
+
+Lütfen İmam Nevevî'nin Riyâzü's-Sâlihîn eserinden ilgili sahih hadîs-i şerîfı/şerîfleri bul ve aşağıdaki düzenli formatta yanıtla:
+1. 📖 Hadis Numarası, Kitap ve Bâb Başlığı (Örn: Riyâzü's-Sâlihîn, 1. Kitap: İhlas ve Niyet, 1. Bâb, Hadis No: 1)
+2. 🕌 Arapça Metni (Orijinal harekeli Arapça hadis metni)
+3. 💬 Türkçe Meali (Net, anlaşılır ve edebi Türkçe çevirisi)
+4. 🎙️ Ravi ve Kaynak (Örn: Hz. Ömer r.a. - Buhârî, İman 41; Müslim, İmâre 155)
+5. 💡 Hadis Nüktesi ve Fıkhi/Ahlaki Şerhi (Maddeler halinde günlük hayata iz düşümü)
+
+Eğer kullanıcı belirli bir hadis numarası (örn: "Hadis 50", "120. Hadis") sordusa doğrudan o numaralı sahih hadisi getir.`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: prompt,
+        config: {
+          temperature: 0.5,
+        },
+      });
+
+      res.json({ result: response.text || "İlgili hadis bulunamadı." });
+    } catch (error: any) {
+      console.error("Riyazus AI Search API Error:", error);
+      res.status(500).json({ error: error?.message || "Hadis araması yapılırken hata oluştu." });
+    }
+  });
+
   // Vite middleware for dev / static for prod
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

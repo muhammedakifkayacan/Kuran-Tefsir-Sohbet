@@ -194,32 +194,32 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white rounded-3xl p-5 border-2 border-emerald-500 shadow-md space-y-4 overflow-hidden"
+            className="bg-white dark:bg-stone-900 rounded-3xl p-5 border-2 border-emerald-500 shadow-md space-y-4 overflow-hidden"
           >
-            <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-              <h3 className="font-bold text-sm text-stone-900 flex items-center gap-2">
-                <Settings className="w-4 h-4 text-emerald-700" />
+            <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-3">
+              <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                <Settings className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                 <span>Ana Ekran Kart Düzeni & Görünürlük Ayarları</span>
               </h3>
-              <span className="text-xs text-stone-500">Okları kullanarak sıralamayı değiştirebilirsiniz</span>
+              <span className="text-xs text-stone-500 dark:text-stone-400">Okları kullanarak sıralamayı değiştirebilirsiniz</span>
             </div>
 
             <div className="space-y-2">
               {widgets.map((widget, idx) => (
                 <div
                   key={widget.id}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-stone-50 border border-stone-200/90"
+                  className="flex items-center justify-between p-3 rounded-2xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200/90 dark:border-stone-700"
                 >
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => toggleWidget(widget.id)}
                       className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                        widget.enabled ? 'bg-emerald-700 text-white' : 'bg-stone-200 text-stone-500'
+                        widget.enabled ? 'bg-emerald-700 text-white' : 'bg-stone-200 dark:bg-stone-700 text-stone-500 dark:text-stone-400'
                       }`}
                     >
                       {widget.enabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                     </button>
-                    <span className={`text-xs font-bold ${widget.enabled ? 'text-stone-900' : 'text-stone-400 line-through'}`}>
+                    <span className={`text-xs font-bold ${widget.enabled ? 'text-stone-900 dark:text-stone-100' : 'text-stone-400 line-through'}`}>
                       {widget.title}
                     </span>
                   </div>
@@ -228,14 +228,14 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                     <button
                       disabled={idx === 0}
                       onClick={() => moveWidget(idx, 'up')}
-                      className="p-1.5 rounded-lg bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 disabled:opacity-40 cursor-pointer text-xs font-bold"
+                      className="p-1.5 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 disabled:opacity-40 cursor-pointer text-xs font-bold"
                     >
                       ▲
                     </button>
                     <button
                       disabled={idx === widgets.length - 1}
                       onClick={() => moveWidget(idx, 'down')}
-                      className="p-1.5 rounded-lg bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 disabled:opacity-40 cursor-pointer text-xs font-bold"
+                      className="p-1.5 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 disabled:opacity-40 cursor-pointer text-xs font-bold"
                     >
                       ▼
                     </button>
@@ -257,17 +257,17 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               return (
                 <div
                   key="prayer"
-                  className="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/90 shadow-2xs space-y-4"
+                  className="bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-6 border border-stone-200/90 dark:border-stone-800 shadow-2xs space-y-4"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-stone-100 pb-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-stone-100 dark:border-stone-800 pb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 font-bold flex items-center justify-center border border-amber-200 shrink-0">
-                        <Clock className="w-4 h-4 text-amber-800" />
+                      <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-300 font-bold flex items-center justify-center border border-amber-200 dark:border-stone-700 shrink-0">
+                        <Clock className="w-4 h-4 text-amber-800 dark:text-amber-400" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-sm text-stone-900">Namaz Vakitleri & Konum</h3>
-                        <p className="text-[11px] text-stone-500 font-medium flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-emerald-700 inline" />
+                        <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100">Namaz Vakitleri & Konum</h3>
+                        <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-emerald-700 dark:text-emerald-400 inline" />
                           <span>{cityNameLabel}</span>
                         </p>
                       </div>
@@ -278,7 +278,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                       <select
                         value={TURKEY_AND_WORLD_CITIES.some((c) => c.name === selectedCityName) ? selectedCityName : 'İstanbul'}
                         onChange={(e) => handleCitySelect(e.target.value)}
-                        className="px-2.5 py-1.5 rounded-xl bg-stone-100 border border-stone-200 text-stone-800 font-bold text-xs focus:outline-none cursor-pointer shadow-2xs"
+                        className="px-2.5 py-1.5 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs focus:outline-none cursor-pointer shadow-2xs"
                       >
                         {TURKEY_AND_WORLD_CITIES.map((c) => (
                           <option key={c.name} value={c.name}>
@@ -290,10 +290,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                       <button
                         onClick={handleGetLocation}
                         disabled={isLocating}
-                        className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-stone-800 hover:bg-emerald-100 dark:hover:bg-stone-700 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-stone-700 font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                         title="Otomatik Konum (GPS) İle İl Tespiti"
                       >
-                        <LocateFixed className={`w-3.5 h-3.5 text-emerald-700 ${isLocating ? 'animate-spin' : ''}`} />
+                        <LocateFixed className={`w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 ${isLocating ? 'animate-spin' : ''}`} />
                         <span>{isLocating ? 'GPS Alınıyor...' : 'Otomatik GPS'}</span>
                       </button>
 
@@ -319,10 +319,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                     ].map((p, idx) => (
                       <div
                         key={idx}
-                        className="p-3 bg-stone-50 rounded-2xl border border-stone-200/80 text-center space-y-1 hover:bg-amber-50/50 transition-colors"
+                        className="p-3 bg-stone-50 dark:bg-stone-800/80 rounded-2xl border border-stone-200/80 dark:border-stone-700 text-center space-y-1 hover:bg-amber-50/50 dark:hover:bg-stone-800 transition-colors"
                       >
-                        <span className="text-[11px] text-stone-500 font-bold block">{p.label}</span>
-                        <span className="text-sm sm:text-base font-black text-stone-900">{p.time}</span>
+                        <span className="text-[11px] text-stone-500 dark:text-stone-400 font-bold block">{p.label}</span>
+                        <span className="text-sm sm:text-base font-black text-stone-900 dark:text-stone-100">{p.time}</span>
                       </div>
                     ))}
                   </div>
@@ -334,7 +334,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 <div key="quickActions" className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <button
                     onClick={() => onNavigateTab('quran')}
-                    className="p-4 bg-emerald-900 text-white rounded-3xl hover:bg-emerald-950 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
+                    className="p-4 bg-emerald-900 dark:bg-emerald-950 text-white rounded-3xl hover:bg-emerald-950 dark:hover:bg-emerald-900 border border-emerald-800 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
                   >
                     <BookOpen className="w-6 h-6 text-emerald-300 group-hover:scale-110 transition-transform" />
                     <div>
@@ -345,7 +345,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
                   <button
                     onClick={() => onNavigateTab('sohbet')}
-                    className="p-4 bg-amber-800 text-white rounded-3xl hover:bg-amber-900 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
+                    className="p-4 bg-amber-800 dark:bg-amber-900 text-white rounded-3xl hover:bg-amber-900 dark:hover:bg-amber-800 border border-amber-700 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
                   >
                     <Radio className="w-6 h-6 text-amber-200 group-hover:scale-110 transition-transform" />
                     <div>
@@ -356,7 +356,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
                   <button
                     onClick={onOpenRiyazusModal}
-                    className="p-4 bg-stone-900 text-white rounded-3xl hover:bg-stone-950 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
+                    className="p-4 bg-stone-900 dark:bg-stone-800 text-white rounded-3xl hover:bg-stone-950 dark:hover:bg-stone-700 border border-stone-800 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
                   >
                     <Quote className="w-6 h-6 text-amber-400 group-hover:scale-110 transition-transform" />
                     <div>
@@ -367,7 +367,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
                   <button
                     onClick={onOpenQiblaFinder}
-                    className="p-4 bg-amber-600 text-white rounded-3xl hover:bg-amber-700 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
+                    className="p-4 bg-amber-600 dark:bg-amber-700 text-white rounded-3xl hover:bg-amber-700 dark:hover:bg-amber-600 border border-amber-500 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
                   >
                     <Compass className="w-6 h-6 text-amber-100 group-hover:scale-110 transition-transform" />
                     <div>
@@ -382,29 +382,29 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               return (
                 <div
                   key="dailyVerse"
-                  className="bg-white rounded-3xl p-6 border border-stone-200/90 shadow-2xs space-y-3"
+                  className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-2xs space-y-3"
                 >
-                  <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-                    <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-amber-600" />
+                  <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-2">
+                    <span className="text-xs font-bold text-amber-900 dark:text-amber-400 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                       Günün Tefekkür Ayeti
                     </span>
                     <button
                       onClick={() => onNavigateTab('quran')}
-                      className="text-xs font-bold text-amber-800 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-bold text-amber-800 dark:text-amber-300 hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>Sûreyi Oku</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
-                  <p className="font-serif text-xl sm:text-2xl text-right dir-rtl leading-loose text-stone-900">
+                  <p className="font-serif text-xl sm:text-2xl text-right dir-rtl leading-loose text-stone-900 dark:text-amber-100">
                     اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ
                   </p>
-                  <p className="text-xs sm:text-sm font-medium text-stone-800 italic">
+                  <p className="text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 italic">
                     "Allah, kendisinden başka hiçbir ilâh olmayandır. Diridir, kayyumdur (her şeyin varlığı O’na bağlıdır)."
                   </p>
-                  <p className="text-[11px] font-bold text-amber-900">— Bakara Sûresi, 255. Ayet (Âyetü’l-Kürsî)</p>
+                  <p className="text-[11px] font-bold text-amber-900 dark:text-amber-400">— Bakara Sûresi, 255. Ayet (Âyetü’l-Kürsî)</p>
                 </div>
               );
 
@@ -412,29 +412,29 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               return (
                 <div
                   key="dailyHadith"
-                  className="bg-white rounded-3xl p-6 border border-stone-200/90 shadow-2xs space-y-3"
+                  className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-2xs space-y-3"
                 >
-                  <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-                    <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
-                      <Quote className="w-4 h-4 text-emerald-700" />
+                  <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-2">
+                    <span className="text-xs font-bold text-emerald-900 dark:text-emerald-400 flex items-center gap-1.5">
+                      <Quote className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                       Günün Hadîs-i Şerîfi (Riyazü’s-Sâlihîn)
                     </span>
                     <button
                       onClick={onOpenRiyazusModal}
-                      className="text-xs font-bold text-emerald-800 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-bold text-emerald-800 dark:text-emerald-300 hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>Tüm Hadisleri İncele</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
-                  <p className="font-serif text-lg sm:text-xl text-right dir-rtl leading-relaxed text-stone-900">
+                  <p className="font-serif text-lg sm:text-xl text-right dir-rtl leading-relaxed text-stone-900 dark:text-amber-100">
                     {todayHadith.arabic}
                   </p>
-                  <p className="text-xs sm:text-sm font-medium text-stone-800 italic">
+                  <p className="text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 italic">
                     "{todayHadith.turkish}"
                   </p>
-                  <p className="text-[11px] font-bold text-stone-500">
+                  <p className="text-[11px] font-bold text-stone-500 dark:text-stone-400">
                     — {todayHadith.ravi} ({todayHadith.source})
                   </p>
                 </div>
@@ -444,16 +444,16 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               return (
                 <div
                   key="sohbetPreview"
-                  className="bg-white rounded-3xl p-6 border border-stone-200/90 shadow-2xs space-y-4"
+                  className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-2xs space-y-4"
                 >
-                  <div className="flex items-center justify-between border-b border-stone-100 pb-3">
-                    <h3 className="font-bold text-sm text-stone-900 flex items-center gap-2">
-                      <Radio className="w-4 h-4 text-amber-700" />
+                  <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-3">
+                    <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                      <Radio className="w-4 h-4 text-amber-700 dark:text-amber-400" />
                       <span>Sohbet & Tefsir Dersleri Kayıt Özeti</span>
                     </h3>
                     <button
                       onClick={() => onNavigateTab('sohbet')}
-                      className="text-xs font-bold text-amber-800 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-bold text-amber-800 dark:text-amber-300 hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>Tümünü Gör ({sohbetSessions.length})</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -461,20 +461,20 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   </div>
 
                   {sohbetSessions.length === 0 ? (
-                    <p className="text-xs text-stone-500">Henüz sohbet veya ders kaydı yok.</p>
+                    <p className="text-xs text-stone-500 dark:text-stone-400">Henüz sohbet veya ders kaydı yok.</p>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {sohbetSessions.slice(0, 2).map((s) => (
                         <div
                           key={s.id}
-                          className="p-4 bg-stone-50 rounded-2xl border border-stone-200/80 space-y-2 hover:bg-amber-50/50 transition-colors"
+                          className="p-4 bg-stone-50 dark:bg-stone-800/80 rounded-2xl border border-stone-200/80 dark:border-stone-700 space-y-2 hover:bg-amber-50/50 dark:hover:bg-stone-800 transition-colors"
                         >
-                          <div className="flex items-center justify-between text-[10px] font-bold text-amber-800">
+                          <div className="flex items-center justify-between text-[10px] font-bold text-amber-800 dark:text-amber-400">
                             <span>{s.category}</span>
                             <span>{s.date}</span>
                           </div>
-                          <h4 className="font-bold text-xs text-stone-900 line-clamp-1">{s.title}</h4>
-                          <p className="text-[11px] text-stone-500 font-medium truncate">{s.venue}</p>
+                          <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100 line-clamp-1">{s.title}</h4>
+                          <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium truncate">{s.venue}</p>
                         </div>
                       ))}
                     </div>

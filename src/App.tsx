@@ -181,8 +181,14 @@ export default function App() {
 
       if (isDark) {
         document.documentElement.classList.add('dark');
+        document.body.classList.add('dark');
+        setPageTheme('dark');
       } else {
         document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
+        if (pageTheme === 'dark') {
+          setPageTheme('ivory');
+        }
       }
     };
 
@@ -194,8 +200,12 @@ export default function App() {
       const handleChange = (e: MediaQueryListEvent) => {
         if (e.matches) {
           document.documentElement.classList.add('dark');
+          document.body.classList.add('dark');
+          setPageTheme('dark');
         } else {
           document.documentElement.classList.remove('dark');
+          document.body.classList.remove('dark');
+          setPageTheme('ivory');
         }
       };
       mediaQuery.addEventListener('change', handleChange);

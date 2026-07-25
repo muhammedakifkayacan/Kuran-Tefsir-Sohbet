@@ -85,3 +85,16 @@ export interface Reciter {
   subtext: string;
   baseUrl: string;
 }
+
+export interface RibbonBookmark {
+  id: string;
+  surahId: number;
+  surahName: string;
+  pageNumber: number;
+  verseNumber?: number;
+  verseTextSnippet?: string;
+  createdAt: string;
+  color?: string;
+  note?: string;
+}
+

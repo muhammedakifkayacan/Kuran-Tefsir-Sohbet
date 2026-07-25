@@ -22,7 +22,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-2xl border-t border-stone-200/80 px-2 py-2 shadow-2xl pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl border-t border-stone-200/80 dark:border-stone-800 px-2 py-2 shadow-2xl pb-safe">
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -38,8 +38,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               className={`relative flex flex-col items-center justify-center py-1.5 px-4 rounded-2xl cursor-pointer ${
                 isActive
-                  ? 'text-emerald-950 font-bold'
-                  : 'text-stone-500 hover:text-emerald-800 font-medium'
+                  ? 'text-emerald-950 dark:text-amber-300 font-bold'
+                  : 'text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-amber-200 font-medium'
               }`}
             >
               {/* Active Apple Pill Indicator */}
@@ -47,7 +47,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 <motion.span
                   layoutId="activeBottomTabPill"
                   transition={{ type: 'spring', stiffness: 450, damping: 32 }}
-                  className="absolute inset-0 bg-emerald-50 rounded-2xl border border-emerald-200/90 shadow-2xs -z-10"
+                  className="absolute inset-0 bg-emerald-50 dark:bg-stone-800/90 rounded-2xl border border-emerald-200/90 dark:border-stone-700 shadow-2xs -z-10"
                 />
               )}
 
@@ -56,7 +56,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                   animate={{ scale: isActive ? 1.15 : 1 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-emerald-800' : 'text-stone-500'}`} />
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-emerald-800 dark:text-amber-400' : 'text-stone-500 dark:text-stone-400'}`} />
                 </motion.div>
 
                 {/* Badge if exists */}
