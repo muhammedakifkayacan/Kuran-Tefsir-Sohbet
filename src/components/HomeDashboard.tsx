@@ -57,7 +57,9 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   const [selectedCityName, setSelectedCityName] = useState<string>(() => {
     return localStorage.getItem('kuran_app_prayer_city') || 'İstanbul';
   });
-  const [cityNameLabel, setCityNameLabel] = useState<string>('İstanbul');
+  const [cityNameLabel, setCityNameLabel] = useState<string>(() => {
+    return localStorage.getItem('kuran_app_prayer_city_label') || localStorage.getItem('kuran_app_prayer_city') || 'İstanbul';
+  });
   const [isLocating, setIsLocating] = useState(false);
   const [isLocationMenuOpen, setIsLocationMenuOpen] = useState(false);
   const [prayerTimes, setPrayerTimes] = useState({
@@ -199,19 +201,44 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   // Handle Manual City Dropdown Select
   const handleCitySelect = (cityName: string) => {
     setSelectedCityName(cityName);
+    setCityNameLabel(cityName);
     localStorage.setItem('kuran_app_prayer_city', cityName);
+    localStorage.setItem('kuran_app_prayer_city_label', cityName);
+    localStorage.removeItem('kuran_app_prayer_coords');
     const found = TURKEY_AND_WORLD_CITIES.find((c) => c.name === cityName);
     if (found) {
       fetchPrayerTimesForCoords(found.lat, found.lng, found.name);
     }
   };
 
-  // On initial mount, fetch prayer times for the saved city
+  // On initial mount, fetch prayer times for the saved city / saved GPS coordinates
   useEffect(() => {
+    const savedCoordsStr = localStorage.getItem('kuran_app_prayer_coords');
     const savedCity = localStorage.getItem('kuran_app_prayer_city') || 'İstanbul';
-    const found = TURKEY_AND_WORLD_CITIES.find((c) => c.name === savedCity) || TURKEY_AND_WORLD_CITIES[0];
+    const savedLabel = localStorage.getItem('kuran_app_prayer_city_label') || savedCity;
+
+    if (savedCoordsStr) {
+      try {
+        const { lat, lng } = JSON.parse(savedCoordsStr);
+        if (typeof lat === 'number' && typeof lng === 'number') {
+          setSelectedCityName(savedCity);
+          setCityNameLabel(savedLabel);
+          fetchPrayerTimesForCoords(lat, lng, savedLabel);
+          return;
+        }
+      } catch (e) {
+        console.error('Error parsing saved coords:', e);
+      }
+    }
+
+    const found = TURKEY_AND_WORLD_CITIES.find(
+      (c) => c.name.toLowerCase().trim() === savedCity.toLowerCase().trim()
+    ) || TURKEY_AND_WORLD_CITIES.find((c) => c.name === 'İstanbul') || TURKEY_AND_WORLD_CITIES[0];
+
     if (found) {
-      fetchPrayerTimesForCoords(found.lat, found.lng, found.name);
+      setSelectedCityName(found.name);
+      setCityNameLabel(savedLabel || found.name);
+      fetchPrayerTimesForCoords(found.lat, found.lng, savedLabel || found.name);
     }
   }, []);
 
@@ -241,6 +268,13 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 
         const label = `📍 ${detectedCity} (Otomatik GPS)`;
         setSelectedCityName(detectedCity);
+        setCityNameLabel(label);
+
+        // Store persistent city name, label, and GPS coordinates
+        localStorage.setItem('kuran_app_prayer_city', detectedCity);
+        localStorage.setItem('kuran_app_prayer_city_label', label);
+        localStorage.setItem('kuran_app_prayer_coords', JSON.stringify({ lat: latitude, lng: longitude }));
+
         await fetchPrayerTimesForCoords(latitude, longitude, label);
         setIsLocating(false);
       },
@@ -273,25 +307,25 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12 animate-fade-in">
       {/* Top Banner & Dashboard Customizer Trigger */}
-      <div className="bg-emerald-900 text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-emerald-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-3xl p-5 sm:p-7 shadow-2xs border border-stone-200/90 dark:border-stone-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-800 text-emerald-200 text-xs font-bold rounded-full mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold rounded-full mb-2 border border-emerald-200/60 dark:border-emerald-800/60">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>Masaüstü & Mobil Bütünleşik Panel</span>
           </div>
           <TitleWithHelp
             title="Hoş Geldiniz, Hayırlı Dersler"
             description="Kur'an okumalarınızı, ders notlarınızı ve sohbet meclislerinizi tek ekrandan yönetin."
-            titleClassName="text-xl sm:text-2xl font-bold tracking-tight text-white"
+            titleClassName="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100"
           />
         </div>
 
         <button
           onClick={() => setIsCustomizing(!isCustomizing)}
-          className="px-4 py-2.5 rounded-2xl bg-emerald-800/90 hover:bg-emerald-800 text-emerald-100 font-bold text-xs border border-emerald-700 flex items-center gap-2 transition-all active:scale-95 cursor-pointer shrink-0"
+          className="px-4 py-2.5 rounded-2xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-bold text-xs border border-stone-200/80 dark:border-stone-700 flex items-center gap-2 transition-all active:scale-95 cursor-pointer shrink-0 shadow-2xs"
         >
-          <Sliders className="w-4 h-4 text-emerald-200" />
-          <span>{isCustomizing ? 'Düzenlemeyi Bitir' : '⚙️ Ana Ekran Düzenini Özelleştir'}</span>
+          <Sliders className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+          <span>{isCustomizing ? 'Düzenlemeyi Bitir' : 'Düzen Özelleştir'}</span>
         </button>
       </div>
 
@@ -466,15 +500,13 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   </div>
 
                   {/* Prominent Prayer Countdown Hero Banner */}
-                  <div className="bg-stone-900 dark:bg-stone-950 text-white rounded-2xl p-4 sm:p-5 border border-stone-800 shadow-md relative overflow-hidden">
-                    <div className="absolute top-0 right-0 -mr-6 -mt-6 w-32 h-32 bg-emerald-600/10 rounded-full blur-2xl pointer-events-none" />
-
+                  <div className="bg-stone-900 dark:bg-stone-950 text-white rounded-2xl p-4 sm:p-5 border border-stone-800/90 shadow-xs relative overflow-hidden">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
                       {/* Status Info */}
                       <div className="space-y-1">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">
-                          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                          <span>Mevcut: {countdownInfo.currentPrayerLabel}</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 text-emerald-300 text-xs font-bold border border-emerald-800/80">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                          <span>Mevcut Vakit: {countdownInfo.currentPrayerLabel}</span>
                         </div>
                         <p className="text-xs sm:text-sm font-medium text-stone-300 pt-0.5">
                           Sonraki Vakit: <span className="text-emerald-400 font-bold">{countdownInfo.nextPrayerLabel}</span>
@@ -482,14 +514,14 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                       </div>
 
                       {/* Clean Digital Countdown Timer */}
-                      <div className="flex items-center gap-3 bg-stone-800/90 dark:bg-stone-900/90 px-4 py-2.5 rounded-2xl border border-stone-700/80 shadow-inner shrink-0 w-full sm:w-auto justify-between sm:justify-start">
+                      <div className="flex items-center gap-3 bg-stone-800/90 dark:bg-stone-900/90 px-4 py-2.5 rounded-2xl border border-stone-700/80 shrink-0 w-full sm:w-auto justify-between sm:justify-start">
                         <div className="text-left">
                           <span className="text-2xl sm:text-3xl font-black font-mono tracking-wider text-emerald-400 block">
                             {countdownInfo.countdownStr}
                           </span>
                         </div>
                         <div className="text-right sm:text-left pl-3 border-l border-stone-700/80">
-                          <span className="text-xs font-extrabold text-amber-300 block uppercase tracking-wider">
+                          <span className="text-[10px] font-bold text-stone-400 block uppercase tracking-wider">
                             KALAN SÜRE
                           </span>
                         </div>
@@ -500,11 +532,11 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                     <div className="mt-3.5 space-y-1">
                       <div className="flex justify-between items-center text-[10px] text-stone-400 font-semibold">
                         <span>Vakit İlerlemesi (%{countdownInfo.progressPercent})</span>
-                        <span>{countdownInfo.nextPrayerLabel} Vakti Yaklaşıyor</span>
+                        <span>{countdownInfo.nextPrayerLabel} Vakti</span>
                       </div>
-                      <div className="w-full h-2 bg-stone-800 rounded-full overflow-hidden p-0.5 border border-stone-700/50">
+                      <div className="w-full h-1.5 bg-stone-800 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-emerald-500 to-amber-400 rounded-full transition-all duration-1000"
+                          className="h-full bg-emerald-500 rounded-full transition-all duration-1000"
                           style={{ width: `${countdownInfo.progressPercent}%` }}
                         />
                       </div>
@@ -527,21 +559,20 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                           key={p.key}
                           className={`p-3 rounded-2xl border text-center space-y-1 transition-all ${
                             isActive
-                              ? 'bg-emerald-700 text-white border-emerald-600 shadow-md ring-2 ring-emerald-500/50 scale-[1.02]'
-                              : 'bg-stone-50 dark:bg-stone-800/80 border-stone-200/80 dark:border-stone-700 hover:bg-amber-50/50 dark:hover:bg-stone-800'
+                              ? 'bg-emerald-800 dark:bg-emerald-900 text-white border-emerald-700 shadow-sm ring-1 ring-emerald-500/30'
+                              : 'bg-stone-50 dark:bg-stone-800/80 border-stone-200/80 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800'
                           }`}
                         >
                           <div className="flex items-center justify-center gap-1">
                             <span className={`text-[11px] font-bold block ${isActive ? 'text-emerald-100' : 'text-stone-500 dark:text-stone-400'}`}>
                               {p.label}
                             </span>
-                            {isActive && <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping" />}
                           </div>
                           <span className={`text-sm sm:text-base font-black ${isActive ? 'text-white' : 'text-stone-900 dark:text-stone-100'}`}>
                             {p.time}
                           </span>
                           {isActive && (
-                            <span className="block text-[9px] font-extrabold uppercase tracking-wider bg-emerald-800/80 text-amber-300 px-1 py-0.5 rounded-full mt-1 border border-emerald-600/50">
+                            <span className="block text-[9px] font-bold uppercase tracking-wider bg-emerald-950/80 text-emerald-200 px-1 py-0.5 rounded-full mt-1 border border-emerald-700/60">
                               Mevcut Vakit
                             </span>
                           )}
@@ -562,14 +593,16 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') onNavigateTab('quran');
                     }}
-                    className="p-4 bg-emerald-900 dark:bg-emerald-950 text-white rounded-3xl hover:bg-emerald-950 dark:hover:bg-emerald-900 border border-emerald-800 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
+                    className="p-4 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/90 dark:border-stone-800 shadow-2xs hover:border-emerald-500/50 hover:shadow-md transition-all space-y-3 text-left cursor-pointer group"
                   >
-                    <BookOpen className="w-6 h-6 text-emerald-300 group-hover:scale-110 transition-transform" />
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800/60 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <BookOpen className="w-5 h-5" />
+                    </div>
                     <div>
                       <TitleWithHelp
                         title="Kur'an Oku"
                         description="Mushaf & Tefsir"
-                        titleClassName="font-bold text-sm text-white"
+                        titleClassName="font-bold text-sm text-stone-900 dark:text-stone-100"
                       />
                     </div>
                   </div>
@@ -581,14 +614,16 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') onNavigateTab('sohbet');
                     }}
-                    className="p-4 bg-amber-800 dark:bg-amber-900 text-white rounded-3xl hover:bg-amber-900 dark:hover:bg-amber-800 border border-amber-700 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
+                    className="p-4 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/90 dark:border-stone-800 shadow-2xs hover:border-amber-500/50 hover:shadow-md transition-all space-y-3 text-left cursor-pointer group"
                   >
-                    <Radio className="w-6 h-6 text-amber-200 group-hover:scale-110 transition-transform" />
+                    <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-100 dark:border-amber-800/60 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Radio className="w-5 h-5" />
+                    </div>
                     <div>
                       <TitleWithHelp
                         title="Sohbet Kaydet"
                         description="Ses & AI Özet"
-                        titleClassName="font-bold text-sm text-white"
+                        titleClassName="font-bold text-sm text-stone-900 dark:text-stone-100"
                       />
                     </div>
                   </div>
@@ -600,14 +635,16 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') onOpenRiyazusModal();
                     }}
-                    className="p-4 bg-stone-900 dark:bg-stone-800 text-white rounded-3xl hover:bg-stone-950 dark:hover:bg-stone-700 border border-stone-800 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
+                    className="p-4 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/90 dark:border-stone-800 shadow-2xs hover:border-stone-400 dark:hover:border-stone-600 hover:shadow-md transition-all space-y-3 text-left cursor-pointer group"
                   >
-                    <Quote className="w-6 h-6 text-amber-400 group-hover:scale-110 transition-transform" />
+                    <div className="w-10 h-10 rounded-2xl bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-200/80 dark:border-stone-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Quote className="w-5 h-5" />
+                    </div>
                     <div>
                       <TitleWithHelp
                         title="Riyazü’s-Sâlihîn"
                         description="Hadîs-i Şerîfler"
-                        titleClassName="font-bold text-sm text-white"
+                        titleClassName="font-bold text-sm text-stone-900 dark:text-stone-100"
                       />
                     </div>
                   </div>
@@ -619,14 +656,16 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') onOpenQiblaFinder();
                     }}
-                    className="p-4 bg-amber-600 dark:bg-amber-700 text-white rounded-3xl hover:bg-amber-700 dark:hover:bg-amber-600 border border-amber-500 transition-all shadow-2xs space-y-2 text-left cursor-pointer group"
+                    className="p-4 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/90 dark:border-stone-800 shadow-2xs hover:border-emerald-500/50 hover:shadow-md transition-all space-y-3 text-left cursor-pointer group"
                   >
-                    <Compass className="w-6 h-6 text-amber-100 group-hover:scale-110 transition-transform" />
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800/60 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Compass className="w-5 h-5" />
+                    </div>
                     <div>
                       <TitleWithHelp
                         title="Kıble Pusulası"
                         description="Kâbe Yönü"
-                        titleClassName="font-bold text-sm text-white"
+                        titleClassName="font-bold text-sm text-stone-900 dark:text-stone-100"
                       />
                     </div>
                   </div>
@@ -640,26 +679,26 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-2xs space-y-3"
                 >
                   <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-2">
-                    <span className="text-xs font-bold text-amber-900 dark:text-amber-400 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    <span className="text-xs font-bold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                       Günün Tefekkür Ayeti
                     </span>
                     <button
                       onClick={() => onNavigateTab('quran')}
-                      className="text-xs font-bold text-amber-800 dark:text-amber-300 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>Sûreyi Oku</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
-                  <p className="font-serif text-xl sm:text-2xl text-right dir-rtl leading-loose text-stone-900 dark:text-amber-100">
+                  <p className="font-serif text-xl sm:text-2xl text-right dir-rtl leading-loose text-stone-900 dark:text-stone-100">
                     اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ
                   </p>
                   <p className="text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 italic">
                     "Allah, kendisinden başka hiçbir ilâh olmayandır. Diridir, kayyumdur (her şeyin varlığı O’na bağlıdır)."
                   </p>
-                  <p className="text-[11px] font-bold text-amber-900 dark:text-amber-400">— Bakara Sûresi, 255. Ayet (Âyetü’l-Kürsî)</p>
+                  <p className="text-[11px] font-bold text-stone-600 dark:text-stone-400">— Bakara Sûresi, 255. Ayet (Âyetü’l-Kürsî)</p>
                 </div>
               );
 
@@ -670,20 +709,20 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   className="bg-white dark:bg-stone-900 rounded-3xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-2xs space-y-3"
                 >
                   <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-2">
-                    <span className="text-xs font-bold text-emerald-900 dark:text-emerald-400 flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
                       <Quote className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                       Günün Hadîs-i Şerîfi (Riyazü’s-Sâlihîn)
                     </span>
                     <button
                       onClick={onOpenRiyazusModal}
-                      className="text-xs font-bold text-emerald-800 dark:text-emerald-300 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>Tüm Hadisleri İncele</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
-                  <p className="font-serif text-lg sm:text-xl text-right dir-rtl leading-relaxed text-stone-900 dark:text-amber-100">
+                  <p className="font-serif text-lg sm:text-xl text-right dir-rtl leading-relaxed text-stone-900 dark:text-stone-100">
                     {todayHadith.arabic}
                   </p>
                   <p className="text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 italic">
@@ -703,12 +742,12 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                 >
                   <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-3">
                     <h3 className="font-bold text-sm text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                      <Radio className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                      <Radio className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                       <span>Sohbet & Tefsir Dersleri Kayıt Özeti</span>
                     </h3>
                     <button
                       onClick={() => onNavigateTab('sohbet')}
-                      className="text-xs font-bold text-amber-800 dark:text-amber-300 hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>Tümünü Gör ({sohbetSessions.length})</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -722,9 +761,9 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                       {sohbetSessions.slice(0, 2).map((s) => (
                         <div
                           key={s.id}
-                          className="p-4 bg-stone-50 dark:bg-stone-800/80 rounded-2xl border border-stone-200/80 dark:border-stone-700 space-y-2 hover:bg-amber-50/50 dark:hover:bg-stone-800 transition-colors"
+                          className="p-4 bg-stone-50 dark:bg-stone-800/80 rounded-2xl border border-stone-200/80 dark:border-stone-700 space-y-2 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                         >
-                          <div className="flex items-center justify-between text-[10px] font-bold text-amber-800 dark:text-amber-400">
+                          <div className="flex items-center justify-between text-[10px] font-bold text-emerald-800 dark:text-emerald-400">
                             <span>{s.category}</span>
                             <span>{s.date}</span>
                           </div>

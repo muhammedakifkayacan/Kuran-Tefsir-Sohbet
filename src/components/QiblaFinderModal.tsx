@@ -220,31 +220,34 @@ export const QiblaFinderModal: React.FC<QiblaFinderModalProps> = ({ isOpen, onCl
           {/* Precision Digital Compass Circle */}
           <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-stone-950 border-8 border-stone-800 shadow-2xl flex items-center justify-center overflow-hidden">
             {/* Outer Compass Degrees */}
-            <div className="absolute top-2 text-xs font-black text-rose-500">K (0°)</div>
-            <div className="absolute right-3 text-xs font-black text-stone-500">D (90°)</div>
-            <div className="absolute bottom-2 text-xs font-black text-stone-500">G (180°)</div>
-            <div className="absolute left-3 text-xs font-black text-stone-500">B (270°)</div>
+            <div className="absolute top-2.5 text-xs font-black text-rose-500 tracking-wider">K (0°)</div>
+            <div className="absolute right-3.5 text-xs font-black text-stone-500 tracking-wider">D (90°)</div>
+            <div className="absolute bottom-2.5 text-xs font-black text-stone-500 tracking-wider">G (180°)</div>
+            <div className="absolute left-3.5 text-xs font-black text-stone-500 tracking-wider">B (270°)</div>
 
             {/* Qibla Direction Needle */}
             <motion.div
               animate={{ rotate: needleRotation }}
               transition={{ type: 'spring', stiffness: 180, damping: 18 }}
-              className="absolute w-full h-full flex items-center justify-center"
+              className="absolute w-full h-full flex items-center justify-center pointer-events-none"
             >
-              <div className="relative w-full h-full flex flex-col items-center justify-start pt-3">
-                {/* Kaaba Emblem */}
-                <div className={`w-12 h-12 rounded-2xl ${isAligned ? 'bg-amber-400 text-stone-950 scale-110' : 'bg-stone-900 text-amber-400'} border-2 border-amber-400 font-black text-xs flex flex-col items-center justify-center shadow-2xl transition-all duration-300`}>
-                  <span className="text-xl leading-none">🕋</span>
-                  <span className="text-[8px] tracking-widest font-black uppercase">KÂBE</span>
+              <div className="relative w-full h-full flex flex-col items-center justify-between py-4">
+                {/* Pointer Arrow pointing to Qibla */}
+                <div className="flex flex-col items-center">
+                  <div className={`w-8 h-8 rounded-xl ${isAligned ? 'bg-amber-400 text-stone-950 scale-110 shadow-amber-400/50' : 'bg-emerald-900 text-amber-300 border border-emerald-600'} font-bold flex items-center justify-center shadow-lg transition-all`}>
+                    <span className="text-base leading-none">🕋</span>
+                  </div>
+                  <div className="w-1.5 h-20 sm:h-22 bg-gradient-to-b from-amber-400 via-emerald-500 to-transparent rounded-full shadow-md mt-1" />
                 </div>
-                {/* Pointer Arrow */}
-                <div className="w-2 h-24 sm:h-28 bg-gradient-to-b from-amber-400 via-emerald-500 to-emerald-700 rounded-full shadow-lg mt-1" />
+
+                {/* Counter Weight (Bottom of Needle) */}
+                <div className="w-1.5 h-12 bg-stone-700/60 rounded-full" />
               </div>
             </motion.div>
 
             {/* Center Pivot Point */}
-            <div className="w-8 h-8 rounded-full bg-stone-900 border-2 border-amber-400 shadow-md z-10 flex items-center justify-center text-amber-400 font-bold text-xs">
-              <Navigation className="w-4 h-4 fill-amber-400" />
+            <div className="w-7 h-7 rounded-full bg-stone-900 border-2 border-amber-400 shadow-md z-10 flex items-center justify-center text-amber-400 font-bold">
+              <div className="w-2 h-2 rounded-full bg-amber-400" />
             </div>
           </div>
 
