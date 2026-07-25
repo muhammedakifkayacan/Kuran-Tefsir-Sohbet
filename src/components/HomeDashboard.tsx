@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, Radio, StickyNote, Compass, Sparkles, MapPin, RefreshCw, Clock, ArrowRight, Settings, Sliders, ChevronDown, Volume2, Quote, Sun, Moon, Eye, EyeOff } from 'lucide-react';
+import { BookOpen, Radio, StickyNote, Compass, Sparkles, MapPin, RefreshCw, Clock, ArrowRight, Settings, Sliders, ChevronDown, Volume2, Quote, Sun, Moon, Eye, EyeOff, LocateFixed } from 'lucide-react';
 import { NavTab, SohbetSession, VerseNote } from '../types';
 import { RIYAZUS_SALIHIN_HADITHS } from '../data/riyazusSalihinData';
+import { TURKEY_AND_WORLD_CITIES, CityLocation } from '../data/citiesData';
 
 interface HomeDashboardProps {
   onNavigateTab: (tab: NavTab) => void;
@@ -52,7 +53,10 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   }, [widgets]);
 
   // Location & Prayer Times State
-  const [cityName, setCityName] = useState('İstanbul');
+  const [selectedCityName, setSelectedCityName] = useState<string>(() => {
+    return localStorage.getItem('kuran_app_prayer_city') || 'İstanbul';
+  });
+  const [cityNameLabel, setCityNameLabel] = useState<string>('İstanbul');
   const [isLocating, setIsLocating] = useState(false);
   const [prayerTimes, setPrayerTimes] = useState({
     Imsak: '04:12',
@@ -63,7 +67,48 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     Yatsi: '21:48',
   });
 
-  // GPS Location Handler for Prayer Times
+  // Fetch Prayer Times for given latitude & longitude
+  const fetchPrayerTimesForCoords = async (lat: number, lng: number, labelName: string) => {
+    setCityNameLabel(labelName);
+    try {
+      const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=13`);
+      const json = await res.json();
+      if (json.data && json.data.timings) {
+        const t = json.data.timings;
+        setPrayerTimes({
+          Imsak: t.Fajr,
+          Gunes: t.Sunrise,
+          Ogle: t.Dhuhr,
+          Ikindi: t.Asr,
+          Aksam: t.Maghrib,
+          Yatsi: t.Isha,
+        });
+      }
+    } catch (e) {
+      console.error('Prayer times fetch error:', e);
+    }
+  };
+
+  // Handle Manual City Dropdown Select
+  const handleCitySelect = (cityName: string) => {
+    setSelectedCityName(cityName);
+    localStorage.setItem('kuran_app_prayer_city', cityName);
+    const found = TURKEY_AND_WORLD_CITIES.find((c) => c.name === cityName);
+    if (found) {
+      fetchPrayerTimesForCoords(found.lat, found.lng, found.name);
+    }
+  };
+
+  // On initial mount, fetch prayer times for the saved city
+  useEffect(() => {
+    const savedCity = localStorage.getItem('kuran_app_prayer_city') || 'İstanbul';
+    const found = TURKEY_AND_WORLD_CITIES.find((c) => c.name === savedCity) || TURKEY_AND_WORLD_CITIES[0];
+    if (found) {
+      fetchPrayerTimesForCoords(found.lat, found.lng, found.name);
+    }
+  }, []);
+
+  // GPS Location Handler with Reverse Geocoding to get City/Province Name
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
       alert('Tarayıcınız konum servisini desteklemiyor.');
@@ -73,32 +118,29 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        setCityName(`📍 Otomatik Konum (${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°)`);
+        let detectedCity = 'Konumunuz';
         try {
-          // Fetch exact prayer times from Aladhan API
-          const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=13`);
-          const json = await res.json();
-          if (json.data && json.data.timings) {
-            const t = json.data.timings;
-            setPrayerTimes({
-              Imsak: t.Fajr,
-              Gunes: t.Sunrise,
-              Ogle: t.Dhuhr,
-              Ikindi: t.Asr,
-              Aksam: t.Maghrib,
-              Yatsi: t.Isha,
-            });
+          // Reverse Geocode using BigDataCloud free API or OpenStreetMap
+          const geoRes = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=tr`
+          );
+          const geoJson = await geoRes.json();
+          if (geoJson.principalSubdivision || geoJson.city || geoJson.locality) {
+            detectedCity = geoJson.principalSubdivision || geoJson.city || geoJson.locality;
           }
         } catch (e) {
-          console.error('Prayer times fetch error:', e);
-        } finally {
-          setIsLocating(false);
+          console.warn('Reverse geocode error, fallback to GPS:', e);
         }
+
+        const label = `📍 ${detectedCity} (Otomatik GPS)`;
+        setSelectedCityName(detectedCity);
+        await fetchPrayerTimesForCoords(latitude, longitude, label);
+        setIsLocating(false);
       },
       (err) => {
         console.error(err);
         setIsLocating(false);
-        setCityName('İstanbul (Varsayılan)');
+        alert('Konum alınamadı. Lütfen listeden şehrinizi manuel seçiniz.');
       }
     );
   };
@@ -217,25 +259,42 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                   key="prayer"
                   className="bg-white rounded-3xl p-5 sm:p-6 border border-stone-200/90 shadow-2xs space-y-4"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-stone-100 pb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 font-bold flex items-center justify-center border border-amber-200">
+                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 font-bold flex items-center justify-center border border-amber-200 shrink-0">
                         <Clock className="w-4 h-4 text-amber-800" />
                       </div>
                       <div>
                         <h3 className="font-bold text-sm text-stone-900">Namaz Vakitleri & Konum</h3>
-                        <p className="text-[11px] text-stone-500 font-medium">{cityName}</p>
+                        <p className="text-[11px] text-stone-500 font-medium flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-emerald-700 inline" />
+                          <span>{cityNameLabel}</span>
+                        </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                      {/* Manuel Şehir Seçimi Dropdown */}
+                      <select
+                        value={TURKEY_AND_WORLD_CITIES.some((c) => c.name === selectedCityName) ? selectedCityName : 'İstanbul'}
+                        onChange={(e) => handleCitySelect(e.target.value)}
+                        className="px-2.5 py-1.5 rounded-xl bg-stone-100 border border-stone-200 text-stone-800 font-bold text-xs focus:outline-none cursor-pointer shadow-2xs"
+                      >
+                        {TURKEY_AND_WORLD_CITIES.map((c) => (
+                          <option key={c.name} value={c.name}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+
                       <button
                         onClick={handleGetLocation}
                         disabled={isLocating}
                         className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                        title="Otomatik Konum (GPS) İle İl Tespiti"
                       >
-                        <RefreshCw className={`w-3.5 h-3.5 text-emerald-700 ${isLocating ? 'animate-spin' : ''}`} />
-                        <span>{isLocating ? 'Konum Alınıyor...' : 'Konuma Göre Yenile'}</span>
+                        <LocateFixed className={`w-3.5 h-3.5 text-emerald-700 ${isLocating ? 'animate-spin' : ''}`} />
+                        <span>{isLocating ? 'GPS Alınıyor...' : 'Otomatik GPS'}</span>
                       </button>
 
                       <button
@@ -243,7 +302,7 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
                         className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer"
                       >
                         <Compass className="w-3.5 h-3.5 text-amber-200" />
-                        <span>🕋 Kıble Bulma</span>
+                        <span>🕋 Kıble</span>
                       </button>
                     </div>
                   </div>

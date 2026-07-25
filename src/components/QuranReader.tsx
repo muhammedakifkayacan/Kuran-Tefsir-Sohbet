@@ -1496,13 +1496,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     setSelectedMushafAyah(null);
   }, [selectedSurah]);
 
-  // Sync activeAyah back to selectedMushafAyah for coherence
+  // Sync activeAyah page without opening verse option popovers when playing audio
   useEffect(() => {
-    if (activeAyah && viewMode === 'mushaf') {
-      setSelectedMushafAyah(activeAyah);
-      setSelectedPage(activeAyah.page);
+    if (activeAyah) {
+      // Turn page if audio moves to next page
+      if (selectedPage !== activeAyah.page) {
+        setSelectedPage(activeAyah.page);
+      }
+      // ONLY set selectedMushafAyah popover if NOT playing audio
+      if (!isPlaying && viewMode === 'mushaf') {
+        setSelectedMushafAyah(activeAyah);
+      }
     }
-  }, [activeAyah]);
+  }, [activeAyah, isPlaying]);
 
   // Trigger prominent page badge notice whenever selectedPage changes (except initial mount)
   const isFirstRenderRef = React.useRef(true);
@@ -1726,7 +1732,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     const lastVerseInPage = pageVerses[pageVerses.length - 1];
 
     return (
-      <div id="tour-surah-selector" className={`relative z-20 border rounded-2xl p-2 sm:p-3 shadow-xs transition-all duration-300 w-full max-w-full overflow-hidden ${themeStyles.cardBg} ${themeStyles.cardBorder} ${
+      <div id="tour-surah-selector" className={`relative z-20 border rounded-2xl p-2 sm:p-3 shadow-xs transition-all duration-300 w-full max-w-full overflow-visible ${themeStyles.cardBg} ${themeStyles.cardBorder} ${
         isFullScreen && !areOverlaysVisible
           ? 'opacity-0 -translate-y-6 pointer-events-none h-0 overflow-hidden mb-0'
           : 'opacity-100 translate-y-0 mb-3'
@@ -1912,8 +1918,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               {/* Filter / Settings Popover */}
               {isFilterMenuOpen && (
                 <>
-                  <div className="fixed inset-0 z-40" onClick={() => setIsFilterMenuOpen(false)} />
-                  <div className="fixed sm:absolute top-20 sm:top-full right-2 sm:right-0 mt-2 z-50 p-3.5 sm:p-4 rounded-3xl border border-stone-200 bg-white/95 text-stone-900 shadow-2xl w-72 sm:w-80 max-w-[calc(100vw-24px)] backdrop-blur-2xl animate-fade-in space-y-3.5">
+                  <div className="fixed inset-0 z-50 bg-stone-900/40 backdrop-blur-xs" onClick={() => setIsFilterMenuOpen(false)} />
+                  <div className="fixed sm:absolute top-16 sm:top-full left-1/2 sm:left-auto right-auto sm:right-0 -translate-x-1/2 sm:translate-x-0 mt-2 z-50 p-4 sm:p-5 rounded-3xl border border-stone-200 bg-white/98 text-stone-900 shadow-2xl w-[92vw] sm:w-80 max-w-sm backdrop-blur-2xl animate-fade-in space-y-4 max-h-[85vh] overflow-y-auto">
                     <div className="flex items-center justify-between pb-2 border-b border-stone-100">
                       <span className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
                         <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600" />

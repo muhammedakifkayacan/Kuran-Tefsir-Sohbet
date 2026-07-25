@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Compass, Navigation, MapPin, CheckCircle, RefreshCw, X, Info, Smartphone, LocateFixed } from 'lucide-react';
+import { TURKEY_AND_WORLD_CITIES } from '../data/citiesData';
 
 interface QiblaFinderModalProps {
   isOpen: boolean;
@@ -11,28 +12,7 @@ interface QiblaFinderModalProps {
 const KAABA_LAT = 21.4225;
 const KAABA_LNG = 39.8262;
 
-// Popular Predefined Cities in Turkey & World with exact Lat/Lng
-const CITIES_LIST = [
-  { name: 'İstanbul', lat: 41.0082, lng: 28.9784 },
-  { name: 'Ankara', lat: 39.9334, lng: 32.8597 },
-  { name: 'İzmir', lat: 38.4237, lng: 27.1428 },
-  { name: 'Bursa', lat: 40.1885, lng: 29.0610 },
-  { name: 'Antalya', lat: 36.8969, lng: 30.7133 },
-  { name: 'Konya', lat: 37.8746, lng: 32.4932 },
-  { name: 'Adana', lat: 37.0000, lng: 35.3213 },
-  { name: 'Gaziantep', lat: 37.0662, lng: 37.3833 },
-  { name: 'Şanlıurfa', lat: 37.1674, lng: 38.7955 },
-  { name: 'Trabzon', lat: 41.0027, lng: 39.7168 },
-  { name: 'Kayseri', lat: 38.7312, lng: 35.4787 },
-  { name: 'Diyarbakır', lat: 37.9144, lng: 40.2306 },
-  { name: 'Erzurum', lat: 39.9043, lng: 41.2679 },
-  { name: 'Samsun', lat: 41.2867, lng: 36.3300 },
-  { name: 'Kudüs', lat: 31.7683, lng: 35.2137 },
-  { name: 'Medine', lat: 24.5247, lng: 39.5692 },
-  { name: 'Mekke (Kâbe)', lat: 21.4225, lng: 39.8262 },
-  { name: 'Berlin', lat: 52.5200, lng: 13.4050 },
-  { name: 'Londra', lat: 51.5074, lng: -0.1278 },
-];
+const CITIES_LIST = TURKEY_AND_WORLD_CITIES;
 
 // Calculate Qibla angle from user latitude/longitude
 function calculateQiblaAngle(lat: number, lng: number): number {
