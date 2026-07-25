@@ -14,6 +14,18 @@ export const fetchSurahFromApi = async (id: number): Promise<Surah> => {
     return surahCache[id];
   }
 
+  // Check localStorage cache first if offline or memory missed
+  try {
+    const saved = localStorage.getItem(`kuran_offline_surah_${id}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.verses && parsed.verses.length > 0) {
+        surahCache[id] = parsed;
+        return parsed;
+      }
+    }
+  } catch (e) {}
+
   const listItem = ALL_SURAHS.find((s) => s.id === id);
   if (!listItem) {
     throw new Error('Sûre bulunamadı');
@@ -50,7 +62,7 @@ export const fetchSurahFromApi = async (id: number): Promise<Surah> => {
         // AlQuran API prepends Bismillah to Ayah 1 for surahs 2..114 (except 9)
         // We strip this prefix so Bismillah is not displayed twice (header + verse text)
         const stripped = arabicText
-          .replace(/^بِسْمِ\s+ٱللَّهِ\s+ٱلرَّحْمَٰنِ\s+ٱلرَّحِيمِ\s*/u, '')
+          .replace(/^بِسْمِ\s+ٱللَّهِ\s+ٱلرَّحْمَٰنِ\s+ٱلرَّحِيمِ\s*/u, '')
           .replace(/^بِسْمِ\s+ٱللَّهِ\s+ٱلرَّحْمَٰنِ\s+ٱلرَّحِيمِ\s*/u, '')
           .replace(/^بِسْمِ\s+اللَّهِ\s+الرَّحْمَنِ\s+الرَّحِيمِ\s*/u, '')
           .replace(/^بِسْمِ\s+[\u0600-\u06FF\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s]+?ٱلرَّحِيمِ\s*/u, '')
@@ -86,9 +98,22 @@ export const fetchSurahFromApi = async (id: number): Promise<Surah> => {
     };
 
     surahCache[id] = loadedSurah;
+    try {
+      localStorage.setItem(`kuran_offline_surah_${id}`, JSON.stringify(loadedSurah));
+    } catch (e) {}
+
     return loadedSurah;
   } catch (err) {
     console.error(`Sûre ${id} yükleme hatası:`, err);
+    // Try local storage fallback
+    try {
+      const saved = localStorage.getItem(`kuran_offline_surah_${id}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed) return parsed;
+      }
+    } catch (e) {}
+
     // If we have a local fallback for this surah, return it
     const local = QURAN_SURAHS.find((s) => s.id === id);
     if (local) return local;

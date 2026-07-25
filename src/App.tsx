@@ -47,6 +47,22 @@ export default function App() {
     return !savedUser && savedGuest !== 'true';
   });
 
+  // Online / Offline Network Status State
+  const [isOffline, setIsOffline] = useState<boolean>(() => typeof navigator !== 'undefined' ? !navigator.onLine : false);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   // Controls Auth Guard Warning Modal when a guest tries to add notes or sohbet
   const [isAuthGuardOpen, setIsAuthGuardOpen] = useState<boolean>(false);
   const [authGuardMessage, setAuthGuardMessage] = useState<string>('');
@@ -534,6 +550,16 @@ export default function App() {
           activeTab={activeTab}
           onNavigateTab={(tab) => setActiveTab(tab)}
         />
+
+        {/* Offline Network Warning Bar */}
+        {isOffline && (
+          <div className="bg-amber-800/95 dark:bg-amber-950/95 text-amber-100 text-xs font-semibold py-2 px-3 text-center flex items-center justify-center gap-2 border-b border-amber-700/80 shadow-xs z-40 backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+            <span className="leading-snug">
+              <strong>Çevrim Dışı Mod:</strong> İnternet bağlantınız yok ancak uygulamanız ve önbellekteki Kur'an / ders notlarınız çalışıyor!
+            </span>
+          </div>
+        )}
 
         {/* Scrollable View Content Area */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden w-full max-w-5xl mx-auto px-2 sm:px-4 pb-28 sm:pb-36 relative">
