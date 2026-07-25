@@ -18,6 +18,7 @@ import { HomeDashboard } from './components/HomeDashboard';
 import { QiblaFinderModal } from './components/QiblaFinderModal';
 import { RiyazusSalihinModal } from './components/RiyazusSalihinModal';
 import { AddToHomeScreenPrompt } from './components/AddToHomeScreenPrompt';
+import { useSettings } from './context/SettingsContext';
 
 import { NavTab, Surah, Ayah, VerseNote, Reciter, SohbetSession } from './types';
 import { QURAN_SURAHS, RECITERS } from './data/quranData';
@@ -27,6 +28,19 @@ import { auth } from './lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 export default function App() {
+  const {
+    fontSize,
+    setFontSize,
+    pageTheme,
+    setPageTheme,
+    themeMode,
+    setThemeMode,
+    showTajweed,
+    setShowTajweed,
+    showTranslation,
+    setShowTranslation,
+  } = useSettings();
+
   // Mobile Frame Toggle
   const [isMobileFrame, setIsMobileFrame] = useState<boolean>(false);
 
@@ -173,68 +187,8 @@ export default function App() {
     }
   }, [isWelcomeOpen]);
 
-  // Full Screen Mode & Reader Settings State
+  // Full Screen Mode
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
-  const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'system'>(() => {
-    return (localStorage.getItem('kuran_theme_mode') as 'light' | 'dark' | 'system') || 'system';
-  });
-  const [pageTheme, setPageTheme] = useState<'ivory' | 'mint' | 'white' | 'dark'>('ivory');
-  const [fontSize, setFontSize] = useState<'md' | 'lg' | 'xl' | '2xl'>('xl');
-  const [showTajweed, setShowTajweed] = useState<boolean>(true);
-  const [showTranslation, setShowTranslation] = useState<boolean>(() => {
-    const saved = localStorage.getItem('kuran_app_show_translation');
-    return saved !== null ? saved === 'true' : true;
-  });
-
-  useEffect(() => {
-    localStorage.setItem('kuran_app_show_translation', String(showTranslation));
-  }, [showTranslation]);
-
-  // Theme Mode Effect (Light / Dark / System)
-  useEffect(() => {
-    const applyTheme = () => {
-      let isDark = false;
-      if (themeMode === 'dark') {
-        isDark = true;
-      } else if (themeMode === 'light') {
-        isDark = false;
-      } else {
-        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      }
-
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-        document.body.classList.add('dark');
-        setPageTheme('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        document.body.classList.remove('dark');
-        if (pageTheme === 'dark') {
-          setPageTheme('ivory');
-        }
-      }
-    };
-
-    applyTheme();
-    localStorage.setItem('kuran_theme_mode', themeMode);
-
-    if (themeMode === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = (e: MediaQueryListEvent) => {
-        if (e.matches) {
-          document.documentElement.classList.add('dark');
-          document.body.classList.add('dark');
-          setPageTheme('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-          document.body.classList.remove('dark');
-          setPageTheme('ivory');
-        }
-      };
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
-  }, [themeMode]);
 
   // Immersive overlays visibility in Full Screen Reading Mode
   const [areOverlaysVisible, setAreOverlaysVisible] = useState<boolean>(true);

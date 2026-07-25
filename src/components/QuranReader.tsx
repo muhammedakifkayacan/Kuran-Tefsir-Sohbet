@@ -6,6 +6,7 @@ import { Surah, Ayah, VerseNote, RibbonBookmark } from '../types';
 import { ALL_SURAHS } from '../data/surahList';
 import { fetchSurahFromApi } from '../utils/quranApi';
 import { MEAL_SOURCES, TAFSIR_SOURCES, generateTafsirContent, getAuthorMealText } from '../data/tafsirData';
+import { useSettings } from '../context/SettingsContext';
 
 interface QuranReaderProps {
   selectedSurah: Surah;
@@ -404,19 +405,27 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     }
   }, [targetVerseNumber, selectedSurah]);
 
-  const [localShowTajweed, setLocalShowTajweed] = useState(true);
+  const settings = useSettings();
+
   const [showTransliteration, setShowTransliteration] = useState(true);
-  const [localShowTranslation, setLocalShowTranslation] = useState(true);
-  const [localFontSize, setLocalFontSize] = useState<'md' | 'lg' | 'xl' | '2xl'>('xl');
 
-  const showTajweed = propShowTajweed !== undefined ? propShowTajweed : localShowTajweed;
-  const setShowTajweed = propSetShowTajweed || setLocalShowTajweed;
+  const showTajweed = propShowTajweed !== undefined ? propShowTajweed : settings.showTajweed;
+  const setShowTajweed = (val: boolean) => {
+    settings.setShowTajweed(val);
+    if (propSetShowTajweed) propSetShowTajweed(val);
+  };
 
-  const showTranslation = propShowTranslation !== undefined ? propShowTranslation : localShowTranslation;
-  const setShowTranslation = propSetShowTranslation || setLocalShowTranslation;
+  const showTranslation = propShowTranslation !== undefined ? propShowTranslation : settings.showTranslation;
+  const setShowTranslation = (val: boolean) => {
+    settings.setShowTranslation(val);
+    if (propSetShowTranslation) propSetShowTranslation(val);
+  };
 
-  const fontSize = propFontSize !== undefined ? propFontSize : localFontSize;
-  const setFontSize = propSetFontSize || setLocalFontSize;
+  const fontSize = propFontSize !== undefined ? propFontSize : settings.fontSize;
+  const setFontSize = (size: 'md' | 'lg' | 'xl' | '2xl') => {
+    settings.setFontSize(size);
+    if (propSetFontSize) propSetFontSize(size);
+  };
 
   const [selectedPage, setSelectedPage] = useState<number>(() => {
     try {
