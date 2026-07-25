@@ -1296,6 +1296,16 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const [surahSearchQuery, setSurahSearchQuery] = useState<string>('');
   const [isFontPopoverOpen, setIsFontPopoverOpen] = useState<boolean>(false);
   const [pageNotice, setPageNotice] = useState<number | null>(null);
+  const mushafContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBoardTop = () => {
+    if (mushafContainerRef.current) {
+      const rect = mushafContainerRef.current.getBoundingClientRect();
+      if (rect.top < 0 || rect.top > 250) {
+        mushafContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   // Tefsir & Meal Seçenek Durumları
   const [activeTafsirAyah, setActiveTafsirAyah] = useState<Ayah | null>(null);
@@ -1481,6 +1491,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
   const handlePrevPage = () => {
     triggerPagePeel('prev');
+    scrollToBoardTop();
     const curIdx = pagesInSurah.indexOf(selectedPage);
     if (curIdx > 0) {
       setSelectedPage(pagesInSurah[curIdx - 1]);
@@ -1493,6 +1504,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
   const handleNextPage = () => {
     triggerPagePeel('next');
+    scrollToBoardTop();
     const curIdx = pagesInSurah.indexOf(selectedPage);
     if (curIdx < pagesInSurah.length - 1) {
       setSelectedPage(pagesInSurah[curIdx + 1]);
@@ -1515,7 +1527,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     const deltaX = touchEndX - touchStartX;
     const deltaY = touchEndY - touchStartY;
 
-    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+    // Smooth horizontal swipe check with strict dominance over vertical movement
+    if (Math.abs(deltaX) > 35 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
       if (deltaX < 0) {
         handleNextPage();
         showToast('➡️ Sayfa İleri');
@@ -2898,7 +2911,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
         <>
           {/* --- VIEW MODE 1: PURE MUSHAF PAGE VIEW (SADECE KURAN SAYFALARI) --- */}
           {viewMode === 'mushaf' && (
-            <div className="max-w-4xl mx-auto w-full space-y-4">
+            <div ref={mushafContainerRef} className="max-w-4xl mx-auto w-full space-y-4">
               {/* Simplified & Clean Page Navigation Control */}
               {renderPageNavigationControl()}
 
@@ -2937,7 +2950,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 onTouchEnd={handleTouchEnd}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
-                className={`rounded-3xl p-6 sm:p-8 border-2 shadow-lg relative min-h-[400px] transition-all duration-300 cursor-grab active:cursor-grabbing select-none ${themeStyles.boardBg} ${themeStyles.boardBorder} ${
+                style={{ touchAction: 'pan-y' }}
+                className={`rounded-3xl p-6 sm:p-8 border-2 shadow-lg relative min-h-[500px] sm:min-h-[600px] transition-all duration-300 ease-out cursor-grab active:cursor-grabbing select-none ${themeStyles.boardBg} ${themeStyles.boardBorder} ${
                   pageTurnDirection === 'next'
                     ? 'animate-page-peel-next'
                     : pageTurnDirection === 'prev'
@@ -3179,7 +3193,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 onTouchEnd={handleTouchEnd}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
-                className={`rounded-3xl p-6 sm:p-8 border-2 shadow-lg relative min-h-[400px] transition-all duration-300 cursor-grab active:cursor-grabbing select-none ${themeStyles.boardBg} ${themeStyles.boardBorder} ${
+                style={{ touchAction: 'pan-y' }}
+                className={`rounded-3xl p-6 sm:p-8 border-2 shadow-lg relative min-h-[500px] sm:min-h-[600px] transition-all duration-300 ease-out cursor-grab active:cursor-grabbing select-none ${themeStyles.boardBg} ${themeStyles.boardBorder} ${
                   pageTurnDirection === 'next'
                     ? 'animate-page-peel-next'
                     : pageTurnDirection === 'prev'
