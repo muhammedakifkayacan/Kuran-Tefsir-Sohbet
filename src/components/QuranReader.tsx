@@ -1941,10 +1941,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               {isPageMenuOpen && (
                 <>
                   <div
-                    className="fixed inset-0 z-[100] bg-stone-950/20"
+                    className="fixed inset-0 z-[200] bg-stone-950/30"
                     onClick={() => setIsPageMenuOpen(false)}
                   />
-                  <div className="fixed sm:absolute top-20 sm:top-full left-1/2 sm:left-1/2 -translate-x-1/2 mt-2 z-[101] p-3 rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-72 sm:w-80 max-w-[calc(100vw-24px)] animate-fade-in">
+                  <div className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 mt-2 z-[201] p-3 rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-72 sm:w-80 max-w-[calc(100vw-24px)] animate-fade-in">
                     <div className="flex items-center justify-between pb-2 mb-2 border-b border-stone-200 dark:border-stone-800 text-xs font-bold">
                       <span>Sayfaya Git</span>
                       <span className="text-[10px] opacity-60">{selectedSurah.nameTurkish} ({pagesInSurah.length} Sayfa)</span>
@@ -1987,7 +1987,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           </div>
 
           {/* Action Bar Tools (Compact row on mobile, inline on desktop) */}
-          <div className="flex items-center justify-between sm:justify-end gap-1 sm:gap-1.5 w-full sm:w-auto overflow-x-auto scrollbar-none pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-200/60 dark:border-stone-700/60">
+          <div className="flex items-center justify-between sm:justify-end gap-1 sm:gap-1.5 w-full sm:w-auto overflow-x-auto sm:overflow-visible scrollbar-none pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-200/60 dark:border-stone-700/60">
             {/* Arama İkon Butonu */}
             <button
               onClick={() => {
@@ -2087,8 +2087,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               {/* Filter / Settings Popover */}
               {isFilterMenuOpen && (
                 <>
-                  <div className="fixed inset-0 z-[100] bg-stone-950/30" onClick={() => setIsFilterMenuOpen(false)} />
-                  <div className="fixed sm:absolute top-16 sm:top-full left-1/2 sm:left-auto right-auto sm:right-0 -translate-x-1/2 sm:translate-x-0 mt-2 z-[101] p-4 sm:p-5 rounded-3xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-[92vw] sm:w-80 max-w-sm animate-fade-in space-y-4 max-h-[85vh] overflow-y-auto">
+                  <div className="fixed inset-0 z-[200] bg-stone-950/30" onClick={() => setIsFilterMenuOpen(false)} />
+                  <div className="fixed top-16 sm:top-20 left-1/2 sm:left-auto right-auto sm:right-6 -translate-x-1/2 sm:translate-x-0 mt-2 z-[201] p-4 sm:p-5 rounded-3xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-[92vw] sm:w-80 max-w-sm animate-fade-in space-y-4 max-h-[85vh] overflow-y-auto">
                     <div className="flex items-center justify-between pb-2 border-b border-stone-100 dark:border-stone-800">
                       <span className="text-xs font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
                         <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -2188,9 +2188,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     </div>
 
                     {/* Meal Müellifi / Seçeneği */}
-                    <div className="space-y-1 pt-2 border-t border-stone-100">
-                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block flex items-center gap-1">
-                        <BookOpen className="w-3 h-3 text-amber-600" />
+                    <div className="space-y-1 pt-2 border-t border-stone-100 dark:border-stone-800">
+                      <label className="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase tracking-wider block flex items-center gap-1">
+                        <BookOpen className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                         <span>Meal Müellifi / Seçeneği</span>
                       </label>
                       <select
@@ -2200,10 +2200,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           localStorage.setItem('kuran_app_meal_source', e.target.value);
                           showToast('Meal müellifi güncellendi');
                         }}
-                        className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-xs font-bold rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                        className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-xs font-bold rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
                       >
                         {MEAL_SOURCES.map((m) => (
-                          <option key={m.id} value={m.id}>
+                          <option key={m.id} value={m.id} className="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
                             {m.name} ({m.author})
                           </option>
                         ))}
@@ -2212,8 +2212,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
                     {/* Tefsir Çeşidi / Kaynağı */}
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block flex items-center gap-1">
-                        <FileText className="w-3 h-3 text-amber-600" />
+                      <label className="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase tracking-wider block flex items-center gap-1">
+                        <FileText className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                         <span>Tefsir Çeşidi / Kaynağı</span>
                       </label>
                       <select
@@ -2223,10 +2223,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           localStorage.setItem('kuran_app_tafsir_source', e.target.value);
                           showToast('Tefsir kaynağı güncellendi');
                         }}
-                        className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-xs font-bold rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                        className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-xs font-bold rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
                       >
                         {TAFSIR_SOURCES.map((t) => (
-                          <option key={t.id} value={t.id}>
+                          <option key={t.id} value={t.id} className="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
                             {t.name} ({t.author})
                           </option>
                         ))}
@@ -2234,15 +2234,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     </div>
 
                     {/* Yer İşaretli / Kaydedilen Ayetlere Hızlı Geçiş */}
-                    <div className="space-y-1.5 pt-2.5 border-t border-stone-100">
+                    <div className="space-y-1.5 pt-2.5 border-t border-stone-100 dark:border-stone-800">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider flex items-center gap-1">
-                          <Bookmark className="w-3 h-3 text-amber-600 fill-amber-500" />
+                        <label className="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase tracking-wider flex items-center gap-1">
+                          <Bookmark className="w-3 h-3 text-amber-600 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
                           Yer İşaretli / Kaydedilen Ayetler ({bookmarkedVerses.length})
                         </label>
                       </div>
                       {bookmarkedVerses.length === 0 ? (
-                        <div className="text-[11px] text-stone-500 italic bg-stone-50 p-2.5 rounded-xl text-center border border-dashed border-stone-200">
+                        <div className="text-[11px] text-stone-500 dark:text-stone-400 italic bg-stone-50 dark:bg-stone-800/80 p-2.5 rounded-xl text-center border border-dashed border-stone-200 dark:border-stone-700">
                           Bu sûrede henüz yer işareti eklenmiş ayet yok. Ayet kartındaki 🔖 ikonuna basarak ekleyebilirsiniz.
                         </div>
                       ) : (
@@ -2261,10 +2261,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                                     showToast(`📌 ${vNum}. Ayete gidildi (Sayfa ${verseObj.page})`);
                                   }
                                 }}
-                                className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-500 text-amber-900 hover:text-white border border-amber-200 text-xs font-bold transition-all active:scale-95 flex items-center gap-1 shadow-2xs"
+                                className="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-stone-800 hover:bg-amber-500 dark:hover:bg-amber-600 text-amber-900 dark:text-amber-300 hover:text-white dark:hover:text-white border border-amber-200 dark:border-stone-700 text-xs font-bold transition-all active:scale-95 flex items-center gap-1 shadow-2xs cursor-pointer"
                                 title={`Ayet ${vNum}'e git (Sayfa ${verseObj?.page || ''})`}
                               >
-                                <Bookmark className="w-3 h-3 text-amber-600 fill-amber-500 shrink-0" />
+                                <Bookmark className="w-3 h-3 text-amber-600 dark:text-amber-400 fill-amber-500 dark:fill-amber-400 shrink-0" />
                                 <span>Ayet {vNum}</span>
                                 {verseObj && <span className="opacity-75 text-[10px] font-normal"> (S.{verseObj.page})</span>}
                               </button>
@@ -2943,7 +2943,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#D4AF37]/30 rounded-br-sm pointer-events-none" />
 
                 {/* Interactive Hanging Ribbon Bookmark ("İp Ayraç / Kurdele") */}
-                <div className="absolute top-0 right-2 sm:right-4 z-30 flex flex-col items-center select-none pointer-events-auto">
+                <div className="absolute top-0 right-2 sm:right-4 z-10 flex flex-col items-center select-none pointer-events-auto">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -3240,28 +3240,28 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
           {renderPageNavigationControl()}
           {/* Detailed Filters panel */}
           {(!isFullScreen || areOverlaysVisible) && (
-            <div className="bg-white rounded-3xl p-4 border border-stone-200/80 shadow-sm space-y-3">
+            <div className="bg-white dark:bg-stone-900 rounded-3xl p-4 border border-stone-200/80 dark:border-stone-800 shadow-sm space-y-3">
               {/* Search Bar & Juz Filter */}
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                  <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     placeholder="Ayet ara, meal veya kelime..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-stone-50 text-slate-800 text-xs rounded-xl border border-stone-200 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className="w-full pl-9 pr-3 py-2 bg-stone-50 dark:bg-stone-800 text-slate-800 dark:text-stone-100 text-xs rounded-xl border border-stone-200 dark:border-stone-700 focus:outline-none focus:ring-1 focus:ring-amber-500"
                   />
                 </div>
 
                 <select
                   value={filterJuz}
                   onChange={(e) => setFilterJuz(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                  className="bg-stone-50 text-stone-700 text-xs rounded-xl px-2.5 py-2 border border-stone-200"
+                  className="bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-100 text-xs rounded-xl px-2.5 py-2 border border-stone-200 dark:border-stone-700 cursor-pointer"
                 >
-                  <option value="all">Tüm Cüzler</option>
+                  <option value="all" className="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">Tüm Cüzler</option>
                   {[...Array(30)].map((_, i) => (
-                    <option key={i + 1} value={i + 1}>
+                    <option key={i + 1} value={i + 1} className="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
                       {i + 1}. Cüz
                     </option>
                   ))}
