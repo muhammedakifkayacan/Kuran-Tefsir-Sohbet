@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, [isMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl text-stone-900 shadow-xs border-b border-stone-200/80 transition-all">
+    <header className="sticky top-0 z-50 bg-white/85 dark:bg-stone-900/90 backdrop-blur-xl text-stone-900 dark:text-stone-100 shadow-xs border-b border-stone-200/80 dark:border-stone-800 transition-all">
       {/* Main Bar */}
       <div className="px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 max-w-6xl mx-auto w-full">
         {/* Logo & Title */}
@@ -63,10 +63,10 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-lg sm:text-xl font-serif">ق</span>
           </div>
           <div>
-            <h1 className="text-xs sm:text-base font-bold tracking-tight flex items-center gap-1 leading-none text-stone-900">
+            <h1 className="text-xs sm:text-base font-bold tracking-tight flex items-center gap-1 leading-none text-stone-900 dark:text-stone-100">
               Kur'an & Tefsir
             </h1>
-            <p className="text-[10px] sm:text-[11px] text-stone-500 font-medium leading-tight mt-0.5">
+            <p className="text-[10px] sm:text-[11px] text-stone-500 dark:text-stone-400 font-medium leading-tight mt-0.5">
               Ders ve Okuma Rehberi
             </p>
           </div>

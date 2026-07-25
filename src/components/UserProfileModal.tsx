@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, LogOut, ShieldCheck, Bookmark, StickyNote, X, Cloud, Sliders, Type, Palette, Eye, AlertCircle } from 'lucide-react';
+import { User, LogOut, ShieldCheck, Bookmark, StickyNote, X, Cloud, Sliders, Type, Palette, Eye, Sun, Moon, Monitor } from 'lucide-react';
 import { loginWithGoogle, logoutFirebase } from '../lib/firebase';
 
 interface UserProfileModalProps {
@@ -14,6 +14,8 @@ interface UserProfileModalProps {
   setFontSize?: (size: 'md' | 'lg' | 'xl' | '2xl') => void;
   pageTheme?: 'ivory' | 'mint' | 'white' | 'dark';
   setPageTheme?: (theme: 'ivory' | 'mint' | 'white' | 'dark') => void;
+  themeMode?: 'light' | 'dark' | 'system';
+  setThemeMode?: (mode: 'light' | 'dark' | 'system') => void;
   showTajweed?: boolean;
   setShowTajweed?: (val: boolean) => void;
   showTranslation?: boolean;
@@ -33,6 +35,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   setFontSize = (_s) => {},
   pageTheme = 'ivory',
   setPageTheme = (_t) => {},
+  themeMode = 'system',
+  setThemeMode = (_m) => {},
   showTajweed = true,
   setShowTajweed = (_v) => {},
   showTranslation = true,
@@ -107,8 +111,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md animate-fade-in">
-      <div className="bg-white/95 text-stone-900 border border-white/60 shadow-2xl rounded-[32px] max-w-md w-full p-6 space-y-5 relative overflow-hidden backdrop-blur-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/50 backdrop-blur-md animate-fade-in">
+      <div className="bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-stone-100 border border-white/60 dark:border-stone-800 shadow-2xl rounded-[32px] max-w-md w-full p-6 space-y-5 relative overflow-hidden backdrop-blur-2xl">
         
         {/* Apple Style Top Glow */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 via-emerald-500 to-amber-600" />
@@ -116,50 +120,50 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-500 hover:text-stone-800 flex items-center justify-center transition-all"
+          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-500 dark:text-stone-300 hover:text-stone-800 flex items-center justify-center transition-all cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Header Title */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 border border-amber-200 flex items-center justify-center font-bold">
-            <User className="w-5 h-5 text-amber-800" />
+          <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-stone-800 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-stone-700 flex items-center justify-center font-bold">
+            <User className="w-5 h-5 text-amber-800 dark:text-amber-400" />
           </div>
           <div>
-            <h2 className="text-lg font-bold tracking-tight text-stone-900">
+            <h2 className="text-lg font-bold tracking-tight text-stone-900 dark:text-stone-100">
               Kullanıcı Hesabı & Ayarlar
             </h2>
-            <p className="text-xs text-stone-500">
-              Profil bilgileri, yazı boyutu ve sayfa teması
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              Profil bilgileri, tema modu, yazı boyutu ve sayfa teması
             </p>
           </div>
         </div>
 
         {/* Navigation Switcher Tabs */}
-        <div className="flex items-center p-1 bg-stone-100 rounded-2xl text-xs font-bold">
+        <div className="flex items-center p-1 bg-stone-100 dark:bg-stone-800/80 rounded-2xl text-xs font-bold">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'profile'
-                ? 'bg-white text-stone-900 shadow-sm'
-                : 'text-stone-500 hover:text-stone-800'
+                ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm'
+                : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
             }`}
           >
-            <User className="w-3.5 h-3.5 text-amber-600" />
+            <User className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>Profil & İstatistik</span>
           </button>
 
           <button
             onClick={() => setActiveTab('settings')}
-            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
               activeTab === 'settings'
-                ? 'bg-white text-stone-900 shadow-sm'
-                : 'text-stone-500 hover:text-stone-800'
+                ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm'
+                : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
             }`}
           >
-            <Sliders className="w-3.5 h-3.5 text-amber-600" />
-            <span>Okuma Ayarları</span>
+            <Sliders className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>Okuma & Tema Ayarları</span>
           </button>
         </div>
 
@@ -329,10 +333,45 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         ) : (
           /* Settings Tab */
           <div className="space-y-4 animate-fade-in">
+            {/* Theme Mode Setting (Açık / Koyu / Sistem) */}
+            <div className="bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/80 rounded-2xl p-3.5 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-stone-900 dark:text-stone-100">
+                <Sun className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <span>Uygulama Görünüm Teması</span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { id: 'light', label: 'Açık', icon: Sun },
+                  { id: 'dark', label: 'Koyu', icon: Moon },
+                  { id: 'system', label: 'Otomatik', icon: Monitor },
+                ].map((mode) => {
+                  const IconComp = mode.icon;
+                  const isActive = themeMode === mode.id;
+                  return (
+                    <button
+                      key={mode.id}
+                      onClick={() => setThemeMode(mode.id as any)}
+                      className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        isActive
+                          ? 'bg-amber-600 text-white shadow-sm ring-2 ring-amber-500'
+                          : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700'
+                      }`}
+                    >
+                      <IconComp className="w-3.5 h-3.5 shrink-0" />
+                      <span>{mode.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-stone-500 dark:text-stone-400 font-medium pt-0.5">
+                * Otomatik mod, telefonunuzun / bilgisayarınızın sistem renk moduna göre uyarlanır.
+              </p>
+            </div>
+
             {/* Arabic Font Size Setting */}
-            <div className="bg-stone-50 border border-stone-200 rounded-2xl p-3.5 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-stone-900">
-                <Type className="w-4 h-4 text-amber-600" />
+            <div className="bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/80 rounded-2xl p-3.5 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-stone-900 dark:text-stone-100">
+                <Type className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 <span>Arapça Yazı Boyutu</span>
               </div>
               <div className="grid grid-cols-4 gap-1.5">
@@ -345,10 +384,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   <button
                     key={item.value}
                     onClick={() => setFontSize(item.value as any)}
-                    className={`py-2 rounded-xl text-xs font-bold transition-all ${
+                    className={`py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       fontSize === item.value
                         ? 'bg-amber-600 text-white shadow-sm'
-                        : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-200'
+                        : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700'
                     }`}
                   >
                     {item.label}
@@ -358,22 +397,23 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
 
             {/* Page Theme Setting */}
-            <div className="bg-stone-50 border border-stone-200 rounded-2xl p-3.5 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-stone-900">
-                <Palette className="w-4 h-4 text-amber-600" />
-                <span>Mushaf Sayfa Teması (Sade & Aydınlık)</span>
+            <div className="bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/80 rounded-2xl p-3.5 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-stone-900 dark:text-stone-100">
+                <Palette className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <span>Mushaf Sayfa Zemini Teması</span>
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { id: 'ivory', name: 'Fildişi', bg: 'bg-[#FBF9F1] text-stone-900 border-amber-300' },
                   { id: 'mint', name: 'Nane', bg: 'bg-[#F2F7F4] text-emerald-950 border-emerald-300' },
                   { id: 'white', name: 'Beyaz', bg: 'bg-white text-slate-900 border-slate-300' },
+                  { id: 'dark', name: 'Gece (Koyu)', bg: 'bg-stone-900 text-amber-100 border-amber-500/50' },
                 ].map((theme) => (
                   <button
                     key={theme.id}
                     onClick={() => setPageTheme(theme.id as any)}
-                    className={`py-2 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1 ${theme.bg} ${
-                      pageTheme === theme.id ? 'ring-2 ring-amber-500 shadow-sm' : 'opacity-80'
+                    className={`py-2 rounded-xl text-xs font-bold border transition-all flex flex-col items-center gap-1 cursor-pointer ${theme.bg} ${
+                      pageTheme === theme.id ? 'ring-2 ring-amber-500 shadow-sm scale-105' : 'opacity-80 hover:opacity-100'
                     }`}
                   >
                     <span>{theme.name}</span>
@@ -383,14 +423,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
 
             {/* Toggles */}
-            <div className="bg-stone-50 border border-stone-200 rounded-2xl p-3.5 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-stone-900">
-                <Eye className="w-4 h-4 text-amber-600" />
+            <div className="bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/80 rounded-2xl p-3.5 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-bold text-stone-900 dark:text-stone-100">
+                <Eye className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 <span>Görünüm Seçenekleri</span>
               </div>
 
               <div className="flex items-center justify-between text-xs">
-                <span className="text-stone-700 font-medium">Tecvit Renk Vurguları</span>
+                <span className="text-stone-700 dark:text-stone-300 font-medium">Tecvit Renk Vurguları</span>
                 <input
                   type="checkbox"
                   checked={showTajweed}
@@ -399,8 +439,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 />
               </div>
 
-              <div className="flex items-center justify-between text-xs pt-2 border-t border-stone-200">
-                <span className="text-stone-700 font-medium">Ayet Meali Gösterimi</span>
+              <div className="flex items-center justify-between text-xs pt-2 border-t border-stone-200 dark:border-stone-700">
+                <span className="text-stone-700 dark:text-stone-300 font-medium">Ayet Meali Gösterimi</span>
                 <input
                   type="checkbox"
                   checked={showTranslation}
@@ -413,10 +453,10 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
         )}
 
         {/* Footer */}
-        <div className="pt-2 border-t border-stone-200 flex justify-end">
+        <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs transition-colors"
+            className="px-4 py-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs transition-colors cursor-pointer"
           >
             Tamam
           </button>

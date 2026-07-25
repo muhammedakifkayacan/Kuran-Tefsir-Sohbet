@@ -159,10 +159,49 @@ export default function App() {
 
   // Full Screen Mode & Reader Settings State
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+  const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'system'>(() => {
+    return (localStorage.getItem('kuran_theme_mode') as 'light' | 'dark' | 'system') || 'system';
+  });
   const [pageTheme, setPageTheme] = useState<'ivory' | 'mint' | 'white' | 'dark'>('ivory');
   const [fontSize, setFontSize] = useState<'md' | 'lg' | 'xl' | '2xl'>('xl');
   const [showTajweed, setShowTajweed] = useState<boolean>(true);
   const [showTranslation, setShowTranslation] = useState<boolean>(true);
+
+  // Theme Mode Effect (Light / Dark / System)
+  useEffect(() => {
+    const applyTheme = () => {
+      let isDark = false;
+      if (themeMode === 'dark') {
+        isDark = true;
+      } else if (themeMode === 'light') {
+        isDark = false;
+      } else {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    applyTheme();
+    localStorage.setItem('kuran_theme_mode', themeMode);
+
+    if (themeMode === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        if (e.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      };
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+  }, [themeMode]);
 
   // Immersive overlays visibility in Full Screen Reading Mode
   const [areOverlaysVisible, setAreOverlaysVisible] = useState<boolean>(true);
@@ -386,7 +425,7 @@ export default function App() {
       onTouchStart={handleTouchStartApp}
       onTouchMove={handleTouchMoveApp}
       onTouchEnd={handleTouchEndApp}
-      className="min-h-screen w-full max-w-full overflow-x-hidden bg-stone-100 text-slate-900 flex flex-col items-center justify-center font-sans antialiased selection:bg-amber-400 selection:text-slate-950 relative"
+      className="min-h-screen w-full max-w-full overflow-x-hidden bg-stone-100 dark:bg-stone-950 text-slate-900 dark:text-stone-100 flex flex-col items-center justify-center font-sans antialiased selection:bg-amber-400 selection:text-slate-950 relative transition-colors duration-200"
     >
       {/* PWA / Standalone Pull-to-Refresh Floating Indicator */}
       {(pullDistance > 0 || isRefreshing) && (
@@ -408,13 +447,15 @@ export default function App() {
       )}
       {/* Main Container Wrapper */}
       <div
-        className={`w-full max-w-full overflow-x-hidden min-h-screen flex flex-col bg-[#FAF8F5] ${
+        className={`w-full max-w-full overflow-x-hidden min-h-screen flex flex-col bg-[#FAF8F5] dark:bg-stone-950 transition-colors duration-200 ${
           isFullScreen && activeTab === 'quran'
             ? pageTheme === 'mint'
-              ? 'bg-[#F2F7F4]'
+              ? 'bg-[#F2F7F4] dark:bg-stone-950'
               : pageTheme === 'white'
-              ? 'bg-[#FFFFFF]'
-              : 'bg-[#FAF8F5]'
+              ? 'bg-[#FFFFFF] dark:bg-stone-950'
+              : pageTheme === 'dark'
+              ? 'bg-stone-950'
+              : 'bg-[#FAF8F5] dark:bg-stone-950'
             : ''
         }`}
       >
@@ -715,6 +756,8 @@ export default function App() {
         setFontSize={setFontSize}
         pageTheme={pageTheme}
         setPageTheme={setPageTheme}
+        themeMode={themeMode}
+        setThemeMode={setThemeMode}
         showTajweed={showTajweed}
         setShowTajweed={setShowTajweed}
         showTranslation={showTranslation}
