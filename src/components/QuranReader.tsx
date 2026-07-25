@@ -4,6 +4,7 @@ import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, 
 import { Surah, Ayah, VerseNote } from '../types';
 import { ALL_SURAHS } from '../data/surahList';
 import { fetchSurahFromApi } from '../utils/quranApi';
+import { MEAL_SOURCES, TAFSIR_SOURCES, generateTafsirContent, getAuthorMealText } from '../data/tafsirData';
 
 interface QuranReaderProps {
   selectedSurah: Surah;
@@ -1248,6 +1249,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const [isFontPopoverOpen, setIsFontPopoverOpen] = useState<boolean>(false);
   const [pageNotice, setPageNotice] = useState<number | null>(null);
 
+  // Tefsir & Meal Seçenek Durumları
+  const [activeTafsirAyah, setActiveTafsirAyah] = useState<Ayah | null>(null);
+  const [selectedMealSource, setSelectedMealSource] = useState<string>(() => {
+    return localStorage.getItem('kuran_app_meal_source') || 'diyanet';
+  });
+  const [selectedTafsirSource, setSelectedTafsirSource] = useState<string>(() => {
+    return localStorage.getItem('kuran_app_tafsir_source') || 'diyanet_kuranyolu';
+  });
+
   // Çoklu Ayet Seçimi & Paylaşım Durumları
   const [isMultiSelectMode, setIsMultiSelectMode] = useState<boolean>(false);
   const [selectedVerseNumbers, setSelectedVerseNumbers] = useState<number[]>([]);
@@ -2016,6 +2026,52 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Meal Müellifi / Seçeneği */}
+                    <div className="space-y-1 pt-2 border-t border-stone-100">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block flex items-center gap-1">
+                        <BookOpen className="w-3 h-3 text-amber-600" />
+                        <span>Meal Müellifi / Seçeneği</span>
+                      </label>
+                      <select
+                        value={selectedMealSource}
+                        onChange={(e) => {
+                          setSelectedMealSource(e.target.value);
+                          localStorage.setItem('kuran_app_meal_source', e.target.value);
+                          showToast('Meal müellifi güncellendi');
+                        }}
+                        className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-xs font-bold rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                      >
+                        {MEAL_SOURCES.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            {m.name} ({m.author})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Tefsir Çeşidi / Kaynağı */}
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block flex items-center gap-1">
+                        <FileText className="w-3 h-3 text-amber-600" />
+                        <span>Tefsir Çeşidi / Kaynağı</span>
+                      </label>
+                      <select
+                        value={selectedTafsirSource}
+                        onChange={(e) => {
+                          setSelectedTafsirSource(e.target.value);
+                          localStorage.setItem('kuran_app_tafsir_source', e.target.value);
+                          showToast('Tefsir kaynağı güncellendi');
+                        }}
+                        className="w-full bg-stone-50 border border-stone-200 text-stone-900 text-xs font-bold rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                      >
+                        {TAFSIR_SOURCES.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.name} ({t.author})
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     {/* Yer İşaretli / Kaydedilen Ayetlere Hızlı Geçiş */}
@@ -3208,6 +3264,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
                     <div className="flex items-center gap-1.5">
                       <button
+                        onClick={() => setActiveTafsirAyah(verse)}
+                        className="px-2.5 py-1.5 rounded-xl bg-amber-100/90 text-amber-950 hover:bg-amber-200 border border-amber-300 transition-colors flex items-center gap-1 font-bold text-xs cursor-pointer shadow-2xs"
+                        title="Ayet Tefsirine Bak"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-amber-800" />
+                        <span>Tefsire Bak</span>
+                      </button>
+
+                      <button
                         onClick={() =>
                           onOpenAiTajweedExplain(selectedSurah.nameTurkish, verse.number, verse.arabic)
                         }
@@ -3309,16 +3374,19 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
           {/* Expandable Translation inside Tooltip */}
           {showTooltipTranslation && (
-            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs italic text-stone-700 leading-relaxed max-h-32 overflow-y-auto space-y-1">
-              <div>"{selectedMushafAyah.translation}"</div>
-              <div className="text-[10px] font-mono non-italic text-amber-800 pt-1 border-t border-stone-200">
+            <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs italic text-stone-700 leading-relaxed max-h-36 overflow-y-auto space-y-1">
+              <div className="text-[10px] font-bold text-amber-800 not-italic uppercase tracking-wider">
+                {MEAL_SOURCES.find((m) => m.id === selectedMealSource)?.name || 'Türkçe Meali'}
+              </div>
+              <div>"{getAuthorMealText(selectedMushafAyah.arabic, selectedMushafAyah.translation, selectedMealSource)}"</div>
+              <div className="text-[10px] font-mono not-italic text-amber-800 pt-1 border-t border-stone-200">
                 Okunuşu: {selectedMushafAyah.transliteration}
               </div>
             </div>
           )}
 
           {/* Quick Actions Row inside Tooltip */}
-          <div className="grid grid-cols-6 gap-1 pt-1">
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 pt-1">
             <button
               onClick={() => onPlayAyah(selectedMushafAyah)}
               className={`py-2 px-1 rounded-2xl text-[10px] font-bold flex flex-col items-center justify-center gap-1 transition-all ${
@@ -3328,7 +3396,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               }`}
             >
               <Volume2 className="w-3.5 h-3.5 text-amber-700" />
-              <span>{activeAyah?.number === selectedMushafAyah.number && isPlaying ? 'Durdur' : 'Dinle'}</span>
+              <span className="truncate">{activeAyah?.number === selectedMushafAyah.number && isPlaying ? 'Durdur' : 'Dinle'}</span>
             </button>
 
             <button
@@ -3340,7 +3408,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               }`}
             >
               <BookOpen className="w-3.5 h-3.5 text-amber-700" />
-              <span>{showTooltipTranslation ? 'Gizle' : 'Meal'}</span>
+              <span className="truncate">{showTooltipTranslation ? 'Gizle' : 'Meali Gör'}</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTafsirAyah(selectedMushafAyah)}
+              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-700 hover:bg-amber-800 text-white border border-amber-700 flex flex-col items-center justify-center gap-1 transition-all shadow-2xs cursor-pointer"
+            >
+              <FileText className="w-3.5 h-3.5 text-amber-200" />
+              <span className="truncate">Tefsire Bak</span>
             </button>
 
             <button
@@ -3348,7 +3424,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
             >
               <Share2 className="w-3.5 h-3.5 text-amber-700" />
-              <span>Paylaş</span>
+              <span className="truncate">Paylaş</span>
             </button>
 
             <button
@@ -3363,7 +3439,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer"
             >
               <Edit3 className="w-3.5 h-3.5 text-amber-700" />
-              <span>Not Al</span>
+              <span className="truncate">Not Al</span>
             </button>
 
             <button
@@ -3375,15 +3451,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               }`}
             >
               <Bookmark className={`w-3.5 h-3.5 ${bookmarkedVerses.includes(selectedMushafAyah.number) ? 'fill-current text-amber-600' : 'text-amber-700'}`} />
-              <span>{bookmarkedVerses.includes(selectedMushafAyah.number) ? 'Kaydedildi' : 'Kaydet'}</span>
+              <span className="truncate">{bookmarkedVerses.includes(selectedMushafAyah.number) ? 'Kaydedildi' : 'Kaydet'}</span>
             </button>
 
             <button
               onClick={() => onOpenAiTajweedExplain(selectedSurah.nameTurkish, selectedMushafAyah.number, selectedMushafAyah.arabic)}
-              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-amber-600 text-white hover:bg-amber-700 border border-amber-600 flex flex-col items-center justify-center gap-1 transition-all shadow-2xs cursor-pointer"
+              className="py-2 px-1 rounded-2xl text-[10px] font-bold bg-emerald-700 text-white hover:bg-emerald-800 border border-emerald-700 flex flex-col items-center justify-center gap-1 transition-all shadow-2xs cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-              <span>AI Sor</span>
+              <Sparkles className="w-3.5 h-3.5 text-emerald-200" />
+              <span className="truncate">AI Sor</span>
             </button>
           </div>
         </div>
@@ -3835,6 +3911,165 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               >
                 <Share2 className="w-4 h-4" />
                 <span>Paylaş</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tefsir Bak Detay Modalı */}
+      {activeTafsirAyah && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-slate-950/75 backdrop-blur-md animate-fade-in">
+          <div className="bg-white border border-stone-200 rounded-3xl p-5 sm:p-6 w-full max-w-2xl shadow-2xl space-y-4 text-stone-900 relative max-h-[90vh] flex flex-col overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 border border-amber-300 flex items-center justify-center font-bold shrink-0">
+                  <FileText className="w-5 h-5 text-amber-800" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-stone-900 leading-tight flex items-center gap-2">
+                    <span>{selectedSurah.nameTurkish} Sûresi, {activeTafsirAyah.number}. Ayet Tefsiri</span>
+                  </h3>
+                  <p className="text-xs text-stone-500 font-medium">
+                    Sayfa {activeTafsirAyah.page} — Kapsamlı Ayet Tahlili & Şerhi
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setActiveTafsirAyah(null)}
+                className="p-2 rounded-full hover:bg-stone-100 text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+                title="Kapat"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Tefsir Source Selector Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 bg-amber-50/80 border border-amber-200/90 rounded-2xl shrink-0">
+              <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5 shrink-0">
+                <Sparkles className="w-4 h-4 text-amber-700" />
+                <span>Tefsir Kaynağı:</span>
+              </span>
+              <select
+                value={selectedTafsirSource}
+                onChange={(e) => {
+                  setSelectedTafsirSource(e.target.value);
+                  localStorage.setItem('kuran_app_tafsir_source', e.target.value);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-white border border-amber-300 text-amber-950 font-bold text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-2xs"
+              >
+                {TAFSIR_SOURCES.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} ({t.author})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto flex-1 space-y-4 pr-1.5 scrollbar-thin">
+              {/* Arabic snippet */}
+              <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-right dir-rtl font-serif text-xl text-stone-900 leading-relaxed">
+                {activeTafsirAyah.arabic}
+              </div>
+
+              {/* Meal snippet */}
+              <div className="p-3.5 bg-amber-50/40 rounded-2xl border border-amber-200/60 space-y-1">
+                <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center justify-between">
+                  <span>Türkçe Meali ({MEAL_SOURCES.find(m => m.id === selectedMealSource)?.name})</span>
+                </div>
+                <p className="text-xs font-medium text-stone-800 italic leading-relaxed">
+                  "{getAuthorMealText(activeTafsirAyah.arabic, activeTafsirAyah.translation, selectedMealSource)}"
+                </p>
+              </div>
+
+              {(() => {
+                const tafsirData = generateTafsirContent(
+                  selectedSurah.id,
+                  selectedSurah.nameTurkish,
+                  activeTafsirAyah.number,
+                  activeTafsirAyah.arabic,
+                  activeTafsirAyah.translation,
+                  selectedTafsirSource
+                );
+
+                return (
+                  <div className="space-y-3.5">
+                    {/* Ayet Özeti / Esbab-ı Nüzul */}
+                    <div className="p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-1.5 text-xs text-emerald-950">
+                      <div className="font-bold flex items-center gap-1.5 text-emerald-900">
+                        <Info className="w-4 h-4 text-emerald-700 shrink-0" />
+                        <span>Ayetin Özeti & Nüzul Sebebi</span>
+                      </div>
+                      <p className="font-semibold text-emerald-900 leading-relaxed">{tafsirData.summary}</p>
+                      {tafsirData.revelationContext && (
+                        <p className="text-[11px] text-emerald-800 pt-1 border-t border-emerald-200/80 leading-normal">
+                          <strong>Nüzul Arka Planı:</strong> {tafsirData.revelationContext}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Tefsir Paragrafları */}
+                    <div className="space-y-2.5">
+                      <h4 className="text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <FileText className="w-4 h-4 text-amber-700" />
+                        <span>{tafsirData.sourceName} Detaylı İzahı</span>
+                      </h4>
+                      {tafsirData.commentary.map((paragraph, idx) => (
+                        <p key={idx} className="text-xs text-stone-700 font-normal leading-relaxed bg-stone-50 p-3 rounded-2xl border border-stone-100">
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+
+                    {/* Hikmetler ve Dersler */}
+                    {tafsirData.spiritualLessons && tafsirData.spiritualLessons.length > 0 && (
+                      <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl space-y-2 text-xs">
+                        <h4 className="font-bold text-amber-950 flex items-center gap-1.5">
+                          <Sparkles className="w-4 h-4 text-amber-700" />
+                          <span>Ayetten Çıkarılan Hikmet ve Dersler</span>
+                        </h4>
+                        <ul className="space-y-1.5 pl-1">
+                          {tafsirData.spiritualLessons.map((lesson, lIdx) => (
+                            <li key={lIdx} className="flex items-start gap-2 text-stone-800 font-medium">
+                              <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>{lesson}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Footer Actions */}
+            <div className="flex items-center justify-between gap-2 pt-3 border-t border-stone-200 shrink-0">
+              <button
+                onClick={() => {
+                  if (!user && onRequireAuth) {
+                    onRequireAuth('Tefsir ders notu eklemek için lütfen oturum açın.');
+                    return;
+                  }
+                  setActiveNoteModalAyah(activeTafsirAyah);
+                  setNoteTagInput('Tefsir Notu');
+                  const sourceName = TAFSIR_SOURCES.find((t) => t.id === selectedTafsirSource)?.name || 'Tefsir';
+                  setNoteTextInput(`[${sourceName} Tefsir Notu - ${selectedSurah.nameTurkish} ${activeTafsirAyah.number}. Ayet]:\n`);
+                }}
+                className="px-4 py-2.5 rounded-2xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer"
+              >
+                <Edit3 className="w-4 h-4 text-amber-200" />
+                <span>Tefsir Notu Al</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTafsirAyah(null)}
+                className="px-5 py-2.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition-all active:scale-95 cursor-pointer"
+              >
+                Kapat
               </button>
             </div>
           </div>

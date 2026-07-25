@@ -17,6 +17,7 @@ import { InteractiveTour } from './components/InteractiveTour';
 import { HomeDashboard } from './components/HomeDashboard';
 import { QiblaFinderModal } from './components/QiblaFinderModal';
 import { RiyazusSalihinModal } from './components/RiyazusSalihinModal';
+import { AddToHomeScreenPrompt } from './components/AddToHomeScreenPrompt';
 
 import { NavTab, Surah, Ayah, VerseNote, Reciter, SohbetSession } from './types';
 import { QURAN_SURAHS, RECITERS } from './data/quranData';
@@ -765,6 +766,9 @@ export default function App() {
         isOpen={isRiyazusModalOpen}
         onClose={() => setIsRiyazusModalOpen(false)}
       />
+
+      {/* Add To Home Screen (PWA) Reminder Prompt */}
+      <AddToHomeScreenPrompt />
 
       {/* Interactive Onboarding Tour */}
       <InteractiveTour
