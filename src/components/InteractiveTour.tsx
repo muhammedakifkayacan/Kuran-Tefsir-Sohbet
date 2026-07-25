@@ -140,10 +140,10 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
     // Smoothly scroll element into view if off-screen
     const rect = el.getBoundingClientRect();
     const isOffscreen =
-      rect.top < 0 ||
-      rect.left < 0 ||
-      rect.bottom > window.innerHeight ||
-      rect.right > window.innerWidth;
+      rect.top < 20 ||
+      rect.left < 10 ||
+      rect.bottom > window.innerHeight - 20 ||
+      rect.right > window.innerWidth - 10;
 
     if (isOffscreen) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
@@ -160,7 +160,7 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
         height: updatedRect.height + padding * 2,
       });
       setIsMeasuring(false);
-    }, 120);
+    }, 160);
   }, [isOpen, currentStep]);
 
   // When step changes, handle auto tab switching and remeasuring
@@ -175,10 +175,13 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
       // Wait for tab switch animation & DOM mounting
       const timer = setTimeout(() => {
         measureTarget();
-      }, 200);
+      }, 250);
       return () => clearTimeout(timer);
     } else {
-      measureTarget();
+      const timer = setTimeout(() => {
+        measureTarget();
+      }, 80);
+      return () => clearTimeout(timer);
     }
   }, [currentStepIndex, isOpen, currentStep, activeTab, onNavigateTab, measureTarget]);
 
@@ -244,50 +247,83 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
   // Calculate Popover Position relative to targetRect with strict mobile viewport bounds
   let popoverStyle: React.CSSProperties = {};
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-  const actualCardWidth = isMobile ? Math.min(340, window.innerWidth - 32) : 340;
-  const cardHeight = popoverMeasuredHeight || 300;
+  const cardHeight = popoverMeasuredHeight || 280;
 
   if (targetRect) {
-    const spaceBelow = window.innerHeight - (targetRect.top + targetRect.height);
-    const spaceAbove = targetRect.top;
-    const preferredPos = currentStep.preferredPosition || 'bottom';
+    if (isMobile) {
+      // On mobile view: Pin left to 16px and right to 16px to guarantee zero horizontal overflow!
+      const isTargetInBottomHalf = targetRect.top > window.innerHeight * 0.45;
 
-    let placeOnTop = preferredPos === 'top';
-    if (preferredPos === 'bottom' && spaceBelow < cardHeight + 16 && spaceAbove > spaceBelow) {
-      placeOnTop = true;
-    } else if (preferredPos === 'top' && spaceAbove < cardHeight + 16 && spaceBelow > spaceAbove) {
-      placeOnTop = false;
-    }
+      if (isTargetInBottomHalf) {
+        // Target is near bottom (e.g., BottomNav in steps 4 & 6) -> Place card above target
+        const desiredTop = targetRect.top - cardHeight - 12;
+        const clampedTop = Math.max(12, desiredTop);
+        const availableHeight = targetRect.top - clampedTop - 12;
 
-    let calculatedTop: number;
-    if (placeOnTop) {
-      calculatedTop = targetRect.top - cardHeight - 12;
+        popoverStyle = {
+          top: `${clampedTop}px`,
+          left: '16px',
+          right: '16px',
+          width: 'auto',
+          maxHeight: `${Math.max(180, availableHeight)}px`,
+        };
+      } else {
+        // Target is near top (e.g., Header / Sohbet Add in steps 1, 2, 5, 7) -> Place card below target
+        const desiredTop = targetRect.top + targetRect.height + 12;
+        const clampedTop = Math.min(window.innerHeight - 200, desiredTop);
+        const availableHeight = window.innerHeight - clampedTop - 68; // Reserve 68px for bottom nav bar
+
+        popoverStyle = {
+          top: `${clampedTop}px`,
+          left: '16px',
+          right: '16px',
+          width: 'auto',
+          maxHeight: `${Math.max(180, availableHeight)}px`,
+        };
+      }
     } else {
-      calculatedTop = targetRect.top + targetRect.height + 12;
+      // Desktop positioning
+      const desktopCardWidth = 340;
+      const spaceBelow = window.innerHeight - (targetRect.top + targetRect.height);
+      const spaceAbove = targetRect.top;
+      const preferredPos = currentStep.preferredPosition || 'bottom';
+
+      let placeOnTop = preferredPos === 'top';
+      if (preferredPos === 'bottom' && spaceBelow < cardHeight + 16 && spaceAbove > spaceBelow) {
+        placeOnTop = true;
+      } else if (preferredPos === 'top' && spaceAbove < cardHeight + 16 && spaceBelow > spaceAbove) {
+        placeOnTop = false;
+      }
+
+      let calculatedTop: number;
+      if (placeOnTop) {
+        calculatedTop = targetRect.top - cardHeight - 12;
+      } else {
+        calculatedTop = targetRect.top + targetRect.height + 12;
+      }
+
+      const maxTop = Math.max(16, window.innerHeight - cardHeight - 16);
+      calculatedTop = Math.max(16, Math.min(calculatedTop, maxTop));
+
+      let leftPos = targetRect.left + targetRect.width / 2 - desktopCardWidth / 2;
+      const maxLeft = Math.max(16, window.innerWidth - desktopCardWidth - 16);
+      leftPos = Math.max(16, Math.min(leftPos, maxLeft));
+
+      popoverStyle = {
+        top: `${calculatedTop}px`,
+        left: `${leftPos}px`,
+        width: `${desktopCardWidth}px`,
+        maxHeight: `calc(100vh - 32px)`,
+      };
     }
-
-    // Clamp top position so card is ALWAYS at least 16px from top and bottom edges of viewport
-    const maxTop = Math.max(16, window.innerHeight - cardHeight - 16);
-    calculatedTop = Math.max(16, Math.min(calculatedTop, maxTop));
-
-    // Horizontal positioning: centered on targetRect, clamped within viewport padding (16px)
-    let leftPos = targetRect.left + targetRect.width / 2 - actualCardWidth / 2;
-    const maxLeft = Math.max(16, window.innerWidth - actualCardWidth - 16);
-    leftPos = Math.max(16, Math.min(leftPos, maxLeft));
-
-    popoverStyle = {
-      top: `${calculatedTop}px`,
-      left: `${leftPos}px`,
-      width: isMobile ? `calc(100vw - 32px)` : `${actualCardWidth}px`,
-      maxHeight: `calc(100vh - 32px)`,
-    };
   } else {
     // Fallback centered
     popoverStyle = {
       top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: isMobile ? `calc(100vw - 32px)` : `${actualCardWidth}px`,
+      left: isMobile ? '16px' : '50%',
+      right: isMobile ? '16px' : 'auto',
+      transform: isMobile ? 'translateY(-50%)' : 'translate(-50%, -50%)',
+      width: isMobile ? 'auto' : '340px',
       maxHeight: `calc(100vh - 32px)`,
     };
   }
@@ -347,12 +383,12 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
         <motion.div
           ref={popoverRef}
           key={currentStep.id}
-          initial={{ opacity: 0, y: 12, scale: 0.96 }}
+          initial={{ opacity: 0, y: 10, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -10, scale: 0.96 }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          exit={{ opacity: 0, y: -8, scale: 0.97 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
           style={popoverStyle}
-          className="fixed z-[99995] w-[calc(100vw-32px)] sm:w-[340px] max-h-[calc(100vh-32px)] overflow-y-auto bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-3xl p-5 shadow-2xl border border-stone-200/90 dark:border-stone-800 backdrop-blur-2xl"
+          className="fixed z-[99995] sm:w-[340px] overflow-y-auto bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-2xl border border-stone-200/90 dark:border-stone-800 backdrop-blur-2xl"
         >
           {/* Header & Step Counter */}
           <div className="flex items-center justify-between gap-2 mb-3">
