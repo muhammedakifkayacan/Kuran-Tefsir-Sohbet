@@ -1,29 +1,33 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Home, BookOpen, Radio, StickyNote } from 'lucide-react';
+import { Home, BookOpen, Radio, StickyNote, Minimize2 } from 'lucide-react';
 import { NavTab } from '../types';
 
 interface BottomNavProps {
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
   unresolvedNotesCount?: number;
+  isFullScreen?: boolean;
+  setIsFullScreen?: (val: boolean) => void;
 }
 
 export const BottomNav: React.FC<BottomNavProps> = ({
   activeTab,
   setActiveTab,
   unresolvedNotesCount = 0,
+  isFullScreen,
+  setIsFullScreen,
 }) => {
   const tabs: { id: NavTab; label: string; icon: React.FC<{ className?: string }>; badge?: number }[] = [
-    { id: 'home', label: '🏠 Ana Sayfa', icon: Home },
-    { id: 'quran', label: '📖 Kur\'an Oku', icon: BookOpen },
-    { id: 'sohbet', label: '💬 Ders & Sohbet', icon: Radio },
-    { id: 'notes', label: '📝 Notlarım & AI', icon: StickyNote, badge: unresolvedNotesCount },
+    { id: 'home', label: 'Ana Sayfa', icon: Home },
+    { id: 'quran', label: 'Kur\'an Oku', icon: BookOpen },
+    { id: 'sohbet', label: 'Ders & Sohbet', icon: Radio },
+    { id: 'notes', label: 'Notlarım', icon: StickyNote, badge: unresolvedNotesCount },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl border-t border-stone-200/80 dark:border-stone-800 px-2 py-2 shadow-2xl pb-safe">
-      <div className="flex items-center justify-around max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl border-t border-stone-200/80 dark:border-stone-800 px-2 py-1.5 sm:py-2 shadow-2xl pb-safe">
+      <div className="flex items-center justify-around max-w-lg mx-auto gap-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -32,11 +36,16 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             <motion.button
               key={tab.id}
               id={`tour-tab-${tab.id}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                if (isFullScreen && setIsFullScreen) {
+                  setIsFullScreen(false);
+                }
+                setActiveTab(tab.id);
+              }}
               whileTap={{ scale: 0.92 }}
               whileHover={{ scale: 1.04 }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              className={`relative flex flex-col items-center justify-center py-1.5 px-4 rounded-2xl cursor-pointer ${
+              className={`relative flex flex-col items-center justify-center py-1.5 px-2.5 sm:px-4 rounded-2xl cursor-pointer ${
                 isActive
                   ? 'text-emerald-950 dark:text-amber-300 font-bold'
                   : 'text-stone-500 dark:text-stone-400 hover:text-emerald-800 dark:hover:text-amber-200 font-medium'
@@ -72,10 +81,24 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 )}
               </div>
 
-              <span className="text-[11px] mt-1 tracking-tight leading-none">{tab.label}</span>
+              <span className="text-[10px] sm:text-[11px] mt-1 tracking-tight leading-none whitespace-nowrap">{tab.label}</span>
             </motion.button>
           );
         })}
+
+        {/* Exit Fullscreen Button in BottomNav when in Fullscreen */}
+        {isFullScreen && setIsFullScreen && (
+          <motion.button
+            onClick={() => setIsFullScreen(false)}
+            whileTap={{ scale: 0.92 }}
+            whileHover={{ scale: 1.04 }}
+            className="flex flex-col items-center justify-center py-1.5 px-2.5 rounded-2xl cursor-pointer text-amber-800 dark:text-amber-300 bg-amber-100/80 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 font-bold shrink-0"
+            title="Tam Ekrandan Çık"
+          >
+            <Minimize2 className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+            <span className="text-[10px] mt-1 tracking-tight leading-none whitespace-nowrap">Tam Ekran</span>
+          </motion.button>
+        )}
       </div>
     </nav>
   );

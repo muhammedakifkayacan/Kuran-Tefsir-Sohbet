@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Smartphone, Monitor, Sparkles, Download, Home, User, Menu, X, BookOpen, Radio, BookCheck, StickyNote, Sliders, ChevronRight, Compass } from 'lucide-react';
+import { Smartphone, Monitor, Sparkles, Download, Home, User, Menu, X, BookOpen, Radio, BookCheck, StickyNote, Sliders, ChevronRight, Compass, Minimize2 } from 'lucide-react';
 import { NavTab } from '../types';
 import { TitleWithHelp } from './TitleWithHelp';
 
@@ -19,6 +19,8 @@ interface HeaderProps {
   user?: { name: string; email: string; avatar: string } | null;
   activeTab?: NavTab;
   onNavigateTab?: (tab: NavTab) => void;
+  isFullScreen?: boolean;
+  setIsFullScreen?: (val: boolean) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,6 +37,8 @@ export const Header: React.FC<HeaderProps> = ({
   user,
   activeTab = 'quran',
   onNavigateTab,
+  isFullScreen,
+  setIsFullScreen,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -132,6 +136,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Compass className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 animate-pulse" />
               <span>🚀 Rehber</span>
+            </button>
+          )}
+
+          {/* Exit Fullscreen Toggle Button if in Fullscreen */}
+          {isFullScreen && setIsFullScreen && (
+            <button
+              onClick={() => setIsFullScreen(false)}
+              title="Tam Ekrandan Çık"
+              className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs transition-all flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer border border-amber-600 shrink-0"
+            >
+              <Minimize2 className="w-4 h-4 text-white" />
+              <span className="hidden sm:inline">Tam Ekrandan Çık</span>
             </button>
           )}
 

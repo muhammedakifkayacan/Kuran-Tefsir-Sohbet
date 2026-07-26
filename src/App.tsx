@@ -495,8 +495,8 @@ export default function App() {
             : ''
         }`}
       >
-        {/* App Top Header - Hidden when reading Quran for true full-screen Apple-level experience */}
-        <div className={activeTab === 'quran' ? 'hidden' : ''}>
+        {/* App Top Header - Shown on all tabs; hides in full screen when overlays are hidden */}
+        <div className={`sticky top-0 z-50 transition-all ${isFullScreen && !areOverlaysVisible ? 'hidden' : ''}`}>
           <Header
             isMobileFrame={isMobileFrame}
             setIsMobileFrame={setIsMobileFrame}
@@ -511,6 +511,8 @@ export default function App() {
             user={user}
             activeTab={activeTab}
             onNavigateTab={(tab) => setActiveTab(tab)}
+            isFullScreen={isFullScreen}
+            setIsFullScreen={setIsFullScreen}
           />
         </div>
 
@@ -656,111 +658,14 @@ export default function App() {
           />
         )}
 
-        {/* Floating Full-screen Overlay Control Pill Bar */}
-        {isFullScreen && areOverlaysVisible && (
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-white/95 text-stone-900 backdrop-blur-2xl px-3.5 py-2 rounded-full shadow-xl border border-stone-200/90 flex items-center gap-2 sm:gap-3 text-xs animate-fade-in max-w-[95vw] overflow-x-auto scrollbar-none">
-            {/* Theme Selector Color Dots */}
-            <div className="flex items-center gap-1.5 pr-2 border-r border-stone-200">
-              {(['ivory', 'mint', 'white', 'sepia'] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setPageTheme(t as any)}
-                  className={`w-5 h-5 rounded-full border transition-all ${
-                    t === 'ivory'
-                      ? 'bg-[#FCFBF7] border-amber-300'
-                      : t === 'mint'
-                      ? 'bg-[#F2F7F2] border-emerald-300'
-                      : t === 'white'
-                      ? 'bg-[#FFFFFF] border-stone-300'
-                      : 'bg-[#FAF3E0] border-amber-400'
-                  } ${pageTheme === t ? 'ring-2 ring-amber-600 scale-110 shadow-2xs' : 'opacity-70 hover:opacity-100'}`}
-                  title={t === 'ivory' ? 'Fildişi Tema' : t === 'mint' ? 'Nane Yeşili Tema' : t === 'white' ? 'Kar Beyazı Tema' : 'Sepya Tema'}
-                />
-              ))}
-            </div>
-
-            {/* Navigation Tabs */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setActiveTab('quran')}
-                className={`px-3 py-1.5 rounded-full font-bold transition-all flex items-center gap-1.5 ${
-                  activeTab === 'quran'
-                    ? 'bg-[#D4AF37] text-stone-950 shadow-sm'
-                    : 'text-stone-300 hover:text-white'
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>Kur'an</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setIsFullScreen(false);
-                  setActiveTab('sohbet');
-                }}
-                className={`px-3 py-1.5 rounded-full font-bold transition-all flex items-center gap-1.5 ${
-                  activeTab === 'sohbet'
-                    ? 'bg-[#D4AF37] text-stone-950 shadow-sm'
-                    : 'text-stone-300 hover:text-white'
-                }`}
-              >
-                <Radio className="w-3.5 h-3.5" />
-                <span>Sohbet</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setIsFullScreen(false);
-                  setActiveTab('notes');
-                }}
-                className={`px-3 py-1.5 rounded-full font-bold transition-all flex items-center gap-1.5 ${
-                  activeTab === 'notes'
-                    ? 'bg-[#D4AF37] text-stone-950 shadow-sm'
-                    : 'text-stone-300 hover:text-white'
-                }`}
-              >
-                <StickyNote className="w-3.5 h-3.5" />
-                <span>Notlar</span>
-              </button>
-            </div>
-
-            <div className="w-px h-4 bg-stone-800 my-auto mx-0.5" />
-
-            {/* Quick Action Icons & Fullscreen Exit */}
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setIsExportImportOpen(true)}
-                title="Notları Dışa/İçe Aktar"
-                className="p-1.5 rounded-full text-amber-300 hover:bg-stone-800 transition-colors"
-              >
-                <Download className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                onClick={() => setIsUserProfileOpen(true)}
-                title="Kullanıcı Girişi / Profil"
-                className="p-1.5 rounded-full text-amber-300 hover:bg-stone-800 transition-colors"
-              >
-                <User className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                onClick={() => setIsFullScreen(false)}
-                title="Tam Ekrandan Çık"
-                className="p-1.5 rounded-full text-stone-300 hover:text-white hover:bg-stone-800 transition-colors"
-              >
-                <Minimize2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Native Mobile Bottom Navigation - Hidden when reading Quran for full screen */}
-        {!isFullScreen && activeTab !== 'quran' && (
+        {/* Native Mobile Bottom Navigation - Shown on all tabs; hides in full screen when overlays are hidden */}
+        {(!isFullScreen || areOverlaysVisible) && (
           <BottomNav
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             unresolvedNotesCount={verseNotes.length}
+            isFullScreen={isFullScreen}
+            setIsFullScreen={setIsFullScreen}
           />
         )}
       </div>
