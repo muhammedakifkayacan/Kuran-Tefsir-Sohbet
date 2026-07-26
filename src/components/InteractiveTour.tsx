@@ -16,7 +16,7 @@ export interface TourStep {
 export const TOUR_STEPS: TourStep[] = [
   {
     id: 'step_welcome',
-    targetId: 'tour-header-logo',
+    targetId: 'tour-quran-topbar',
     tab: 'quran',
     title: 'Hoş Geldin! 🎉',
     badge: 'Uygulama Rehberi',
@@ -29,17 +29,17 @@ export const TOUR_STEPS: TourStep[] = [
     tab: 'quran',
     title: 'Sure & Sayfa Arama 📖',
     badge: 'Hızlı Erişim',
-    description: "İstediğiniz Sûre ismini veya sayfa numarasını yazarak anında geçiş yapabilirsiniz. İster meal oku, ister Arapça metni takip et!",
+    description: "İstediğiniz Sûre ismini veya sayfa numarasını seçerek anında geçiş yapabilirsiniz. İster meal oku, ister Arapça metni takip et!",
     preferredPosition: 'bottom',
   },
   {
     id: 'step_recitation_audio',
-    targetId: 'tour-audio-controls',
+    targetId: 'tour-quran-menu',
     tab: 'quran',
-    title: 'Sesli Dinleme & Tilavet 🎧',
-    badge: 'Kur\'an Dinle',
-    description: "Sayfadaki 'Dinle' butonuna basarak dünyaca ünlü kârilerin sesinden Kur'an dinleyebilir, okuma hızını istediğiniz gibi ayarlayabilirsiniz.",
-    preferredPosition: 'top',
+    title: 'Kur\'an Menüsü & Ayarlar 🎧',
+    badge: 'Sesli Dinleme & Ayarlar',
+    description: "Menü butonuna dokunarak sesli tilavet dinleyebilir, mealleri indirebilir, yazı boyutunu ve zemin rengini kişiselleştirebilirsiniz.",
+    preferredPosition: 'bottom',
   },
   {
     id: 'step_sohbet_view',
@@ -71,10 +71,10 @@ export const TOUR_STEPS: TourStep[] = [
   {
     id: 'step_profile_sync',
     targetId: 'tour-user-profile',
-    tab: 'quran',
+    tab: 'home',
     title: 'Profil & Ayarlar ⚙️',
     badge: 'Hesap & Temalar',
-    description: "Google hesabınızla giriş yaparak verilerinizi bulutta saklayabilir, gece modunu ve yazı boyutunu değiştirebilirsiniz.",
+    description: "Google hesabınızla giriş yaparak verilerinizi bulutta saklayabilir, gece modunu ve tüm tercihlerinizi yönetebilirsiniz.",
     preferredPosition: 'bottom',
   },
 ];
@@ -122,14 +122,20 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
     if (!isOpen || !currentStep) return;
 
     let el = document.getElementById(currentStep.targetId);
-    if (!el) {
-      if (retryCountRef.current < 15) {
+    let isVisible = el && el.offsetWidth > 0 && el.offsetHeight > 0;
+
+    if (!isVisible) {
+      if (retryCountRef.current < 12) {
         retryCountRef.current += 1;
-        setTimeout(measureTarget, 100);
+        setTimeout(measureTarget, 120);
         return;
       } else {
-        // Fallback to top header logo or main selector if specific target element is missing
-        el = document.getElementById('tour-surah-selector') || document.getElementById('tour-header-logo') || document.querySelector('header');
+        // Fallback to quran topbar or surah selector or main container if specific target element is missing/hidden
+        el = document.getElementById('tour-quran-topbar') || 
+             document.getElementById('tour-surah-selector') || 
+             document.getElementById('tour-header-logo') || 
+             document.querySelector('main') || 
+             document.body;
       }
     }
 
@@ -139,25 +145,28 @@ export const InteractiveTour: React.FC<InteractiveTourProps> = ({
     
     // Smoothly scroll element into view if off-screen
     const rect = el.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+
     const isOffscreen =
       rect.top < 20 ||
       rect.left < 10 ||
       rect.bottom > window.innerHeight - 20 ||
       rect.right > window.innerWidth - 10;
 
-    if (isOffscreen) {
+    if (isOffscreen && el !== document.body) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
     }
 
     // Re-calculate after potential scroll offset
     setTimeout(() => {
+      if (!el) return;
       const updatedRect = el.getBoundingClientRect();
       const padding = 6;
       setTargetRect({
         top: Math.max(0, updatedRect.top - padding),
         left: Math.max(0, updatedRect.left - padding),
-        width: updatedRect.width + padding * 2,
-        height: updatedRect.height + padding * 2,
+        width: Math.max(40, updatedRect.width + padding * 2),
+        height: Math.max(30, updatedRect.height + padding * 2),
       });
       setIsMeasuring(false);
     }, 160);

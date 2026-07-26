@@ -307,25 +307,22 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12 animate-fade-in">
       {/* Top Banner & Dashboard Customizer Trigger */}
-      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-3xl p-5 sm:p-7 shadow-2xs border border-stone-200/90 dark:border-stone-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-3xl p-5 sm:p-6 border border-stone-200/80 dark:border-stone-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold rounded-full mb-2 border border-emerald-200/60 dark:border-emerald-800/60">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-            <span>Masaüstü & Mobil Bütünleşik Panel</span>
-          </div>
-          <TitleWithHelp
-            title="Hoş Geldiniz, Hayırlı Dersler"
-            description="Kur'an okumalarınızı, ders notlarınızı ve sohbet meclislerinizi tek ekrandan yönetin."
-            titleClassName="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100"
-          />
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
+            Hoş Geldiniz
+          </h1>
+          <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
+            Kur'an ve tefsir dersleriniz
+          </p>
         </div>
 
         <button
           onClick={() => setIsCustomizing(!isCustomizing)}
-          className="px-4 py-2.5 rounded-2xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-bold text-xs border border-stone-200/80 dark:border-stone-700 flex items-center gap-2 transition-all active:scale-95 cursor-pointer shrink-0 shadow-2xs"
+          className="px-3.5 py-2 rounded-2xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 font-semibold text-xs border border-stone-200/80 dark:border-stone-700 flex items-center gap-2 transition-all active:scale-95 cursor-pointer shrink-0"
         >
           <Sliders className="w-4 h-4 text-stone-500 dark:text-stone-400" />
-          <span>{isCustomizing ? 'Düzenlemeyi Bitir' : 'Düzen Özelleştir'}</span>
+          <span>{isCustomizing ? 'Bitti' : 'Düzenle'}</span>
         </button>
       </div>
 

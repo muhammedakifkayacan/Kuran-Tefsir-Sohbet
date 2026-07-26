@@ -1,0 +1,35 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User profile and personal information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "UserDataDoc": {
+      "title": "User Data Document",
+      "description": "User personal data containing sohbets, notes, bookmarks, and last read",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile"
+    },
+    "/users/{userId}/data/{docId}": {
+      "schema": { "$ref": "#/entities/UserDataDoc" },
+      "description": "User personal app data documents"
+    }
+  }
+}

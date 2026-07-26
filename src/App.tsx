@@ -26,6 +26,7 @@ import { INITIAL_SOHBET_SESSIONS } from './data/sohbetData';
 import { fetchSurahFromApi } from './utils/quranApi';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { loadUserData, saveUserSohbets, saveUserNotes, saveUserLastRead } from './lib/userSync';
 
 export default function App() {
   const {
@@ -120,6 +121,11 @@ export default function App() {
     setUser(null);
     setIsGuest(true);
     localStorage.removeItem('kuran_user_profile');
+    loadUserData(null).then((data) => {
+      setSohbetSessions(data.sohbets);
+      setVerseNotes(data.notes);
+      setLastReadPosition(data.lastRead);
+    });
   };
 
   const handleRequireAuth = (msg: string) => {
@@ -268,45 +274,33 @@ export default function App() {
   const [selectedReciter, setSelectedReciter] = useState<Reciter>(RECITERS[0]);
   const [playbackRate, setPlaybackRate] = useState<number>(1.0);
 
-  // Sohbet Sessions State
-  const [sohbetSessions, setSohbetSessions] = useState<SohbetSession[]>(() => {
-    const saved = localStorage.getItem('kuran_app_sohbets');
-    return saved ? JSON.parse(saved) : INITIAL_SOHBET_SESSIONS;
-  });
-
-  // Verse Notes State
-  const [verseNotes, setVerseNotes] = useState<VerseNote[]>(() => {
-    const saved = localStorage.getItem('kuran_app_notes');
-    return saved
-      ? JSON.parse(saved)
-      : [
-          {
-            id: 'note_1',
-            surahId: 67,
-            surahName: 'Mülk Sûresi',
-            verseNumber: 3,
-            tag: 'Tecvit',
-            noteText: 'İdgam-ı Maal Gunne kuralında tutma süresi 1.5 elif miktarına tamamlanacak.',
-            createdAt: '2026-07-20 14:30',
-          },
-        ];
-  });
+  // Sohbet Sessions & Verse Notes State
+  const [sohbetSessions, setSohbetSessions] = useState<SohbetSession[]>([]);
+  const [verseNotes, setVerseNotes] = useState<VerseNote[]>([]);
 
   // Voice Recorder Modal State
   const [isVoiceRecorderOpen, setIsVoiceRecorderOpen] = useState(false);
   const [recordedVoiceUrl, setRecordedVoiceUrl] = useState<string | null>(null);
   const [recordedVoiceTranscript, setRecordedVoiceTranscript] = useState<string>('');
 
-  // Sync Sohbet Sessions to LocalStorage
-  useEffect(() => {
-    localStorage.setItem('kuran_app_sohbets', JSON.stringify(sohbetSessions));
-  }, [sohbetSessions]);
-
   // Target verse auto-highlight state
   const [targetVerseNumber, setTargetVerseNumber] = useState<number | null>(null);
+
+  // User Data Sync Effect (Firestore + User-Scoped Local Storage)
   useEffect(() => {
-    localStorage.setItem('kuran_app_notes', JSON.stringify(verseNotes));
-  }, [verseNotes]);
+    let isMounted = true;
+    const currentUid = auth.currentUser?.uid || null;
+    loadUserData(currentUid).then((data) => {
+      if (isMounted) {
+        setSohbetSessions(data.sohbets);
+        setVerseNotes(data.notes);
+        if (data.lastRead) setLastReadPosition(data.lastRead);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.email, auth.currentUser?.uid]);
 
   // Global Escape key listener to close modals / full screen
   useEffect(() => {
@@ -373,23 +367,33 @@ export default function App() {
       id: `note_${Date.now()}`,
       createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
     };
-    setVerseNotes([newNote, ...verseNotes]);
+    const updated = [newNote, ...verseNotes];
+    setVerseNotes(updated);
+    saveUserNotes(updated, auth.currentUser?.uid);
   };
 
   const handleDeleteNote = (id: string) => {
-    setVerseNotes(verseNotes.filter((n) => n.id !== id));
+    const updated = verseNotes.filter((n) => n.id !== id);
+    setVerseNotes(updated);
+    saveUserNotes(updated, auth.currentUser?.uid);
   };
 
   const handleAddSohbetSession = (newSohbet: SohbetSession) => {
-    setSohbetSessions([newSohbet, ...sohbetSessions]);
+    const updated = [newSohbet, ...sohbetSessions];
+    setSohbetSessions(updated);
+    saveUserSohbets(updated, auth.currentUser?.uid);
   };
 
   const handleUpdateSohbetSession = (updatedSession: SohbetSession) => {
-    setSohbetSessions((prev) => prev.map((s) => (s.id === updatedSession.id ? updatedSession : s)));
+    const updated = sohbetSessions.map((s) => (s.id === updatedSession.id ? updatedSession : s));
+    setSohbetSessions(updated);
+    saveUserSohbets(updated, auth.currentUser?.uid);
   };
 
   const handleDeleteSohbetSession = (id: string) => {
-    setSohbetSessions(sohbetSessions.filter((s) => s.id !== id));
+    const updated = sohbetSessions.filter((s) => s.id !== id);
+    setSohbetSessions(updated);
+    saveUserSohbets(updated, auth.currentUser?.uid);
   };
 
   const handleResumeReading = (surahId: number, pageNumber?: number) => {
@@ -398,13 +402,16 @@ export default function App() {
   };
 
   const handleImportNotes = (importedNotes: VerseNote[], mode: 'merge' | 'replace') => {
+    let updated: VerseNote[];
     if (mode === 'replace') {
-      setVerseNotes(importedNotes);
+      updated = importedNotes;
     } else {
       const existingIds = new Set(verseNotes.map((n) => n.id));
       const newItems = importedNotes.filter((n) => !existingIds.has(n.id));
-      setVerseNotes([...newItems, ...verseNotes]);
+      updated = [...newItems, ...verseNotes];
     }
+    setVerseNotes(updated);
+    saveUserNotes(updated, auth.currentUser?.uid);
   };
 
   // Pull to Refresh State (PWA / Mobile Home Screen reload)

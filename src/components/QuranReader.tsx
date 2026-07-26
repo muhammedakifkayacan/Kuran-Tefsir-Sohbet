@@ -8,6 +8,8 @@ import { fetchSurahFromApi } from '../utils/quranApi';
 import { getOfflineDownloadStatus, downloadAllSurahsOffline, clearAllOfflineData } from '../utils/offlineStorage';
 import { MEAL_SOURCES, TAFSIR_SOURCES, generateTafsirContent, getAuthorMealText } from '../data/tafsirData';
 import { useSettings } from '../context/SettingsContext';
+import { auth } from '../lib/firebase';
+import { loadUserData, saveUserRibbons, saveUserLastRead, saveUserBookmarksMap } from '../lib/userSync';
 
 interface QuranReaderProps {
   selectedSurah: Surah;
@@ -481,14 +483,17 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   }, [selectedSurah?.id, selectedSurah?.verses]);
 
   // Ribbon Bookmarks ("İp Ayraç / Sayfa Kurdeleleri") State
-  const [ribbons, setRibbons] = useState<RibbonBookmark[]>(() => {
-    try {
-      const saved = localStorage.getItem('kuran_ribbon_bookmarks');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  });
+  const [ribbons, setRibbons] = useState<RibbonBookmark[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    loadUserData(auth.currentUser?.uid).then((data) => {
+      if (isMounted) {
+        setRibbons(data.ribbons);
+      }
+    });
+    return () => { isMounted = false; };
+  }, [user?.email, auth.currentUser?.uid]);
   const [isRibbonListModalOpen, setIsRibbonListModalOpen] = useState(false);
   const [editingRibbonNoteId, setEditingRibbonNoteId] = useState<string | null>(null);
   const [ribbonNoteText, setRibbonNoteText] = useState('');
@@ -1720,7 +1725,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
         (r) => !(r.surahId === selectedSurah.id && r.pageNumber === selectedPage)
       );
       setRibbons(updated);
-      localStorage.setItem('kuran_ribbon_bookmarks', JSON.stringify(updated));
+      saveUserRibbons(updated, auth.currentUser?.uid);
       showToast(`🎗️ İp ayraç yukarı itildi/kaldırıldı (Sayfa ${selectedPage})`);
     } else {
       const firstVerse = pageVerses[0];
@@ -1746,7 +1751,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       };
       const updated = [newRibbon, ...ribbons];
       setRibbons(updated);
-      localStorage.setItem('kuran_ribbon_bookmarks', JSON.stringify(updated));
+      saveUserRibbons(updated, auth.currentUser?.uid);
       showToast(`🎗️ İp Ayraç Sayfa ${selectedPage}'ye indirildi ve yer kaydedildi!`);
     }
   };
@@ -1754,7 +1759,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const handleRemoveRibbonById = (id: string) => {
     const updated = ribbons.filter((r) => r.id !== id);
     setRibbons(updated);
-    localStorage.setItem('kuran_ribbon_bookmarks', JSON.stringify(updated));
+    saveUserRibbons(updated, auth.currentUser?.uid);
     showToast('İp ayraç silindi.');
   };
 
@@ -1781,7 +1786,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const handleSaveRibbonNote = (id: string, noteText: string) => {
     const updated = ribbons.map((r) => (r.id === id ? { ...r, note: noteText.trim() } : r));
     setRibbons(updated);
-    localStorage.setItem('kuran_ribbon_bookmarks', JSON.stringify(updated));
+    saveUserRibbons(updated, auth.currentUser?.uid);
     setEditingRibbonNoteId(null);
     setRibbonNoteText('');
     showToast('İp ayracına not eklendi.');
@@ -1873,21 +1878,18 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
     selectedSurah,
   ]);
 
-  // Load bookmarked verses for current surah from localStorage
+  // Load bookmarked verses for current surah
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(`kuran_bookmarks_${selectedSurah.id}`);
-      if (saved) {
-        setBookmarkedVerses(JSON.parse(saved));
-      } else {
-        setBookmarkedVerses([]);
+    let isMounted = true;
+    loadUserData(auth.currentUser?.uid).then((data) => {
+      if (isMounted) {
+        setBookmarkedVerses(data.bookmarks[selectedSurah.id] || []);
       }
-    } catch {
-      setBookmarkedVerses([]);
-    }
-  }, [selectedSurah.id]);
+    });
+    return () => { isMounted = false; };
+  }, [selectedSurah.id, user?.email, auth.currentUser?.uid]);
 
-  // Persist last reading position to localStorage
+  // Persist last reading position per user
   useEffect(() => {
     const lastPos = {
       surahId: selectedSurah.id,
@@ -1896,15 +1898,15 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       pageNumber: selectedPage,
       updatedAt: new Date().toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
     };
-    localStorage.setItem('kuran_last_read', JSON.stringify(lastPos));
-  }, [selectedSurah, selectedPage, selectedMushafAyah, activeAyah]);
+    saveUserLastRead(lastPos, auth.currentUser?.uid);
+  }, [selectedSurah, selectedPage, selectedMushafAyah, activeAyah, user?.email, auth.currentUser?.uid]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 2500);
   };
 
-  const toggleBookmark = (verseNum: number) => {
+  const toggleBookmark = async (verseNum: number) => {
     let updated: number[];
     if (bookmarkedVerses.includes(verseNum)) {
       updated = bookmarkedVerses.filter((v) => v !== verseNum);
@@ -1914,11 +1916,13 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
       showToast(`${verseNum}. Ayet yer işaretlerine eklendi.`);
     }
     setBookmarkedVerses(updated);
-    try {
-      localStorage.setItem(`kuran_bookmarks_${selectedSurah.id}`, JSON.stringify(updated));
-    } catch (e) {
-      console.error(e);
-    }
+
+    const userData = await loadUserData(auth.currentUser?.uid);
+    const updatedMap = {
+      ...userData.bookmarks,
+      [selectedSurah.id]: updated,
+    };
+    saveUserBookmarksMap(updatedMap, auth.currentUser?.uid);
   };
 
   const handleSaveNoteSubmit = (targetAyah: Ayah, customText?: string) => {
@@ -2034,398 +2038,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   }[safeTheme];
 
   const renderPageNavigationControl = () => {
-    const firstVerseInPage = pageVerses[0];
-    const lastVerseInPage = pageVerses[pageVerses.length - 1];
-
-    return (
-      <div id="tour-surah-selector" className={`relative z-20 border rounded-2xl p-2 sm:p-3 shadow-xs transition-all duration-300 w-full max-w-full overflow-visible hidden sm:block ${themeStyles.cardBg} ${themeStyles.cardBorder} ${
-        isFullScreen && !areOverlaysVisible
-          ? 'opacity-0 -translate-y-6 pointer-events-none h-0 overflow-hidden mb-0'
-          : 'opacity-100 translate-y-0 mb-3'
-      }`}>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 w-full max-w-full">
-          {/* Top Row on Mobile / Main Nav Controls */}
-          <div className="flex items-center justify-between w-full sm:w-auto gap-1.5 sm:gap-2">
-            {/* Önceki Sayfa */}
-            <button
-              disabled={!hasPrevPage}
-              onClick={handlePrevPage}
-              className="px-2.5 sm:px-3 py-1.5 rounded-xl border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 font-bold text-xs flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 shrink-0 cursor-pointer"
-              title="Önceki Sayfa"
-            >
-              <ChevronLeft className="w-4 h-4 text-amber-600" />
-              <span className="hidden xs:inline">Önceki</span>
-            </button>
-
-            {/* Page Dropdown Button */}
-            <div className="relative">
-              <button
-                onClick={() => {
-                  setIsPageMenuOpen(!isPageMenuOpen);
-                  if (isFilterMenuOpen) setIsFilterMenuOpen(false);
-                }}
-                className="px-2.5 sm:px-3.5 py-1.5 rounded-xl border border-amber-300/80 bg-amber-50/80 hover:bg-amber-100 text-amber-950 text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                <span>Sayfa {selectedPage}{pagesInSurah.length > 1 ? ` / ${pagesInSurah[pagesInSurah.length - 1]}` : ''}</span>
-                {firstVerseInPage && lastVerseInPage && (
-                  <span className="hidden md:inline text-[10px] font-normal opacity-75 border-l border-amber-400/30 pl-2">
-                    ({firstVerseInPage.number} - {lastVerseInPage.number}. Ayetler)
-                  </span>
-                )}
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isPageMenuOpen ? 'rotate-180' : ''}`} />
-              </button>
-
-              {/* Popover Dropdown for Fast Page Selection */}
-              {isPageMenuOpen && createPortal(
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-stone-950/60 backdrop-blur-md animate-fade-in">
-                  <div
-                    className="absolute inset-0"
-                    onClick={() => setIsPageMenuOpen(false)}
-                  />
-                  <div className="relative z-10 p-5 rounded-3xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-full max-w-xs sm:max-w-sm max-h-[85vh] overflow-y-auto overscroll-contain">
-                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-stone-200 dark:border-stone-800 text-xs font-bold">
-                      <span>Sayfaya Git</span>
-                      <span className="text-[10px] opacity-60">{selectedSurah.nameTurkish} ({pagesInSurah.length} Sayfa)</span>
-                    </div>
-
-                    <div className="grid grid-cols-5 sm:grid-cols-6 gap-1.5 max-h-56 overflow-y-auto p-1 scrollbar-thin">
-                      {pagesInSurah.map((p) => (
-                        <button
-                          key={p}
-                          onClick={() => {
-                            setSelectedPage(p);
-                            setSelectedMushafAyah(null);
-                            setIsPageMenuOpen(false);
-                          }}
-                          className={`py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                            selectedPage === p
-                              ? 'bg-amber-500 text-white font-black shadow-md scale-105'
-                              : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-amber-100 dark:hover:bg-stone-700 hover:text-amber-900 dark:hover:text-amber-300'
-                          }`}
-                        >
-                          {p}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>,
-                document.body
-              )}
-            </div>
-
-            {/* Sonraki Sayfa */}
-            <button
-              disabled={!hasNextPage}
-              onClick={handleNextPage}
-              className="px-2.5 sm:px-3 py-1.5 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-700 font-bold text-xs flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-95 shrink-0 cursor-pointer"
-              title="Sonraki Sayfa"
-            >
-              <span className="hidden xs:inline">Sonraki</span>
-              <ChevronRight className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            </button>
-          </div>
-
-          {/* Action Bar Tools (Compact row on mobile, inline on desktop) */}
-          <div className="flex items-center justify-between sm:justify-end gap-1 sm:gap-1.5 w-full sm:w-auto overflow-x-auto sm:overflow-visible scrollbar-none pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-200/60 dark:border-stone-700/60">
-            {/* Arama İkon Butonu */}
-            <button
-              onClick={() => {
-                setIsSearchModalOpen(true);
-                if (isFilterMenuOpen) setIsFilterMenuOpen(false);
-                if (isPageMenuOpen) setIsPageMenuOpen(false);
-              }}
-              className="p-1.5 px-2 sm:px-2.5 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-100/90 dark:bg-stone-800/90 hover:bg-amber-50 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0"
-              title="Kur'an-ı Kerim'de Ara"
-            >
-              <Search className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-              <span className="text-xs font-semibold">Ara</span>
-            </button>
-
-            {/* Audio Recitation Dinle Button */}
-            <button
-              id="tour-audio-controls"
-              onClick={() => {
-                const firstAyahInPage = pageVerses[0] || selectedSurah?.verses[0];
-                if (firstAyahInPage) {
-                  onPlayAyah(firstAyahInPage);
-                }
-              }}
-              className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0 ${
-                isPlaying
-                  ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs'
-                  : 'bg-stone-100/90 dark:bg-stone-800/90 hover:bg-emerald-50 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 border-stone-200 dark:border-stone-700'
-              }`}
-              title="Sayfadaki Ayetleri Dinle"
-            >
-              <Volume2 className={`w-3.5 h-3.5 ${isPlaying ? 'text-white animate-pulse' : 'text-emerald-700 dark:text-emerald-400'}`} />
-              <span className="text-xs font-semibold">{isPlaying ? 'Durdur' : 'Dinle'}</span>
-            </button>
-
-            {/* Kayıtlı İpler (Ribbon Bookmarks) Button */}
-            <button
-              onClick={() => setIsRibbonListModalOpen(true)}
-              className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0 ${
-                isCurrentPageRibboned
-                  ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
-                  : 'bg-stone-100/90 dark:bg-stone-800/90 hover:bg-amber-50 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 border-stone-200 dark:border-stone-700'
-              }`}
-              title="Kayıtlı İp Ayraçlarım (Sayfa Kurdeleleri)"
-            >
-              <span className="text-sm">🎗️</span>
-              <span className="text-xs font-semibold">İplerim</span>
-              {ribbons.length > 0 && (
-                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${
-                  isCurrentPageRibboned ? 'bg-amber-900 text-amber-100' : 'bg-amber-600 text-white'
-                }`}>
-                  {ribbons.length}
-                </span>
-              )}
-            </button>
-
-            {/* Çoklu Seç Butonu */}
-            <button
-              onClick={() => {
-                if (isMultiSelectMode) {
-                  exitMultiSelectMode();
-                } else {
-                  setIsMultiSelectMode(true);
-                  showToast('Çoklu Ayet Seçim Modu Açıldı. Ayetlere dokunarak seçebilirsiniz.');
-                }
-              }}
-              className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shrink-0 ${
-                isMultiSelectMode || selectedVerseNumbers.length > 0
-                  ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                  : 'bg-stone-100/90 dark:bg-stone-800/90 hover:bg-amber-50 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 border-stone-200 dark:border-stone-700'
-              }`}
-              title="Çoklu Ayet Seçimi"
-            >
-              <CheckSquare className={`w-3.5 h-3.5 ${isMultiSelectMode || selectedVerseNumbers.length > 0 ? 'text-white' : 'text-amber-700 dark:text-amber-400'}`} />
-              <span className="text-xs font-semibold">
-                {isMultiSelectMode ? 'Açık' : 'Seç'}
-              </span>
-            </button>
-
-            {/* Filtre / Okuma Ayarları İkon Butonu */}
-            <div className="relative shrink-0">
-              <button
-                onClick={() => {
-                  setIsFilterMenuOpen(!isFilterMenuOpen);
-                  if (isPageMenuOpen) setIsPageMenuOpen(false);
-                }}
-                className={`p-1.5 px-2 sm:px-2.5 rounded-xl border text-xs font-bold flex items-center gap-1 transition-all active:scale-95 cursor-pointer ${
-                  isFilterMenuOpen
-                    ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
-                    : 'bg-stone-100/90 dark:bg-stone-800/90 hover:bg-amber-50 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 border-stone-200 dark:border-stone-700'
-                }`}
-                title="Filtreler & Okuma Ayarları (Sûre, Görünüm, Yazı Boyutu)"
-              >
-                <SlidersHorizontal className={`w-3.5 h-3.5 ${isFilterMenuOpen ? 'text-white' : 'text-amber-700 dark:text-amber-400'}`} />
-                <span className="text-xs font-semibold">Ayarlar</span>
-              </button>
-
-              {/* Filter / Settings Modal */}
-              {isFilterMenuOpen && createPortal(
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-stone-950/60 backdrop-blur-md animate-fade-in">
-                  <div
-                    className="absolute inset-0"
-                    onClick={() => setIsFilterMenuOpen(false)}
-                  />
-                  <div className="relative z-10 p-5 rounded-3xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-2xl w-full max-w-sm max-h-[85vh] overflow-y-auto space-y-4 overscroll-contain">
-                    <div className="flex items-center justify-between pb-2 border-b border-stone-100 dark:border-stone-800">
-                      <span className="text-xs font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
-                        <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                        Okuma Filtreleri & Ayarlar
-                      </span>
-                      <button
-                        onClick={() => setIsFilterMenuOpen(false)}
-                        className="p-1 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    {/* Sûre Seçimi */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider block">Sûre Seçimi</label>
-                      <button
-                        onClick={() => {
-                          setIsFilterMenuOpen(false);
-                          setIsSurahModalOpen(true);
-                        }}
-                        className="w-full p-2 px-3 rounded-xl bg-amber-50/80 dark:bg-stone-800 hover:bg-amber-100/90 dark:hover:bg-stone-700 border border-amber-200/80 dark:border-stone-700 text-stone-900 dark:text-stone-100 font-bold text-xs flex items-center justify-between transition-all cursor-pointer"
-                      >
-                        <span className="truncate">{selectedSurah.id}. {selectedSurah.nameTurkish.replace(' Sûresi', '')} Sûresi</span>
-                        <span className="text-[10px] text-amber-800 dark:text-amber-400 font-semibold shrink-0 ml-1">Değiştir ▾</span>
-                      </button>
-                    </div>
-
-                    {/* Görünüm Modu */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider block">Görünüm Modu</label>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-xl text-xs font-bold">
-                        <button
-                          onClick={() => {
-                            setViewMode('mushaf');
-                            setShowTranslation(false);
-                          }}
-                          className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                            viewMode === 'mushaf' && !showTranslation ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
-                          }`}
-                        >
-                          <BookOpen className="w-3 h-3 text-amber-500" />
-                          <span>Arapça</span>
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            setViewMode('mushaf');
-                            setShowTranslation(true);
-                          }}
-                          className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                            viewMode === 'mushaf' && showTranslation ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
-                          }`}
-                        >
-                          <BookOpen className="w-3 h-3 text-amber-500" />
-                          <span>Arapça + Meal</span>
-                        </button>
-
-                        <button
-                          onClick={() => setViewMode('meal')}
-                          className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                            viewMode === 'meal' ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
-                          }`}
-                        >
-                          <FileText className="w-3 h-3 text-amber-500" />
-                          <span>Meal</span>
-                        </button>
-
-                        <button
-                          onClick={() => setViewMode('detailed')}
-                          className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
-                            viewMode === 'detailed' ? 'bg-amber-800 text-white shadow-xs font-extrabold' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100'
-                          }`}
-                        >
-                          <List className="w-3 h-3 text-amber-500" />
-                          <span>Detaylı</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Yazı Boyutu */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider block">Yazı Boyutu</label>
-                      <div className="flex items-center gap-1 bg-stone-100 dark:bg-stone-800 p-1 rounded-xl">
-                        {(['md', 'lg', 'xl', '2xl'] as const).map((sz) => (
-                          <button
-                            key={sz}
-                            onClick={() => setFontSize(sz)}
-                            className={`flex-1 py-1 text-xs rounded-lg font-black uppercase transition-all cursor-pointer ${
-                              fontSize === sz ? 'bg-amber-500 text-white shadow-xs' : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100'
-                            }`}
-                          >
-                            {sz}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Meal Müellifi / Seçeneği */}
-                    <div className="space-y-1 pt-2 border-t border-stone-100 dark:border-stone-800">
-                      <label className="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase tracking-wider block flex items-center gap-1">
-                        <BookOpen className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                        <span>Meal Müellifi / Seçeneği</span>
-                      </label>
-                      <select
-                        value={selectedMealSource}
-                        onChange={(e) => {
-                          setSelectedMealSource(e.target.value);
-                          localStorage.setItem('kuran_app_meal_source', e.target.value);
-                          showToast('Meal müellifi güncellendi');
-                        }}
-                        className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-xs font-bold rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
-                      >
-                        {MEAL_SOURCES.map((m) => (
-                          <option key={m.id} value={m.id} className="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
-                            {m.name} ({m.author})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Tefsir Çeşidi / Kaynağı */}
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase tracking-wider block flex items-center gap-1">
-                        <FileText className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                        <span>Tefsir Çeşidi / Kaynağı</span>
-                      </label>
-                      <select
-                        value={selectedTafsirSource}
-                        onChange={(e) => {
-                          setSelectedTafsirSource(e.target.value);
-                          localStorage.setItem('kuran_app_tafsir_source', e.target.value);
-                          showToast('Tefsir kaynağı güncellendi');
-                        }}
-                        className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-xs font-bold rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
-                      >
-                        {TAFSIR_SOURCES.map((t) => (
-                          <option key={t.id} value={t.id} className="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
-                            {t.name} ({t.author})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Yer İşaretli / Kaydedilen Ayetlere Hızlı Geçiş */}
-                    <div className="space-y-1.5 pt-2.5 border-t border-stone-100 dark:border-stone-800">
-                      <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-bold text-stone-400 dark:text-stone-400 uppercase tracking-wider flex items-center gap-1">
-                          <Bookmark className="w-3 h-3 text-amber-600 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
-                          Yer İşaretli / Kaydedilen Ayetler ({bookmarkedVerses.length})
-                        </label>
-                      </div>
-                      {bookmarkedVerses.length === 0 ? (
-                        <div className="text-[11px] text-stone-500 dark:text-stone-400 italic bg-stone-50 dark:bg-stone-800/80 p-2.5 rounded-xl text-center border border-dashed border-stone-200 dark:border-stone-700">
-                          Bu sûrede henüz yer işareti eklenmiş ayet yok. Ayet kartındaki 🔖 ikonuna basarak ekleyebilirsiniz.
-                        </div>
-                      ) : (
-                        <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-1 scrollbar-thin">
-                          {[...bookmarkedVerses].sort((a, b) => a - b).map((vNum) => {
-                            const verseObj = selectedSurah.verses.find((v) => v.number === vNum);
-                            return (
-                              <button
-                                key={vNum}
-                                onClick={() => {
-                                  if (verseObj) {
-                                    setSelectedPage(verseObj.page);
-                                    setSelectedMushafAyah(verseObj);
-                                    setActiveAyah(verseObj);
-                                    setIsFilterMenuOpen(false);
-                                    showToast(`📌 ${vNum}. Ayete gidildi (Sayfa ${verseObj.page})`);
-                                  }
-                                }}
-                                className="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-stone-800 hover:bg-amber-500 dark:hover:bg-amber-600 text-amber-900 dark:text-amber-300 hover:text-white dark:hover:text-white border border-amber-200 dark:border-stone-700 text-xs font-bold transition-all active:scale-95 flex items-center gap-1 shadow-2xs cursor-pointer"
-                                title={`Ayet ${vNum}'e git (Sayfa ${verseObj?.page || ''})`}
-                              >
-                                <Bookmark className="w-3 h-3 text-amber-600 dark:text-amber-400 fill-amber-500 dark:fill-amber-400 shrink-0" />
-                                <span>Ayet {vNum}</span>
-                                {verseObj && <span className="opacity-75 text-[10px] font-normal"> (S.{verseObj.page})</span>}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>,
-                document.body
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   };
+
+  const _unusedNavControl = () => null;
 
   return (
     <div className={`mx-auto animate-fade-in w-full max-w-full overflow-x-hidden transition-all duration-300 ${themeStyles.textMain} ${
@@ -2434,7 +2050,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
         : 'p-3 sm:p-6 max-w-5xl space-y-4 pb-28'
     }`}>
       {/* TAM EKRAN ELİT BAŞLIK VE MENÜ BAR (SOL GERİ - ORTA SÛRE/SAYFA - SAĞ BURGER MENÜ) */}
-      <div className="sticky top-0 z-40 -mx-3 -mt-3 sm:-mx-5 sm:-mt-5 mb-3 px-3.5 py-2.5 sm:py-3 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 flex items-center justify-between gap-2.5 shadow-2xs">
+      <div id="tour-quran-topbar" className="sticky top-0 z-40 -mx-3 -mt-3 sm:-mx-5 sm:-mt-5 mb-3 px-3.5 py-2.5 sm:py-3 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 flex items-center justify-between gap-2.5 shadow-2xs">
         {/* Sol Üst: Geri Butonu */}
         <button
           type="button"
@@ -2455,6 +2071,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
         {/* Orta: Sûre İsmi ve Sayfa Numarası */}
         <button
+          id="tour-surah-selector"
           type="button"
           onClick={() => setIsSurahModalOpen(true)}
           className="flex items-center gap-2 truncate text-center font-bold text-xs sm:text-sm text-amber-950 dark:text-amber-100 bg-amber-50/90 dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 px-3.5 py-1.5 rounded-xl border border-amber-200 dark:border-stone-700 active:scale-95 transition-all cursor-pointer max-w-[60%]"
@@ -2468,6 +2085,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
 
         {/* Sağ Üst: Burger Menü Butonu */}
         <button
+          id="tour-quran-menu"
           type="button"
           onClick={() => setIsMobileBurgerMenuOpen(true)}
           className="p-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 flex items-center justify-center gap-1 font-bold text-xs"
@@ -2478,36 +2096,41 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
         </button>
       </div>
 
-      {/* MOBİL TAM EKRAN BURGER MENÜ OVERLAY */}
+      {/* TAM EKRAN / MASAÜSTÜ İLE UYUMLU BURGER MENÜ OVERLAY */}
       {isMobileBurgerMenuOpen && createPortal(
-        <div className="fixed inset-0 z-[99999] bg-stone-950 text-stone-100 flex flex-col animate-fade-in overflow-hidden">
-          {/* Header */}
-          <div className="p-4 border-b border-stone-800 bg-stone-900 flex items-center justify-between shrink-0 shadow-md">
-            <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                <BookOpen className="w-5 h-5" />
+        <div className="fixed inset-0 z-[99999] bg-stone-950/60 backdrop-blur-md flex items-center justify-center p-0 md:p-6 animate-fade-in overflow-hidden">
+          <div
+            className="absolute inset-0"
+            onClick={() => setIsMobileBurgerMenuOpen(false)}
+          />
+          <div className="relative z-10 w-full h-full md:h-auto md:max-h-[88vh] md:max-w-xl md:rounded-3xl md:shadow-2xl border-0 md:border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 flex flex-col overflow-hidden">
+            {/* Header */}
+            <div className="p-4 border-b border-stone-200 dark:border-stone-800 bg-amber-50/80 dark:bg-stone-900 flex items-center justify-between shrink-0 shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-amber-950 dark:text-amber-200">Kur'an-ı Kerim Menüsü</h2>
+                  <p className="text-[11px] text-stone-600 dark:text-stone-400">{selectedSurah.id}. {selectedSurah.nameTurkish} • Sayfa {selectedPage}</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-sm font-bold text-amber-200">Kur'an-ı Kerim Menüsü</h2>
-                <p className="text-[11px] text-stone-400">{selectedSurah.id}. {selectedSurah.nameTurkish} • Sayfa {selectedPage}</p>
-              </div>
+              <button
+                type="button"
+                onClick={() => setIsMobileBurgerMenuOpen(false)}
+                className="p-2 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white transition-all cursor-pointer"
+                aria-label="Menüyü Kapat"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsMobileBurgerMenuOpen(false)}
-              className="p-2 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white transition-all cursor-pointer"
-              aria-label="Menüyü Kapat"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
 
           {/* Body */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-12 overscroll-contain">
             {/* 1. HIZLI ARAMA */}
-            <div className="bg-stone-900 border border-stone-800 rounded-2xl p-3.5 space-y-3">
+            <div className="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-2xl p-3.5 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
                   <Search className="w-3.5 h-3.5" />
                   <span>Arama & Akıllı Sorgu</span>
                 </span>
@@ -2517,9 +2140,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     setIsMobileBurgerMenuOpen(false);
                     setIsVoiceSearching(true);
                   }}
-                  className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1 bg-emerald-950/80 border border-emerald-800/80 px-2.5 py-1 rounded-lg"
+                  className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800/80 px-2.5 py-1 rounded-lg cursor-pointer"
                 >
-                  <Mic className="w-3 h-3 animate-pulse text-emerald-400" />
+                  <Mic className="w-3 h-3 animate-pulse text-emerald-600 dark:text-emerald-400" />
                   <span>Sesli Arama</span>
                 </button>
               </div>
@@ -2529,7 +2152,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   setIsMobileBurgerMenuOpen(false);
                   setIsSearchModalOpen(true);
                 }}
-                className="flex items-center gap-2 bg-stone-800 border border-stone-700 rounded-xl p-2.5 text-stone-400 text-xs cursor-pointer hover:border-amber-500 transition-all"
+                className="flex items-center gap-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-2.5 text-stone-500 dark:text-stone-400 text-xs cursor-pointer hover:border-amber-500 transition-all shadow-2xs"
               >
                 <Search className="w-4 h-4 text-stone-400 shrink-0" />
                 <span className="truncate">Ayet, sûre veya sayfa ara (Örn: Yasin, Sayfa 440)...</span>
@@ -2537,8 +2160,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             </div>
 
             {/* 2. SÛRE & SAYFA SEÇİMİ */}
-            <div className="bg-stone-900 border border-stone-800 rounded-2xl p-3.5 space-y-3">
-              <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+            <div className="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-2xl p-3.5 space-y-3">
+              <span className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Sûre & Sayfa Navigasyonu</span>
               </span>
@@ -2550,10 +2173,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     setIsMobileBurgerMenuOpen(false);
                     setIsSurahModalOpen(true);
                   }}
-                  className="w-full p-2.5 rounded-xl bg-stone-800 hover:bg-stone-750 border border-amber-500/30 text-stone-100 font-bold text-xs flex items-center justify-between transition-all cursor-pointer"
+                  className="w-full p-2.5 rounded-xl bg-white dark:bg-stone-800 hover:bg-amber-50 dark:hover:bg-stone-700 border border-amber-200 dark:border-amber-500/30 text-stone-800 dark:text-stone-100 font-bold text-xs flex items-center justify-between transition-all cursor-pointer shadow-2xs"
                 >
                   <div className="flex items-center gap-2 truncate">
-                    <span className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-[10px] font-black shrink-0">
+                    <span className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-800 dark:text-amber-300 flex items-center justify-center text-[10px] font-black shrink-0">
                       {selectedSurah.id}
                     </span>
                     <span className="truncate">{selectedSurah.nameTurkish} ({selectedSurah.versesCount} Ayet)</span>
@@ -2567,10 +2190,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     setIsMobileBurgerMenuOpen(false);
                     setIsPageMenuOpen(true);
                   }}
-                  className="w-full p-2.5 rounded-xl bg-stone-800 hover:bg-stone-750 border border-stone-700 text-stone-100 font-bold text-xs flex items-center justify-between transition-all cursor-pointer"
+                  className="w-full p-2.5 rounded-xl bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-100 font-bold text-xs flex items-center justify-between transition-all cursor-pointer shadow-2xs"
                 >
                   <span className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-amber-400" />
+                    <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                     <span>Sayfaya Git (Sayfa {selectedPage} / 604)</span>
                   </span>
                   <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
@@ -2585,9 +2208,9 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     handlePrevPage();
                     showToast(`Sayfa ${selectedPage - 1}'e geçildi`);
                   }}
-                  className="p-2 rounded-xl bg-stone-800 hover:bg-stone-700 disabled:opacity-30 border border-stone-700 text-stone-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="p-2 rounded-xl bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 disabled:opacity-30 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs"
                 >
-                  <ChevronLeft className="w-4 h-4 text-amber-400" />
+                  <ChevronLeft className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                   <span>Önceki Sayfa</span>
                 </button>
                 <button
@@ -2597,17 +2220,17 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     handleNextPage();
                     showToast(`Sayfa ${selectedPage + 1}'e geçildi`);
                   }}
-                  className="p-2 rounded-xl bg-stone-800 hover:bg-stone-700 disabled:opacity-30 border border-stone-700 text-stone-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="p-2 rounded-xl bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 disabled:opacity-30 border border-stone-200 dark:border-stone-700 text-stone-800 dark:text-stone-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs"
                 >
                   <span>Sonraki Sayfa</span>
-                  <ChevronRight className="w-4 h-4 text-amber-400" />
+                  <ChevronRight className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 </button>
               </div>
             </div>
 
             {/* 3. GÖRÜNÜM MODLARI */}
-            <div className="bg-stone-900 border border-stone-800 rounded-2xl p-3.5 space-y-3">
-              <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+            <div className="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-2xl p-3.5 space-y-3">
+              <span className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
                 <FileText className="w-3.5 h-3.5" />
                 <span>Görünüm Modu</span>
               </span>
@@ -2621,10 +2244,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   className={`p-2.5 rounded-xl border transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     viewMode === 'mushaf' && !showTranslation
                       ? 'bg-amber-600 border-amber-500 text-white font-black shadow-md'
-                      : 'bg-stone-800 border-stone-700 text-stone-300 hover:text-white'
+                      : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
                   }`}
                 >
-                  <BookOpen className="w-4 h-4 text-amber-300" />
+                  <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-300" />
                   <span>Arapça</span>
                 </button>
 
@@ -2637,10 +2260,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   className={`p-2.5 rounded-xl border transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     viewMode === 'mushaf' && showTranslation
                       ? 'bg-amber-600 border-amber-500 text-white font-black shadow-md'
-                      : 'bg-stone-800 border-stone-700 text-stone-300 hover:text-white'
+                      : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
                   }`}
                 >
-                  <BookOpen className="w-4 h-4 text-amber-300" />
+                  <BookOpen className="w-4 h-4 text-amber-600 dark:text-amber-300" />
                   <span>Arapça + Meal</span>
                 </button>
 
@@ -2650,10 +2273,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   className={`p-2.5 rounded-xl border transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     viewMode === 'meal'
                       ? 'bg-amber-600 border-amber-500 text-white font-black shadow-md'
-                      : 'bg-stone-800 border-stone-700 text-stone-300 hover:text-white'
+                      : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
                   }`}
                 >
-                  <FileText className="w-4 h-4 text-amber-300" />
+                  <FileText className="w-4 h-4 text-amber-600 dark:text-amber-300" />
                   <span>Sadece Meal</span>
                 </button>
 
@@ -2663,30 +2286,30 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   className={`p-2.5 rounded-xl border transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     viewMode === 'detailed'
                       ? 'bg-amber-600 border-amber-500 text-white font-black shadow-md'
-                      : 'bg-stone-800 border-stone-700 text-stone-300 hover:text-white'
+                      : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white'
                   }`}
                 >
-                  <List className="w-4 h-4 text-amber-300" />
+                  <List className="w-4 h-4 text-amber-600 dark:text-amber-300" />
                   <span>Detaylı Tefsir</span>
                 </button>
               </div>
             </div>
 
             {/* 4. YAZI BOYUTU & ZEMİN TEMASI */}
-            <div className="bg-stone-900 border border-stone-800 rounded-2xl p-3.5 space-y-3">
+            <div className="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-2xl p-3.5 space-y-3">
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
                   <Type className="w-3.5 h-3.5" />
                   <span>Yazı Boyutu</span>
                 </span>
-                <div className="flex items-center gap-1 bg-stone-800 p-1 rounded-xl">
+                <div className="flex items-center gap-1 bg-white dark:bg-stone-800 p-1 rounded-xl border border-stone-200 dark:border-stone-700">
                   {(['md', 'lg', 'xl', '2xl'] as const).map((sz) => (
                     <button
                       key={sz}
                       type="button"
                       onClick={() => setFontSize(sz)}
                       className={`flex-1 py-2 text-xs rounded-lg font-black uppercase transition-all cursor-pointer ${
-                        fontSize === sz ? 'bg-amber-500 text-white shadow-xs' : 'text-stone-400 hover:text-white'
+                        fontSize === sz ? 'bg-amber-500 text-white shadow-xs' : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
                       }`}
                     >
                       {sz}
@@ -2695,8 +2318,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 </div>
               </div>
 
-              <div className="space-y-1.5 pt-2 border-t border-stone-800">
-                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+              <div className="space-y-1.5 pt-2 border-t border-stone-200 dark:border-stone-700">
+                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
                   <SlidersHorizontal className="w-3.5 h-3.5" />
                   <span>Sayfa Zemin Teması</span>
                 </span>
@@ -2712,7 +2335,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       type="button"
                       onClick={() => setPageTheme(thm.id as any)}
                       className={`p-2 rounded-xl text-center border transition-all cursor-pointer ${thm.bg} ${thm.text} ${
-                        pageTheme === thm.id ? 'ring-2 ring-amber-500 font-extrabold scale-105 border-amber-500' : 'border-stone-700 opacity-80 hover:opacity-100'
+                        pageTheme === thm.id ? 'ring-2 ring-amber-500 font-extrabold scale-105 border-amber-500' : 'border-stone-300 dark:border-stone-700 opacity-80 hover:opacity-100'
                       }`}
                     >
                       <span className="text-[11px] block font-bold">{thm.name}</span>
@@ -2723,8 +2346,8 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             </div>
 
             {/* 5. DİNLEME & İP AYRAÇLARI */}
-            <div className="bg-stone-900 border border-stone-800 rounded-2xl p-3.5 space-y-3">
-              <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+            <div className="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-2xl p-3.5 space-y-3">
+              <span className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
                 <Volume2 className="w-3.5 h-3.5" />
                 <span>Sesli Dinleme & Ayraçlar</span>
               </span>
@@ -2754,7 +2377,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     setIsMobileBurgerMenuOpen(false);
                     setIsRibbonListModalOpen(true);
                   }}
-                  className="p-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 text-amber-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  className="p-2.5 rounded-xl bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700 text-amber-800 dark:text-amber-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 >
                   <span>🎗️ İplerim ({ribbons.length})</span>
                 </button>
@@ -2762,14 +2385,14 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             </div>
 
             {/* 6. MEAL & TEFSİR KAYNAĞI */}
-            <div className="bg-stone-900 border border-stone-800 rounded-2xl p-3.5 space-y-2.5">
-              <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+            <div className="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-2xl p-3.5 space-y-2.5">
+              <span className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Meal Müellifi & Tefsir</span>
               </span>
               <div className="space-y-2">
                 <div>
-                  <label className="text-[10px] text-stone-400 block mb-1">Meal Kaynağı</label>
+                  <label className="text-[10px] text-stone-600 dark:text-stone-400 block mb-1 font-semibold">Meal Kaynağı</label>
                   <select
                     value={selectedMealSource}
                     onChange={(e) => {
@@ -2777,10 +2400,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       localStorage.setItem('kuran_app_meal_source', e.target.value);
                       showToast('Meal müellifi güncellendi');
                     }}
-                    className="w-full bg-stone-800 border border-stone-700 text-stone-100 text-xs font-bold rounded-xl p-2.5 focus:outline-none cursor-pointer"
+                    className="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-xs font-bold rounded-xl p-2.5 focus:outline-none cursor-pointer"
                   >
                     {MEAL_SOURCES.map((m) => (
-                      <option key={m.id} value={m.id}>
+                      <option key={m.id} value={m.id} className="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
                         {m.name} ({m.author})
                       </option>
                     ))}
@@ -2788,7 +2411,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-[10px] text-stone-400 block mb-1">Tefsir Kaynağı</label>
+                  <label className="text-[10px] text-stone-600 dark:text-stone-400 block mb-1 font-semibold">Tefsir Kaynağı</label>
                   <select
                     value={selectedTafsirSource}
                     onChange={(e) => {
@@ -2796,10 +2419,10 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                       localStorage.setItem('kuran_app_tafsir_source', e.target.value);
                       showToast('Tefsir kaynağı güncellendi');
                     }}
-                    className="w-full bg-stone-800 border border-stone-700 text-stone-100 text-xs font-bold rounded-xl p-2.5 focus:outline-none cursor-pointer"
+                    className="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 text-xs font-bold rounded-xl p-2.5 focus:outline-none cursor-pointer"
                   >
                     {TAFSIR_SOURCES.map((t) => (
-                      <option key={t.id} value={t.id}>
+                      <option key={t.id} value={t.id} className="bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100">
                         {t.name} ({t.author})
                       </option>
                     ))}
@@ -2809,50 +2432,50 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
             </div>
 
             {/* 7. ÇEVRİMDIŞI İNDİRME PAKETİ VE INDEXEDDB SAKLAMA */}
-            <div className="bg-stone-900 border border-stone-800 rounded-2xl p-3.5 space-y-3">
+            <div className="bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-2xl p-3.5 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+                <span className="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
                   <HardDrive className="w-3.5 h-3.5" />
                   <span>Çevrimdışı Paket & Depolama</span>
                 </span>
                 {offlineStatus.isComplete ? (
-                  <span className="text-[10px] font-black text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                  <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800 px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                     <span>%100 Çevrimdışı Hazır</span>
                   </span>
                 ) : (
-                  <span className="text-[10px] font-bold text-amber-400 bg-amber-950/80 border border-amber-800 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-bold text-amber-800 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-800 px-2 py-0.5 rounded-md">
                     {offlineStatus.downloadedCount} / 114 Sûre Hazır
                   </span>
                 )}
               </div>
 
               {/* Status Info */}
-              <div className="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/80 flex items-center justify-between text-xs">
+              <div className="bg-white dark:bg-stone-800 p-2.5 rounded-xl border border-stone-200 dark:border-stone-700 flex items-center justify-between text-xs">
                 <div>
-                  <div className="font-bold text-stone-200">İndirilmiş Veri Boyutu</div>
-                  <div className="text-[11px] text-stone-400">IndexedDB Depolama Alanı</div>
+                  <div className="font-bold text-stone-800 dark:text-stone-200">İndirilmiş Veri Boyutu</div>
+                  <div className="text-[11px] text-stone-500 dark:text-stone-400">IndexedDB Depolama Alanı</div>
                 </div>
-                <div className="font-black text-amber-300 text-sm">{offlineStatus.estimatedSizeMB} MB</div>
+                <div className="font-black text-amber-700 dark:text-amber-300 text-sm">{offlineStatus.estimatedSizeMB} MB</div>
               </div>
 
               {/* Download Progress Bar if downloading */}
               {isDownloadingOffline && (
-                <div className="space-y-1.5 bg-amber-950/40 p-2.5 rounded-xl border border-amber-800/50">
-                  <div className="flex items-center justify-between text-xs font-bold text-amber-300">
+                <div className="space-y-1.5 bg-amber-50 dark:bg-amber-950/40 p-2.5 rounded-xl border border-amber-200 dark:border-amber-800/50">
+                  <div className="flex items-center justify-between text-xs font-bold text-amber-800 dark:text-amber-300">
                     <span className="flex items-center gap-1.5">
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-600 dark:text-amber-400" />
                       <span>İndiriliyor: {downloadProgress.surahName}</span>
                     </span>
                     <span>%{Math.round((downloadProgress.current / downloadProgress.total) * 100)}</span>
                   </div>
-                  <div className="w-full bg-stone-800 rounded-full h-2 overflow-hidden border border-amber-500/30">
+                  <div className="w-full bg-stone-200 dark:bg-stone-800 rounded-full h-2 overflow-hidden border border-amber-300 dark:border-amber-500/30">
                     <div
                       className="bg-gradient-to-r from-amber-500 to-emerald-400 h-full transition-all duration-200 rounded-full"
                       style={{ width: `${(downloadProgress.current / downloadProgress.total) * 100}%` }}
                     />
                   </div>
-                  <div className="text-[10px] text-stone-400 text-right">
+                  <div className="text-[10px] text-stone-500 dark:text-stone-400 text-right">
                     {downloadProgress.current} / {downloadProgress.total} Sûre Tamamlandı
                   </div>
                 </div>
@@ -2875,7 +2498,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   <button
                     type="button"
                     onClick={handleStartOfflineDownload}
-                    className="w-full py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 border border-emerald-600/40 cursor-pointer"
+                    className="w-full py-2 rounded-xl bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 border border-emerald-300 dark:border-emerald-600/40 cursor-pointer shadow-2xs"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
                     <span>Paketi Yeniden Güncelle</span>
@@ -2886,25 +2509,25 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                   <button
                     type="button"
                     onClick={handleClearOffline}
-                    className="w-full py-2 px-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-rose-300 hover:text-rose-200 font-semibold text-[11px] flex items-center justify-center gap-1.5 border border-rose-900/40 cursor-pointer"
+                    className="w-full py-2 px-3 rounded-xl bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-rose-600 dark:text-rose-300 font-semibold text-[11px] flex items-center justify-center gap-1.5 border border-rose-200 dark:border-rose-900/40 cursor-pointer shadow-2xs"
                   >
-                    <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                    <Trash2 className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
                     <span>İndirilmiş Paketi Sil (Depolama Alanı Aç)</span>
                   </button>
                 )}
               </div>
 
               {/* Data Persistence Explanation Box */}
-              <div className="p-3 bg-stone-950/60 rounded-xl border border-stone-800 space-y-1.5 text-[11px] text-stone-400 leading-relaxed">
-                <div className="font-bold text-amber-300 flex items-center gap-1">
-                  <Database className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <div className="p-3 bg-amber-50/50 dark:bg-stone-950/60 rounded-xl border border-amber-200/60 dark:border-stone-800 space-y-1.5 text-[11px] text-stone-600 dark:text-stone-400 leading-relaxed">
+                <div className="font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1">
+                  <Database className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
                   <span>Veriler Nasıl Saklanır? Çerezlerden Farkı Nedir?</span>
                 </div>
                 <p>
-                  Verileriniz geçici çerezlerde (Cookies) değil; cihazınızın yüksek kapasiteli <strong className="text-stone-200">IndexedDB ve Yerel Veritabanı</strong> katmanında saklanır.
+                  Verileriniz geçici çerezlerde (Cookies) değil; cihazınızın yüksek kapasiteli <strong className="text-stone-800 dark:text-stone-200">IndexedDB ve Yerel Veritabanı</strong> katmanında saklanır.
                 </p>
                 <p>
-                  Tarayıcı çerezleri temizlense dahi bu veritabanı silinmez. Ayrıca Firebase hesabınızla giriş yaptığınızda notlarınız, ayraçlarınız ve okuma geçmişiniz <strong className="text-stone-200">bulut yedekleme</strong> ile tüm cihazlarınızda güvenceye alınır.
+                  Tarayıcı çerezleri temizlense dahi bu veritabanı silinmez. Ayrıca Firebase hesabınızla giriş yaptığınızda notlarınız, ayraçlarınız ve okuma geçmişiniz <strong className="text-stone-800 dark:text-stone-200">bulut yedekleme</strong> ile tüm cihazlarınızda güvenceye alınır.
                 </p>
               </div>
             </div>
@@ -2918,10 +2541,11 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
               Okumaya Devam Et
             </button>
           </div>
-        </div>,
-        document.body
-      )}
-      {/* Toast Banner */}
+        </div>
+      </div>,
+      document.body
+    )}
+    {/* Toast Banner */}
       {toastMsg && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-amber-200 px-5 py-2.5 rounded-full text-xs font-semibold shadow-xl border border-amber-500/30 flex items-center gap-2 animate-bounce">
           <Check className="w-4 h-4 text-amber-400" />
@@ -5141,7 +4765,7 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                 disabled={deleteCountdown > 0}
                 onClick={() => {
                   setRibbons([]);
-                  localStorage.removeItem('kuran_ribbon_bookmarks');
+                  saveUserRibbons([], auth.currentUser?.uid);
                   setIsDeleteAllConfirmOpen(false);
                   setIsRibbonListModalOpen(false);
                   showToast('Tüm ip ayraçlar başarıyla silindi.');

@@ -398,21 +398,21 @@ export const AuthLandingModal: React.FC<AuthLandingModalProps> = ({
           <div className="border-t border-stone-200" />
 
           {/* Continue as Guest Button (Sleek Dark Pill Button) */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <button
               onClick={() => {
                 onContinueAsGuest();
                 onClose();
               }}
-              className="w-full py-4 px-6 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-md hover:shadow-lg transition-all duration-200 active:scale-98 cursor-pointer group"
+              className="w-full py-3.5 px-6 rounded-2xl bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all duration-200 active:scale-98 cursor-pointer group"
             >
               <Eye className="w-4 h-4 text-emerald-400" />
-              <span>Giriş Yapmadan Devam Et (Misafir İnceleme)</span>
+              <span>Misafir Olarak İncele</span>
               <ChevronRight className="w-4 h-4 text-stone-400 group-hover:translate-x-1 transition-transform" />
             </button>
             
-            <p className="text-[11px] text-stone-500 text-center leading-relaxed px-2 font-normal">
-              * Misafir olarak Kur'an-ı Kerim, tilavet ve tefsir derslerini serbestçe inceleyebilirsiniz. Ders notu eklemek veya sohbet kaydı tutmak istediğinizde oturum uyarısı alırsınız.
+            <p className="text-[11px] text-stone-500 text-center font-normal">
+              Okuma ve dinleme özellikleri misafir modunda aktiftir.
             </p>
           </div>
 

@@ -282,13 +282,10 @@ export const SohbetView: React.FC<SohbetViewProps> = ({
 
       {/* Sohbet Sessions Minimal Cards */}
       {filteredSessions.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/90 dark:border-stone-700 p-6 space-y-2.5">
-          <Radio className="w-10 h-10 text-stone-300 dark:text-stone-600 mx-auto" />
-          <p className="text-sm font-bold text-stone-800 dark:text-stone-100">
-            Kayıtlı sohbet veya tefsir dersi bulunamadı
-          </p>
-          <p className="text-xs text-stone-500 dark:text-stone-400">
-            Yukarıdaki "Sohbet Ekle" butonuna basarak yeni bir sohbet dersi kaydedebilirsiniz.
+        <div className="text-center py-12 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/80 dark:border-stone-800 p-6 space-y-2">
+          <Radio className="w-8 h-8 text-stone-300 dark:text-stone-600 mx-auto" />
+          <p className="text-sm font-semibold text-stone-700 dark:text-stone-300">
+            Henüz sohbet kaydı yok
           </p>
         </div>
       ) : (
