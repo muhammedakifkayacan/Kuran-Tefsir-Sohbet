@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight, Share2, Copy, CheckSquare, Square, MessageCircle, Menu, ArrowLeft } from 'lucide-react';
+import { Bookmark, Sparkles, Mic, Search, Volume2, Info, Check, BookOpen, List, ChevronLeft, ChevronRight, ChevronDown, Edit3, Minimize2, FileText, X, Type, SlidersHorizontal, ArrowRight, Share2, Copy, CheckSquare, Square, MessageCircle, Menu, ArrowLeft, Download, CloudOff, Database, Trash2, RefreshCw, CheckCircle2, HardDrive } from 'lucide-react';
 import { Surah, Ayah, VerseNote, RibbonBookmark } from '../types';
 import { ALL_SURAHS } from '../data/surahList';
 import { fetchSurahFromApi } from '../utils/quranApi';
+import { getOfflineDownloadStatus, downloadAllSurahsOffline, clearAllOfflineData } from '../utils/offlineStorage';
 import { MEAL_SOURCES, TAFSIR_SOURCES, generateTafsirContent, getAuthorMealText } from '../data/tafsirData';
 import { useSettings } from '../context/SettingsContext';
 
@@ -518,6 +519,52 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
   const [filterJuz, setFilterJuz] = useState<number | 'all'>('all');
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isMobileBurgerMenuOpen, setIsMobileBurgerMenuOpen] = useState(false);
+
+  // Offline Quran & Meal Download States
+  const [offlineStatus, setOfflineStatus] = useState<{
+    downloadedCount: number;
+    totalSurahs: number;
+    estimatedSizeMB: number;
+    isComplete: boolean;
+  }>({ downloadedCount: 0, totalSurahs: 114, estimatedSizeMB: 0, isComplete: false });
+  const [isDownloadingOffline, setIsDownloadingOffline] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState<{ current: number; total: number; surahName: string }>({
+    current: 0,
+    total: 114,
+    surahName: '',
+  });
+
+  const refreshOfflineStatus = async () => {
+    const status = await getOfflineDownloadStatus();
+    setOfflineStatus(status);
+  };
+
+  useEffect(() => {
+    refreshOfflineStatus();
+  }, []);
+
+  const handleStartOfflineDownload = async () => {
+    setIsDownloadingOffline(true);
+    showToast("Tüm Kur'an ve Meal paket indirmesi başladı...");
+    const result = await downloadAllSurahsOffline((current, total, surahName) => {
+      setDownloadProgress({ current, total, surahName });
+    });
+    setIsDownloadingOffline(false);
+    await refreshOfflineStatus();
+    if (result.success) {
+      showToast("Tüm Kur'an (%100 Çevrimdışı Paket) başarıyla indirildi!");
+    } else {
+      showToast('İndirme sırasında bir sorun oluştu');
+    }
+  };
+
+  const handleClearOffline = async () => {
+    if (window.confirm("Cihazınızdaki indirilmiş Kur'an ve meal paketini silmek istediğinize emin misiniz?")) {
+      await clearAllOfflineData();
+      await refreshOfflineStatus();
+      showToast('Çevrimdışı veriler cihazdan silindi');
+    }
+  };
   const [searchCategoryTab, setSearchCategoryTab] = useState<'all' | 'surahs' | 'verses' | 'pages'>('all');
   const [isLiveListening, setIsLiveListening] = useState(false);
 
@@ -2758,6 +2805,107 @@ export const QuranReader: React.FC<QuranReaderProps> = ({
                     ))}
                   </select>
                 </div>
+              </div>
+            </div>
+
+            {/* 7. ÇEVRİMDIŞI İNDİRME PAKETİ VE INDEXEDDB SAKLAMA */}
+            <div className="bg-stone-900 border border-stone-800 rounded-2xl p-3.5 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+                  <HardDrive className="w-3.5 h-3.5" />
+                  <span>Çevrimdışı Paket & Depolama</span>
+                </span>
+                {offlineStatus.isComplete ? (
+                  <span className="text-[10px] font-black text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                    <span>%100 Çevrimdışı Hazır</span>
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold text-amber-400 bg-amber-950/80 border border-amber-800 px-2 py-0.5 rounded-md">
+                    {offlineStatus.downloadedCount} / 114 Sûre Hazır
+                  </span>
+                )}
+              </div>
+
+              {/* Status Info */}
+              <div className="bg-stone-800/80 p-2.5 rounded-xl border border-stone-700/80 flex items-center justify-between text-xs">
+                <div>
+                  <div className="font-bold text-stone-200">İndirilmiş Veri Boyutu</div>
+                  <div className="text-[11px] text-stone-400">IndexedDB Depolama Alanı</div>
+                </div>
+                <div className="font-black text-amber-300 text-sm">{offlineStatus.estimatedSizeMB} MB</div>
+              </div>
+
+              {/* Download Progress Bar if downloading */}
+              {isDownloadingOffline && (
+                <div className="space-y-1.5 bg-amber-950/40 p-2.5 rounded-xl border border-amber-800/50">
+                  <div className="flex items-center justify-between text-xs font-bold text-amber-300">
+                    <span className="flex items-center gap-1.5">
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                      <span>İndiriliyor: {downloadProgress.surahName}</span>
+                    </span>
+                    <span>%{Math.round((downloadProgress.current / downloadProgress.total) * 100)}</span>
+                  </div>
+                  <div className="w-full bg-stone-800 rounded-full h-2 overflow-hidden border border-amber-500/30">
+                    <div
+                      className="bg-gradient-to-r from-amber-500 to-emerald-400 h-full transition-all duration-200 rounded-full"
+                      style={{ width: `${(downloadProgress.current / downloadProgress.total) * 100}%` }}
+                    />
+                  </div>
+                  <div className="text-[10px] text-stone-400 text-right">
+                    {downloadProgress.current} / {downloadProgress.total} Sûre Tamamlandı
+                  </div>
+                </div>
+              )}
+
+              {/* Download & Clear Actions */}
+              <div className="grid grid-cols-1 gap-2 pt-1">
+                {!offlineStatus.isComplete && !isDownloadingOffline && (
+                  <button
+                    type="button"
+                    onClick={handleStartOfflineDownload}
+                    className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Tüm Kur'an ve Meali İndir (%100 Çevrimdışı Kullan)</span>
+                  </button>
+                )}
+
+                {offlineStatus.isComplete && !isDownloadingOffline && (
+                  <button
+                    type="button"
+                    onClick={handleStartOfflineDownload}
+                    className="w-full py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 border border-emerald-600/40 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Paketi Yeniden Güncelle</span>
+                  </button>
+                )}
+
+                {offlineStatus.downloadedCount > 0 && !isDownloadingOffline && (
+                  <button
+                    type="button"
+                    onClick={handleClearOffline}
+                    className="w-full py-2 px-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-rose-300 hover:text-rose-200 font-semibold text-[11px] flex items-center justify-center gap-1.5 border border-rose-900/40 cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                    <span>İndirilmiş Paketi Sil (Depolama Alanı Aç)</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Data Persistence Explanation Box */}
+              <div className="p-3 bg-stone-950/60 rounded-xl border border-stone-800 space-y-1.5 text-[11px] text-stone-400 leading-relaxed">
+                <div className="font-bold text-amber-300 flex items-center gap-1">
+                  <Database className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Veriler Nasıl Saklanır? Çerezlerden Farkı Nedir?</span>
+                </div>
+                <p>
+                  Verileriniz geçici çerezlerde (Cookies) değil; cihazınızın yüksek kapasiteli <strong className="text-stone-200">IndexedDB ve Yerel Veritabanı</strong> katmanında saklanır.
+                </p>
+                <p>
+                  Tarayıcı çerezleri temizlense dahi bu veritabanı silinmez. Ayrıca Firebase hesabınızla giriş yaptığınızda notlarınız, ayraçlarınız ve okuma geçmişiniz <strong className="text-stone-200">bulut yedekleme</strong> ile tüm cihazlarınızda güvenceye alınır.
+                </p>
               </div>
             </div>
 

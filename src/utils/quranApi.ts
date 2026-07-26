@@ -1,6 +1,7 @@
 import { Surah, Ayah } from '../types';
 import { ALL_SURAHS } from '../data/surahList';
 import { QURAN_SURAHS } from '../data/quranData';
+import { getSurahFromIDB, saveSurahToIDB } from './offlineStorage';
 
 const surahCache: Record<number, Surah> = {};
 
@@ -10,23 +11,36 @@ QURAN_SURAHS.forEach((s) => {
 });
 
 export const fetchSurahFromApi = async (id: number): Promise<Surah> => {
-  if (surahCache[id] && surahCache[id].verses.length === ALL_SURAHS.find(item => item.id === id)?.versesCount) {
+  const listItem = ALL_SURAHS.find((s) => s.id === id);
+  const expectedVerses = listItem?.versesCount || 0;
+
+  if (surahCache[id] && surahCache[id].verses.length === expectedVerses) {
     return surahCache[id];
   }
 
-  // Check localStorage cache first if offline or memory missed
+  // 1. Check IndexedDB first (Fast & persistent offline store)
+  try {
+    const idbSurah = await getSurahFromIDB(id);
+    if (idbSurah && idbSurah.verses && idbSurah.verses.length === expectedVerses) {
+      surahCache[id] = idbSurah;
+      return idbSurah;
+    }
+  } catch (e) {}
+
+  // 2. Check localStorage cache
   try {
     const saved = localStorage.getItem(`kuran_offline_surah_${id}`);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed && parsed.verses && parsed.verses.length > 0) {
+      if (parsed && parsed.verses && parsed.verses.length === expectedVerses) {
         surahCache[id] = parsed;
+        // Migration to IDB
+        saveSurahToIDB(parsed);
         return parsed;
       }
     }
   } catch (e) {}
 
-  const listItem = ALL_SURAHS.find((s) => s.id === id);
   if (!listItem) {
     throw new Error('Sûre bulunamadı');
   }
@@ -98,6 +112,7 @@ export const fetchSurahFromApi = async (id: number): Promise<Surah> => {
     };
 
     surahCache[id] = loadedSurah;
+    saveSurahToIDB(loadedSurah);
     try {
       localStorage.setItem(`kuran_offline_surah_${id}`, JSON.stringify(loadedSurah));
     } catch (e) {}
