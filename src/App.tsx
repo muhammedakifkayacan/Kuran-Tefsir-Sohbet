@@ -488,22 +488,24 @@ export default function App() {
             : ''
         }`}
       >
-        {/* App Top Header - Fixed & Consistent Always */}
-        <Header
-          isMobileFrame={isMobileFrame}
-          setIsMobileFrame={setIsMobileFrame}
-          onOpenAiAssistant={() => setActiveTab('notes')}
-          onOpenWelcomeModal={() => setIsWelcomeOpen(true)}
-          onOpenExportImportModal={() => setIsExportImportOpen(true)}
-          onOpenUserProfileModal={() => setIsUserProfileOpen(true)}
-          onOpenAuthLandingModal={() => setIsAuthLandingOpen(true)}
-          onStartTour={handleStartTour}
-          onOpenQiblaFinder={() => setIsQiblaModalOpen(true)}
-          onOpenRiyazusModal={() => setIsRiyazusModalOpen(true)}
-          user={user}
-          activeTab={activeTab}
-          onNavigateTab={(tab) => setActiveTab(tab)}
-        />
+        {/* App Top Header - Hidden when reading Quran for true full-screen Apple-level experience */}
+        <div className={activeTab === 'quran' ? 'hidden' : ''}>
+          <Header
+            isMobileFrame={isMobileFrame}
+            setIsMobileFrame={setIsMobileFrame}
+            onOpenAiAssistant={() => setActiveTab('notes')}
+            onOpenWelcomeModal={() => setIsWelcomeOpen(true)}
+            onOpenExportImportModal={() => setIsExportImportOpen(true)}
+            onOpenUserProfileModal={() => setIsUserProfileOpen(true)}
+            onOpenAuthLandingModal={() => setIsAuthLandingOpen(true)}
+            onStartTour={handleStartTour}
+            onOpenQiblaFinder={() => setIsQiblaModalOpen(true)}
+            onOpenRiyazusModal={() => setIsRiyazusModalOpen(true)}
+            user={user}
+            activeTab={activeTab}
+            onNavigateTab={(tab) => setActiveTab(tab)}
+          />
+        </div>
 
         {/* Offline Network Warning Bar */}
         {isOffline && (
@@ -516,7 +518,9 @@ export default function App() {
         )}
 
         {/* Scrollable View Content Area */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden w-full max-w-5xl mx-auto px-2 sm:px-4 pb-28 sm:pb-36 relative">
+        <main className={`flex-1 overflow-y-auto overflow-x-hidden w-full max-w-5xl mx-auto ${
+          activeTab === 'quran' ? 'px-0 sm:px-4 pb-6 sm:pb-36' : 'px-2 sm:px-4 pb-28 sm:pb-36'
+        } relative`}>
           <AnimatePresence mode="wait">
             {activeTab === 'home' && (
               <motion.div
@@ -574,6 +578,7 @@ export default function App() {
                   user={user}
                   onRequireAuth={handleRequireAuth}
                   targetVerseNumber={targetVerseNumber}
+                  onNavigateTab={(tab) => setActiveTab(tab)}
                 />
               </motion.div>
             )}
@@ -743,8 +748,8 @@ export default function App() {
           </div>
         )}
 
-        {/* Native Mobile Bottom Navigation */}
-        {!isFullScreen && (
+        {/* Native Mobile Bottom Navigation - Hidden when reading Quran for full screen */}
+        {!isFullScreen && activeTab !== 'quran' && (
           <BottomNav
             activeTab={activeTab}
             setActiveTab={setActiveTab}
